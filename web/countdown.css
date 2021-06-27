@@ -9,7 +9,12 @@
         --text-colour: white;
         --page-background: rgb(48, 48, 48);
     }
-}  
+}
+
+.force-dark {
+    --text-colour: white;
+    --page-background: rgb(48, 48, 48);
+}
 
 body,
 html {
@@ -51,4 +56,50 @@ html {
     font-weight: 100;
     font-size: 18pt;
     margin-top: -16px;
+}
+
+/* Keyboard Shortcuts */
+.shortcuts-container {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0px;
+    left: 0px;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    
+    align-items: center;
+    justify-items: center;
+}
+
+#shortcuts-content {
+    width: 240px;
+    padding: 12px 24px 12px 24px;
+    background-color: rgba(209, 209, 209, 0.5);
+    border-radius: 4px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    -moz-backdrop-filter: blur(10px);
+}
+
+.shortcuts-title {
+    font-weight: 800;
+    font-size: 36px;
+}
+
+.shortcuts-shortcuts-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-weight: 100;
+}
+
+.shortcuts-shortcuts-operation {
+    align-self: start;
+    grid-column: 1;
+}
+
+.shortcuts-shortcuts-key {
+    justify-self: end;
+    grid-column: 2;
 }

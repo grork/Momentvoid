@@ -42,9 +42,7 @@
             this.minutesElement = this.containerElement.querySelector("[data-countdown-part='minutes'");
             this.secondsElement = this.containerElement.querySelector("[data-countdown-part='seconds'");
 
-            this.intervalToken = window.setInterval(this.tick.bind(this), 1000);
-
-            this.tick();
+            this.start();
         }
 
         tick() {
@@ -77,10 +75,26 @@
             this.secondsElement.textContent = seconds;
         }
 
+        start() {
+            this.intervalToken = window.setInterval(this.tick.bind(this), 1000);
+
+            this.tick();
+        }
+
         stop() {
             if(this.intervalToken) {
                 window.clearInterval(this.intervalToken);
+                this.intervalToken = null;
             }
+        }
+
+        toggle() {
+            if (this.intervalToken) {
+                this.stop();
+                return;
+            }
+
+            this.start();
         }
 
         displayTargetTimeReachedMessage()
@@ -93,7 +107,44 @@
         }
     }
 
+    class Shortcuts {
+        constructor(countdown, container) {
+            this.countdown = countdown;
+            this.container = container;
+
+            window.addEventListener("keydown", this.handleKeyDown.bind(this));
+            window.addEventListener("keyup", this.handleKeyUp.bind(this));
+        }
+
+        handleKeyDown(keyEvent) {
+            switch (keyEvent.key)
+            {
+                case "m":
+                case "M":
+                    this.container.style = "";
+                    break;
+                
+                case "p":
+                case "P":
+                    this.countdown.toggle();
+                    break;
+                
+                case "t":
+                case "T":
+                    document.body.classList.toggle("force-dark");
+                    break;
+            }
+        }
+
+        handleKeyUp()
+        {
+            this.container.style = "display: none";
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
-        window.Countdown = new Countdown(document.getElementById("primary-countdown"));
+        var countdown = new Countdown(document.getElementById("primary-countdown"));
+        window.Countdown = countdown;
+        window.Shortcuts = new Shortcuts(countdown, document.getElementById("shortcuts-content"));
     });
 })();
