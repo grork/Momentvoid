@@ -90,7 +90,7 @@ html {
 
 .shortcuts-shortcuts-list {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr *;
     font-weight: 100;
 }
 

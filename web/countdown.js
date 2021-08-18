@@ -19,6 +19,53 @@
         element.textContent = "-";
         parent.style.display = "none"
     }
+
+    function generateMessage(weeks, days, hours, minutes, seconds) {
+        let message = "";
+        if (weeks === 1) {
+            message = "1 week";
+        }
+
+        if (weeks > 1) {
+            message = `${weeks} weeks`;
+        }
+
+        if (days > 0) {
+            message += ", ";
+
+            if (days === 1) {
+                message += "1 day";
+            }
+
+            if (days > 1) {
+                message += `${days} days`;
+            }
+        }
+
+        if (hours > 0) {
+            message += ", ";
+
+            if (hours === 1) {
+                message += "1 hour";
+            }
+
+            if (hours > 1) {
+                message += `${hours} hours`;
+            }
+        }
+
+        if (minutes > 0) {
+            message += ", ";
+            message += `${minutes} min`;
+        }
+
+        if (seconds > 0) {
+            message += ", ";
+            message += `${seconds} sec`;
+        }
+
+        return message;
+    }
     
     class Countdown {
         constructor(containerElement) {
@@ -73,6 +120,8 @@
             collapseIfLessThan1(minutes, this.minutesElement);
             
             this.secondsElement.textContent = seconds;
+
+            this.currentMessage = generateMessage(weeks, days, hours, minutes, seconds);
         }
 
         start() {
@@ -99,11 +148,15 @@
 
         displayTargetTimeReachedMessage()
         {
-            this.containerElement.textContent = "You are living in the future";
+            this.containerElement.textContent = this.currentMessage = "You are living in the future";
         }
 
         displayInvalidDateError() {
             this.containerElement.textContent = "Invalid date! You need to use an ISO formatted date";
+        }
+
+        putOnClipboard() {
+            navigator.clipboard.writeText(this.currentMessage);
         }
     }
 
@@ -133,6 +186,10 @@
                 case "T":
                     document.body.classList.toggle("force-dark");
                     break;
+                
+                case "c":
+                case "C":
+                    this.countdown.putOnClipboard();
             }
         }
 
