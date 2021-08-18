@@ -125,9 +125,18 @@
         }
 
         start() {
-            this.intervalToken = window.setInterval(this.tick.bind(this), 1000);
-
             this.tick();
+            
+            // Calculate approximate offset to the nearest whole second with
+            // a small fudge factor
+            var currentSecondOffset = (Date.now() % 1000) - 5;
+            
+            // Schedule a tick to that offset
+            this.intervalToken = setTimeout(() => {
+                // Actually start our 'on the second' tick
+                this.intervalToken = window.setInterval(this.tick.bind(this), 1000);
+                this.tick();
+            }, currentSecondOffset);
         }
 
         stop() {
