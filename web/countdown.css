@@ -4,17 +4,24 @@
     --page-background: white;
 }
 
+.force-alternative {
+    --text-colour: white;
+    --page-background: rgb(48, 48, 48);
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         --text-colour: white;
         --page-background: rgb(48, 48, 48);
     }
+
+    .force-alternative {
+        --text-colour: rgb(19, 19, 19);
+        --page-background: white;
+    }
 }
 
-.force-dark {
-    --text-colour: white;
-    --page-background: rgb(48, 48, 48);
-}
+
 
 body,
 html {

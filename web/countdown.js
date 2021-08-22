@@ -193,7 +193,7 @@
                 
                 case "t":
                 case "T":
-                    document.body.classList.toggle("force-dark");
+                    document.body.classList.toggle("force-alternative");
                     break;
                 
                 case "c":
