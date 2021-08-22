@@ -97,7 +97,7 @@ html {
 
 .shortcuts-shortcuts-list {
     display: grid;
-    grid-template-columns: 1fr *;
+    grid-template-columns: 1fr auto;
     font-weight: 100;
 }
 
