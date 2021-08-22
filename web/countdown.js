@@ -167,6 +167,26 @@
         putOnClipboard() {
             navigator.clipboard.writeText(this.currentMessage);
         }
+
+        toggleFullscreen() {
+            if (document.body.webkitRequestFullscreen) {
+                // Assuming webkit
+                if (!document.webkitFullscreenElement) {
+                    document.body.webkitRequestFullscreen();
+                } else {
+                    document.webkitExitFullscreen();
+                }
+
+                return;
+            }
+
+            // Assume not-webkit
+            if (!document.fullscreenElement) {
+                document.body.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
     }
 
     class Shortcuts {
@@ -199,6 +219,12 @@
                 case "c":
                 case "C":
                     this.countdown.putOnClipboard();
+                    break;
+
+                case "f":
+                case "F":
+                    this.countdown.toggleFullscreen()
+                    break;
             }
         }
 
