@@ -237,6 +237,6 @@
     document.addEventListener("DOMContentLoaded", () => {
         var countdown = new Countdown(document.getElementById("primary-countdown"));
         window.Countdown = countdown;
-        window.Shortcuts = new Shortcuts(countdown, document.getElementById("shortcuts-content"));
+        window.Shortcuts = new Shortcuts(countdown, document.querySelector(".shortcuts-container"));
     });
 })();
