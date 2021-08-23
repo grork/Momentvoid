@@ -31,6 +31,7 @@ html {
         "Helvetica Neue", sans-serif;
     background-color: var(--page-background);
     color: var(--text-colour);
+    -webkit-app-region: drag;
 }
 
 .countdown-wrapper {
