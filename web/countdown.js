@@ -190,9 +190,10 @@
     }
 
     class Shortcuts {
-        constructor(countdown, container) {
+        constructor(countdown, themeManager, container) {
             this.countdown = countdown;
             this.container = container;
+            this.themeManager = themeManager;
 
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
             window.addEventListener("keyup", this.handleKeyUp.bind(this));
@@ -218,7 +219,7 @@
                 
                 case "t":
                 case "T":
-                    document.body.classList.toggle("force-alternative");
+                    this.themeManager.toggleTheme();
                     break;
                 
                 case "c":
@@ -239,9 +240,26 @@
         }
     }
 
+    class ThemeManager {
+        toggleTheme() {
+            const wasToggledOn = document.body.classList.toggle("force-alternative")
+            window.localStorage.setItem("toggleTheme", wasToggledOn);
+        }
+
+        restoreTheme() {
+            const currentTheme = window.localStorage.getItem("toggleTheme");
+            if (currentTheme === "true") {
+                window.requestAnimationFrame(() => document.body.classList.toggle("force-alternative", true));
+            }
+        }
+    }
+
+    const themeHelper = new ThemeManager();
+    themeHelper.restoreTheme();
+
     document.addEventListener("DOMContentLoaded", () => {
         var countdown = new Countdown(document.getElementById("primary-countdown"));
         window.Countdown = countdown;
-        window.Shortcuts = new Shortcuts(countdown, document.querySelector(".shortcuts-container"));
+        window.Shortcuts = new Shortcuts(countdown, themeHelper, document.querySelector(".shortcuts-container"));
     });
 })();
