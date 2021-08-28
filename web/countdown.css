@@ -21,8 +21,6 @@
     }
 }
 
-
-
 body,
 html {
     margin: 0px;
@@ -39,11 +37,7 @@ html {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
-}
-
-.countdown-container {
-    width: 175px;
+    min-height: 100%;
 }
 
 .countdown-element-container {
@@ -55,8 +49,15 @@ html {
 
 .countdown-number {
     font-weight: 800;
-    font-size: 72pt;
+    font-size: calc(85vh/7);
+    min-height: 0vh; /* see https://www.sarasoueidan.com/blog/safari-fluid-typography-bug-fix/ */
     margin-left: -4px;
+    /* Why? To stop the changing width of the time components from jiggling
+       around the centre point (because the width of the elements keeps changing)
+       If we fix the width to something 'small', and let it overflow, it nets
+       out pretty well */
+    width: 50px;
+    overflow: visible;
 }
 
 .countdown-description {
