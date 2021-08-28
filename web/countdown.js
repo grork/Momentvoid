@@ -199,6 +199,11 @@
         }
 
         handleKeyDown(keyEvent) {
+            // Don't handle the event again if they key is being held down
+            if (keyEvent.repeat) {
+                return;
+            }
+
             switch (keyEvent.key)
             {
                 case "m":
