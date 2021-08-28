@@ -49,6 +49,10 @@ html {
     margin-right: 12px;
 }
 
+.countdown-element-hide {
+    display: none;
+}
+
 .countdown-number {
     font-weight: 800;
     font-size: calc(85vh/7);

@@ -11,6 +11,8 @@
     const LIGHT_THEME_KEY = "light";
     const THEME_DEFAULT = "default";
     const THEME_TOGGLED = "toggled";
+    
+    const HIDE_SEGMENT_CLASS = "countdown-element-hide";
 
     function collapseIfLessThan1(value, element) {
         var parent = element.parentElement;
@@ -217,6 +219,43 @@
                 document.exitFullscreen();
             }
         }
+
+        cycleSegmentVisibility() {
+            const secondsHidden = this.secondsElement.parentElement.classList.contains(HIDE_SEGMENT_CLASS);
+            const minutesHidden = this.minutesElement.parentElement.classList.contains(HIDE_SEGMENT_CLASS);
+            const hoursHidden = this.hoursElement.parentElement.classList.contains(HIDE_SEGMENT_CLASS);
+            const daysHidden = this.daysElement.parentElement.classList.contains(HIDE_SEGMENT_CLASS);
+
+            if (!secondsHidden) {
+                this.secondsElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, true);
+                return;
+            }
+
+            if (!minutesHidden) {
+                this.minutesElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, true);
+                return;
+            }
+
+            if (!hoursHidden) {
+                this.hoursElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, true);
+                return;
+            }
+
+            if (!daysHidden) {
+                this.daysElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, true);
+                return;
+            }
+
+            // Everyting was hidden, so it's time to show everything again
+            [
+                this.secondsElement.parentElement,
+                this.minutesElement.parentElement,
+                this.hoursElement.parentElement,
+                this.daysElement.parentElement,
+            ].forEach((segment) => {
+                segment.classList.toggle(HIDE_SEGMENT_CLASS, false);
+            });
+        }
     }
 
     class Shortcuts {
@@ -272,6 +311,10 @@
                 case "A":
                     this.countdown.goFaster();
                     break;
+                
+                case "s":
+                case "S":
+                    this.countdown.cycleSegmentVisibility();
             }
         }
 
