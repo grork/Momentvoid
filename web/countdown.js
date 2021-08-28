@@ -7,6 +7,11 @@
     const MS_IN_DAY = MS_IN_HOUR * 24;
     const MS_IN_WEEK = MS_IN_DAY * 7;
 
+    const DARK_THEME_KEY = "dark";
+    const LIGHT_THEME_KEY = "light";
+    const THEME_DEFAULT = "default";
+    const THEME_TOGGLED = "toggled";
+
     function collapseIfLessThan1(value, element) {
         var parent = element.parentElement;
 
@@ -241,21 +246,77 @@
     }
 
     class ThemeManager {
-        toggleTheme() {
-            const wasToggledOn = document.body.classList.toggle("force-alternative")
-            window.localStorage.setItem("toggleTheme", wasToggledOn);
+        constructor() {
+            this.themeConfig = {
+                dark: "default",
+                light: "default"
+            };
+
+            this.loadFromStorage();
+            this.isSystemDarkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
         }
 
-        restoreTheme() {
-            const currentTheme = window.localStorage.getItem("toggleTheme");
-            if (currentTheme === "true") {
-                window.requestAnimationFrame(() => document.body.classList.toggle("force-alternative", true));
+        loadFromStorage() {
+            const storageValue = window.localStorage.getItem("themeConfig");
+            if (storageValue === null) {
+                // Nothing persisted, give up
+                return;
+            }
+
+            const storageConfig = JSON.parse(storageValue);
+            if (!storageConfig.hasOwnProperty("dark") && !storageConfig.hasOwnProperty("light")) {
+                // Not a valid object. we'll stomp it later.
+                return;
+            }
+
+            this.themeConfig = storageConfig;
+        }
+
+        saveConfigToStorage() {
+            window.localStorage.setItem("themeConfig", JSON.stringify(this.themeConfig));
+        }
+
+        toggleTheme() {
+            const themeState = this.getCurrentThemeState();
+            const isDefaultForTheme = (themeState.currentThemeSetting === THEME_DEFAULT);
+            const setting = (isDefaultForTheme) ? THEME_TOGGLED : THEME_DEFAULT;
+
+            this.themeConfig[themeState.currentThemeKey] = setting;
+        
+            this.applyThemeBasedOnConfig();
+            this.saveConfigToStorage();
+        }
+
+        applyThemeBasedOnConfig() {
+            const themeState = this.getCurrentThemeState();
+            const isOverriden = (themeState.currentThemeSetting !== THEME_DEFAULT);
+            const alternativeTheme = (themeState.isSystemDark) ? "force-light" : "force-dark";
+
+            const setTheme = () => document.body.classList.toggle(alternativeTheme, isOverriden);
+            
+            // Don't wait for request animation frame if we have a body element
+            if (document && document.body) {
+                setTheme()
+            } else {
+                window.requestAnimationFrame(setTheme);
+            }
+        }
+
+        getCurrentThemeState() {
+            const isSystemDark = this.isSystemDarkMediaQuery.matches;
+            const themeKey = (isSystemDark) ? DARK_THEME_KEY : LIGHT_THEME_KEY;
+            const setting = this.themeConfig[themeKey];
+
+            return {
+                isSystemDark: isSystemDark,
+                currentThemeKey: themeKey,
+                currentThemeSetting: setting,
             }
         }
     }
 
     const themeHelper = new ThemeManager();
-    themeHelper.restoreTheme();
+    themeHelper.applyThemeBasedOnConfig();
 
     document.addEventListener("DOMContentLoaded", () => {
         var countdown = new Countdown(document.getElementById("primary-countdown"));
