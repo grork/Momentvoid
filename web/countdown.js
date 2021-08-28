@@ -236,6 +236,12 @@
                 case "F":
                     this.countdown.toggleFullscreen()
                     break;
+                
+                case "r":
+                case "R":
+                    this.themeManager.resetConfig();
+                    window.location.reload();
+                    break;
             }
         }
 
@@ -274,6 +280,10 @@
 
         saveConfigToStorage() {
             window.localStorage.setItem("themeConfig", JSON.stringify(this.themeConfig));
+        }
+
+        resetConfig() {
+            window.localStorage.clear();
         }
 
         toggleTheme() {
