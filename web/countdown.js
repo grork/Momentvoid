@@ -74,6 +74,7 @@
     
     class Countdown {
         constructor(containerElement) {
+            this.accelerateTime = 0;
             this.containerElement = containerElement;
             this.targetDate = DEFAULT_TARGET;
 
@@ -97,8 +98,17 @@
             this.start();
         }
 
+        getTime() {
+            let time = new Date().getTime();
+            if (this.accelerateTime) {
+                time += ((this.accelerateTime += 1) * 1000);
+            }
+
+            return time;
+        }
+
         tick() {
-            const now = new Date().getTime();
+            const now = this.getTime();
             const remaining = this.targetDate - now;
 
             // Time calculations for days, hours, minutes and seconds
@@ -129,7 +139,8 @@
             this.currentMessage = generateMessage(weeks, days, hours, minutes, seconds);
         }
 
-        start() {
+        start(tickInterval) {
+            tickInterval = tickInterval || 1000;
             this.tick();
             
             // Calculate approximate offset to the nearest whole second with
@@ -139,7 +150,7 @@
             // Schedule a tick to that offset
             this.intervalToken = setTimeout(() => {
                 // Actually start our 'on the second' tick
-                this.intervalToken = window.setInterval(this.tick.bind(this), 1000);
+                this.intervalToken = window.setInterval(this.tick.bind(this), tickInterval);
                 this.tick();
             }, currentSecondOffset);
         }
@@ -149,6 +160,20 @@
                 window.clearInterval(this.intervalToken);
                 this.intervalToken = null;
             }
+        }
+
+        goFaster() {
+            this.stop();
+            let newInterval = 0;
+
+            if (this.accelerateTime) {
+                this.accelerateTime = 0;
+            } else {
+                this.accelerateTime = 1;
+                newInterval = 250;
+            }
+
+            this.start(newInterval);
         }
 
         toggle() {
@@ -241,6 +266,11 @@
                 case "R":
                     this.themeManager.resetConfig();
                     window.location.reload();
+                    break;
+                
+                case "a":
+                case "A":
+                    this.countdown.goFaster();
                     break;
             }
         }
