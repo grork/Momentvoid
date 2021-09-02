@@ -62,7 +62,7 @@ html {
        around the centre point (because the width of the elements keeps changing)
        If we fix the width to something 'small', and let it overflow, it nets
        out pretty well */
-    width: 50px;
+    width: calc(85vh/7); /* Make the item square-ish to keep it centered */
     overflow: visible;
 }
 
