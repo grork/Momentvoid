@@ -375,7 +375,15 @@
             const isOverriden = (themeState.currentThemeSetting !== THEME_DEFAULT);
             const alternativeTheme = (themeState.isSystemDark) ? "force-light" : "force-dark";
 
-            const setTheme = () => document.body.classList.toggle(alternativeTheme, isOverriden);
+            const setTheme = () => {
+                document.body.classList.toggle(alternativeTheme, isOverriden);
+
+                // Now we need to update the safari et al window chrome colour
+                // so that it matches the background of the page.
+                let finalStyle = window.getComputedStyle(document.body);
+                let meta = document.querySelector('meta[name="theme-color"]');
+                meta.setAttribute("content", finalStyle.backgroundColor);
+            }
             
             // Don't wait for request animation frame if we have a body element
             if (document && document.body) {
