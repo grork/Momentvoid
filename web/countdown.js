@@ -278,6 +278,8 @@
             {
                 case "m":
                 case "M":
+                case "?":
+                case "/":
                     this.container.style = "";
                     break;
                 
