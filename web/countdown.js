@@ -239,7 +239,7 @@
             this.start(newInterval);
         }
 
-        toggle() {
+        togglePlayPause() {
             if (this.intervalToken) {
                 this.stop();
                 return;
@@ -379,7 +379,7 @@
                 
                 case "p":
                 case "P":
-                    this.countdown.toggle();
+                    this.countdown.togglePlayPause();
                     break;
                 
                 case "t":
