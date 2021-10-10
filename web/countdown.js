@@ -14,6 +14,22 @@
     
     const HIDE_SEGMENT_CLASS = "countdown-element-hide";
 
+    const Segments = {
+        WEEKS: 'WEEKS',
+        DAYS: 'DAYS',
+        HOURS: 'HOURS',
+        MINUTES: 'MINUTES',
+        SECONDS: 'SECONDS'
+    };
+
+    const AllSegments = [
+        Segments.WEEKS,
+        Segments.DAYS,
+        Segments.HOURS,
+        Segments.MINUTES,
+        Segments.SECONDS
+    ];
+
     function collapseIfLessThan1(value, element) {
         var parent = element.parentElement;
 
@@ -27,51 +43,93 @@
         parent.style.display = "none"
     }
 
-    function generateMessage(weeks, days, hours, minutes, seconds) {
+    function addCommaIfNeeded(source) {
+        if (source.length === 0) {
+            return source;
+        }
+
+        return source + ", ";
+    }
+
+    function generateMessage(weeks, days, hours, minutes, seconds, segments) {
         let message = "";
-        if (weeks === 1) {
-            message = "1 week";
-        }
 
-        if (weeks > 1) {
-            message = `${weeks} weeks`;
-        }
-
-        if (days > 0) {
-            message += ", ";
-
-            if (days === 1) {
-                message += "1 day";
+        if (segments.includes(Segments.WEEKS)) {
+            if (weeks === 1) {
+                message = "1 week";
             }
 
-            if (days > 1) {
-                message += `${days} days`;
+            if (weeks > 1) {
+                message = `${weeks} weeks`;
             }
         }
 
-        if (hours > 0) {
-            message += ", ";
+        if (segments.includes(Segments.DAYS)) {
+            if (days > 0) {
+                message = addCommaIfNeeded(message);
 
-            if (hours === 1) {
-                message += "1 hour";
-            }
+                if (days === 1) {
+                    message += "1 day";
+                }
 
-            if (hours > 1) {
-                message += `${hours} hours`;
+                if (days > 1) {
+                    message += `${days} days`;
+                }
             }
         }
 
-        if (minutes > 0) {
-            message += ", ";
-            message += `${minutes} min`;
+        if (segments.includes(Segments.HOURS)) {
+            if (hours > 0) {
+                message = addCommaIfNeeded(message);
+
+                if (hours === 1) {
+                    message += "1 hour";
+                }
+
+                if (hours > 1) {
+                    message += `${hours} hours`;
+                }
+            }
         }
 
-        if (seconds > 0) {
-            message += ", ";
-            message += `${seconds} sec`;
+        if (segments.includes(Segments.MINUTES)) {
+            if (minutes > 0) {
+                message = addCommaIfNeeded(message);
+
+                if (minutes === 1) {
+                    message += "1 min";
+                }
+
+                if (minutes > 1) {
+                    message += `${minutes} mins`;
+                }
+            }
+        }
+
+        if (segments.includes(Segments.SECONDS)) {
+            if (seconds > 0) {
+                message = addCommaIfNeeded(message);
+
+                if (seconds === 1) {
+                    message += "1 sec"
+                }
+
+                if (seconds > 1) {
+                    message += `${seconds} secs`;
+                }
+            }
         }
 
         return message;
+    }
+
+    function removeFromArray(source, itemToRemove) {
+        let itemIndex = source.indexOf(itemToRemove);
+        if (itemIndex < 0) {
+            return;
+        }
+
+        source.splice(itemIndex, 1);
     }
     
     class Countdown {
@@ -79,6 +137,8 @@
             this.accelerateTime = 0;
             this.containerElement = containerElement;
             this.targetDate = DEFAULT_TARGET;
+            this.visibleSegments = AllSegments.slice();
+            this.loadSegmentsFromStorage();
 
             const params = new URLSearchParams(window.location.search);
             let targetParam = params.get("target");
@@ -96,6 +156,7 @@
             this.hoursElement = this.containerElement.querySelector("[data-countdown-part='hours'");
             this.minutesElement = this.containerElement.querySelector("[data-countdown-part='minutes'");
             this.secondsElement = this.containerElement.querySelector("[data-countdown-part='seconds'");
+            this.updateSegmentDOMState();
 
             this.start();
         }
@@ -138,7 +199,7 @@
             
             this.secondsElement.textContent = seconds;
 
-            this.currentMessage = generateMessage(weeks, days, hours, minutes, seconds);
+            this.currentMessage = generateMessage(weeks, days, hours, minutes, seconds, this.visibleSegments);
         }
 
         start(tickInterval) {
@@ -220,41 +281,74 @@
             }
         }
 
+        hideNextSegment() {
+            this.cycleSegmentVisibility();
+            this.updateSegmentDOMState();
+            this.saveSegmentsToStorage();
+        }
+
+        updateSegmentDOMState() {
+            const secondsVisible = !this.visibleSegments.includes(Segments.SECONDS);
+            const minuteVisible = !this.visibleSegments.includes(Segments.MINUTES);
+            const hoursVisible = !this.visibleSegments.includes(Segments.HOURS)
+            const daysVisible = !this.visibleSegments.includes(Segments.DAYS);
+            const weeksVisible = !this.visibleSegments.includes(Segments.WEEKS);
+
+            this.secondsElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, secondsVisible);
+            this.minutesElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, minuteVisible);
+            this.hoursElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, hoursVisible);
+            this.daysElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, daysVisible);
+            this.weeksElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, weeksVisible);
+        }
+
         cycleSegmentVisibility() {
-            const secondsHidden = this.secondsElement.parentElement.classList.contains(HIDE_SEGMENT_CLASS);
-            const minutesHidden = this.minutesElement.parentElement.classList.contains(HIDE_SEGMENT_CLASS);
-            const hoursHidden = this.hoursElement.parentElement.classList.contains(HIDE_SEGMENT_CLASS);
-            const daysHidden = this.daysElement.parentElement.classList.contains(HIDE_SEGMENT_CLASS);
+            const secondsHidden = !this.visibleSegments.includes(Segments.SECONDS);
+            const minutesHidden = !this.visibleSegments.includes(Segments.MINUTES);
+            const hoursHidden = !this.visibleSegments.includes(Segments.HOURS)
+            const daysHidden = !this.visibleSegments.includes(Segments.DAYS);
 
             if (!secondsHidden) {
-                this.secondsElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, true);
+                removeFromArray(this.visibleSegments, Segments.SECONDS);
                 return;
             }
 
             if (!minutesHidden) {
-                this.minutesElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, true);
+                removeFromArray(this.visibleSegments, Segments.MINUTES);
                 return;
             }
 
             if (!hoursHidden) {
-                this.hoursElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, true);
+                removeFromArray(this.visibleSegments, Segments.HOURS);
                 return;
             }
 
             if (!daysHidden) {
-                this.daysElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, true);
+                removeFromArray(this.visibleSegments, Segments.DAYS);
                 return;
             }
 
-            // Everyting was hidden, so it's time to show everything again
-            [
-                this.secondsElement.parentElement,
-                this.minutesElement.parentElement,
-                this.hoursElement.parentElement,
-                this.daysElement.parentElement,
-            ].forEach((segment) => {
-                segment.classList.toggle(HIDE_SEGMENT_CLASS, false);
-            });
+            this.visibleSegments = AllSegments.slice();
+            this.saveSegmentsToStorage();
+        }
+
+        loadSegmentsFromStorage() {
+            const storageValue = window.localStorage.getItem("segmentConfig");
+            if (storageValue === null) {
+                // Nothing persisted, give up
+                return;
+            }
+
+            const storageConfig = JSON.parse(storageValue);
+            if (!Array.isArray(storageConfig) || storageConfig.length < 1) {
+                // Not a valid object. we'll stomp it later.
+                return;
+            }
+
+            this.visibleSegments = storageConfig;
+        }
+
+        saveSegmentsToStorage() {
+            window.localStorage.setItem("segmentConfig", JSON.stringify(this.visibleSegments));
         }
     }
 
@@ -305,7 +399,7 @@
                 
                 case "r":
                 case "R":
-                    this.themeManager.resetConfig();
+                    window.localStorage.clear();
                     window.location.reload();
                     break;
                 
@@ -316,7 +410,7 @@
                 
                 case "s":
                 case "S":
-                    this.countdown.cycleSegmentVisibility();
+                    this.countdown.hideNextSegment();
             }
         }
 
@@ -355,10 +449,6 @@
 
         saveConfigToStorage() {
             window.localStorage.setItem("themeConfig", JSON.stringify(this.themeConfig));
-        }
-
-        resetConfig() {
-            window.localStorage.clear();
         }
 
         toggleTheme() {
