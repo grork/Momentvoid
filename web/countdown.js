@@ -135,6 +135,7 @@
     class Countdown {
         constructor(containerElement) {
             this.accelerateTime = 0;
+            this.accelerationFactor = 0;
             this.containerElement = containerElement;
             this.targetDate = DEFAULT_TARGET;
             this.visibleSegments = AllSegments.slice();
@@ -164,7 +165,7 @@
         getTime() {
             let time = new Date().getTime();
             if (this.accelerateTime) {
-                time += ((this.accelerateTime += 1) * 1000);
+                time += ((this.accelerateTime += this.accelerationFactor) * 1000);
             }
 
             return time;
@@ -225,15 +226,17 @@
             }
         }
 
-        goFaster() {
+        goFaster(accelerationFactor = 1, interval = 250) {
             this.stop();
             let newInterval = 0;
 
             if (this.accelerateTime) {
                 this.accelerateTime = 0;
+                this.accelerationFactor = 0;
             } else {
                 this.accelerateTime = 1;
-                newInterval = 250;
+                this.accelerationFactor = accelerationFactor;
+                newInterval = interval;
             }
 
             this.start(newInterval);
@@ -405,7 +408,11 @@
                 
                 case "a":
                 case "A":
-                    this.countdown.goFaster();
+                    if (keyEvent.shiftKey) {
+                        this.countdown.goFaster(100, 48);
+                    } else {
+                        this.countdown.goFaster();
+                    }
                     break;
                 
                 case "s":
