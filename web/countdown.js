@@ -131,15 +131,79 @@
 
         source.splice(itemIndex, 1);
     }
+
+    function cloneIntoWithParts(template, target, partNames) {
+        let parts = {};
+        let content = template.content;
+    
+        for (var index = 0; index < content.children.length; index += 1) {
+            // Clone the node, and append it directly to the supplied container
+            const templateChild = content.children[index];
+            const clonedChild = templateChild.cloneNode(true);
+            target.appendChild(clonedChild);
+    
+            // If we were asked to match parts, we'll do so.
+            if (partNames?.length) {
+                let locatedPartNames = []; // Track which ones we've located, so
+                                           // we can remove them after. We only
+                                           // support finding the first part with
+                                           // a specific name.
+                partNames.forEach((item) => {
+                    const selector = `[data-part='${item}']`;                        
+                    let foundPart = clonedChild.querySelector(selector);
+    
+                    // querySelector only finds *decendents*, so if we didn't find
+                    // the item, maybe the element itself is the part.
+                    if (!foundPart && clonedChild.matches(selector)) {
+                        // Note; matches only gives you 'does selector match'
+                        // and doesn't return the element.
+                        foundPart = clonedChild;
+                    }
+
+                    if (!foundPart) {
+                        return;
+                    }
+    
+                    // Since we found a part, we'll want to remove it later, but
+                    // since we're enumerating the item, we can't remove it yet
+                    locatedPartNames.push(item);
+                    parts[item] = foundPart;
+                });
+    
+                // Now we can remove the part names we'd found so we don't
+                // search for them again.
+                locatedPartNames.forEach((itemToRemove) => removeFromArray(partNames, itemToRemove));
+            }
+        }
+    
+        return parts;
+    }
     
     class Countdown {
-        constructor(containerElement) {
+        constructor(countdownContainer) {
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
-            this.containerElement = containerElement;
             this.targetDate = DEFAULT_TARGET;
             this.visibleSegments = AllSegments.slice();
             this.loadSegmentsFromStorage();
+
+            const template = document.querySelector("[data-template='countdown-template']");
+            const parts = cloneIntoWithParts(template, countdownContainer, [
+                "weeks",
+                "days",
+                "hours",
+                "minutes",
+                "seconds",
+                "container"
+            ]);
+            
+            this.weeksElement = parts.weeks;
+            this.daysElement = parts.days;
+            this.hoursElement = parts.hours;
+            this.minutesElement = parts.minutes;
+            this.secondsElement = parts.seconds;
+
+            this.containerElement = parts.container;
 
             const params = new URLSearchParams(window.location.search);
             let targetParam = params.get("target");
@@ -152,11 +216,6 @@
                 }
             }
 
-            this.weeksElement = this.containerElement.querySelector("[data-countdown-part='weeks'");
-            this.daysElement = this.containerElement.querySelector("[data-countdown-part='days'");
-            this.hoursElement = this.containerElement.querySelector("[data-countdown-part='hours'");
-            this.minutesElement = this.containerElement.querySelector("[data-countdown-part='minutes'");
-            this.secondsElement = this.containerElement.querySelector("[data-countdown-part='seconds'");
             this.updateSegmentDOMState();
 
             this.start();
@@ -509,8 +568,10 @@
     themeHelper.applyThemeBasedOnConfig();
 
     document.addEventListener("DOMContentLoaded", () => {
-        var countdown = new Countdown(document.getElementById("primary-countdown"));
-        window.Countdown = countdown;
-        window.Shortcuts = new Shortcuts(countdown, themeHelper, document.querySelector(".shortcuts-container"));
+        const countdowns = [
+            new Countdown(document.getElementById("countdown-container"))
+        ];
+        window.Countdowns = countdowns;
+        window.Shortcuts = new Shortcuts(countdowns[0], themeHelper, document.querySelector(".shortcuts-container"));
     });
 })();

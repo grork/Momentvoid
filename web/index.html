@@ -22,11 +22,11 @@
         <script type="text/javascript" src="countdown.js"></script>
     </head>
     <body>
-        <div class="countdown-wrapper">
-            <div id="primary-countdown" class="countdown-container">
+        <template data-template="countdown-template">
+            <div class="countdown-container" data-part="container">
                 <!-- Weeks-->
                 <div class="countdown-element-container">
-                    <div class="countdown-number" data-countdown-part="weeks">
+                    <div class="countdown-number" data-part="weeks">
                         -
                     </div>
                     <div class="countdown-description">weeks</div>
@@ -34,7 +34,7 @@
 
                 <!-- Days -->
                 <div class="countdown-element-container">
-                    <div class="countdown-number" data-countdown-part="days">
+                    <div class="countdown-number" data-part="days">
                         -
                     </div>
                     <div class="countdown-description">days</div>
@@ -42,7 +42,7 @@
 
                 <!-- Hours -->
                 <div class="countdown-element-container">
-                    <div class="countdown-number" data-countdown-part="hours">
+                    <div class="countdown-number" data-part="hours">
                         -
                     </div>
                     <div class="countdown-description">hours</div>
@@ -50,7 +50,7 @@
 
                 <!-- Minutes -->
                 <div class="countdown-element-container">
-                    <div class="countdown-number" data-countdown-part="minutes">
+                    <div class="countdown-number" data-part="minutes">
                         -
                     </div>
                     <div class="countdown-description">minutes</div>
@@ -58,12 +58,14 @@
 
                 <!-- Seconds -->
                 <div class="countdown-element-container">
-                    <div class="countdown-number" data-countdown-part="seconds">
+                    <div class="countdown-number" data-part="seconds">
                         -
                     </div>
                     <div class="countdown-description">seconds</div>
                 </div>
             </div>
+        </template>
+        <div class="countdown-wrapper" id="countdown-container">
         </div>
         <div class="shortcuts-container" style="display: none">
             <div id="shortcuts-content">
