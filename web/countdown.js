@@ -178,47 +178,56 @@
     
         return parts;
     }
-    
-    class Countdown {
-        constructor(countdownContainer) {
+
+    class Clock {
+        constructor() {
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
-            this.targetDate = DEFAULT_TARGET;
-            this.visibleSegments = AllSegments.slice();
-            this.loadSegmentsFromStorage();
+            this.handlers = new Map(); // Anyone listening for a tick
+            this.nextHandlerId = 0;
+            this.intervalToken = 0;
+        }
 
-            const template = document.querySelector("[data-template='countdown-template']");
-            const parts = cloneIntoWithParts(template, countdownContainer, [
-                "weeks",
-                "days",
-                "hours",
-                "minutes",
-                "seconds",
-                "container"
-            ]);
-            
-            this.weeksElement = parts.weeks;
-            this.daysElement = parts.days;
-            this.hoursElement = parts.hours;
-            this.minutesElement = parts.minutes;
-            this.secondsElement = parts.seconds;
+        tick() {
+            const tickData = this.getCurrentTickData();
 
-            this.containerElement = parts.container;
-
-            const params = new URLSearchParams(window.location.search);
-            let targetParam = params.get("target");
-            if(targetParam) {   
-                const targetAsDate = new Date(targetParam);
-                this.targetDate = targetAsDate.getTime(); 
-                if(isNaN(this.targetDate)) {
-                    this.displayInvalidDateError();
-                    return;
+            // Call all the handlers with the tick data so they can do whatever
+            // it is they need to do. Note that they might throw, so lets
+            // swallow it, and log any info when someone complains.
+            for (const [key, handler] of this.handlers) {
+                try {
+                    handler(tickData);
+                } catch(e) {
+                    console.log("A tick handler failed: " + e.toString());
                 }
             }
+        }
 
-            this.updateSegmentDOMState();
+        // Generates the tickdata to pass to handlers so they are all working
+        // of a shared clock, which may or may not be time shifted.
+        getCurrentTickData() {
+            const tickData = {
+                getTime: () => this.getTime(),
+            };
 
-            this.start();
+            return tickData;
+        }
+
+        // Register a callback for when a tick, ticks.
+        registerTick(handler) {
+            // so that people can easily unregister their tick handler, we give
+            // them an ID they can use for clearing that register if they need
+            // to. This is not fancy, but it gets the job done.
+            var token = (this.nextHandlerId += 1);
+
+            this.handlers.set(token, handler);
+            
+            return token;
+        }
+
+        
+        unregisterTick(token) {
+            this.handlers.delete(token);
         }
 
         getTime() {
@@ -228,38 +237,6 @@
             }
 
             return time;
-        }
-
-        tick() {
-            const now = this.getTime();
-            const remaining = this.targetDate - now;
-
-            // Time calculations for days, hours, minutes and seconds
-            var weeks = Math.floor(remaining / MS_IN_WEEK);
-            var days = Math.floor( (remaining % MS_IN_WEEK) / MS_IN_DAY);
-            var hours = Math.floor( (remaining % MS_IN_DAY ) / MS_IN_HOUR);
-            var minutes = Math.floor( (remaining % MS_IN_HOUR) / MS_IN_MINUTE);
-            var seconds = Math.floor( (remaining % MS_IN_MINUTE) / MS_IN_SECOND);
-
-            // Check if we've reached the target time, and stop ourselves:
-            if((weeks < 1)
-             && (days < 1)
-             && (hours < 1)
-             && (minutes < 1)
-             && (seconds < 1)) {
-                 this.stop();
-                 this.displayTargetTimeReachedMessage();
-                 return;
-            }
-
-            collapseIfLessThan1(weeks, this.weeksElement);
-            collapseIfLessThan1(days, this.daysElement);
-            collapseIfLessThan1(hours, this.hoursElement);
-            collapseIfLessThan1(minutes, this.minutesElement);
-            
-            this.secondsElement.textContent = seconds;
-
-            this.currentMessage = generateMessage(weeks, days, hours, minutes, seconds, this.visibleSegments);
         }
 
         start(tickInterval) {
@@ -308,6 +285,94 @@
             }
 
             this.start();
+        }
+    }
+    
+    class Countdown {
+        constructor(countdownContainer, clock) {
+            this.clock = clock;
+            this.accelerateTime = 0;
+            this.accelerationFactor = 0;
+            this.targetDate = DEFAULT_TARGET;
+            this.visibleSegments = AllSegments.slice();
+            this.loadSegmentsFromStorage();
+
+            const template = document.querySelector("[data-template='countdown-template']");
+            const parts = cloneIntoWithParts(template, countdownContainer, [
+                "weeks",
+                "days",
+                "hours",
+                "minutes",
+                "seconds",
+                "container"
+            ]);
+            
+            this.weeksElement = parts.weeks;
+            this.daysElement = parts.days;
+            this.hoursElement = parts.hours;
+            this.minutesElement = parts.minutes;
+            this.secondsElement = parts.seconds;
+
+            this.containerElement = parts.container;
+
+            const params = new URLSearchParams(window.location.search);
+            let targetParam = params.get("target");
+            if(targetParam) {   
+                const targetAsDate = new Date(targetParam);
+                this.targetDate = targetAsDate.getTime(); 
+                if(isNaN(this.targetDate)) {
+                    this.displayInvalidDateError();
+                    return;
+                }
+            }
+
+            this.updateSegmentDOMState();
+
+            this.start();
+        }
+
+        tick(tickData) {
+            const now = tickData.getTime();
+            const remaining = this.targetDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var weeks = Math.floor(remaining / MS_IN_WEEK);
+            var days = Math.floor( (remaining % MS_IN_WEEK) / MS_IN_DAY);
+            var hours = Math.floor( (remaining % MS_IN_DAY ) / MS_IN_HOUR);
+            var minutes = Math.floor( (remaining % MS_IN_HOUR) / MS_IN_MINUTE);
+            var seconds = Math.floor( (remaining % MS_IN_MINUTE) / MS_IN_SECOND);
+
+            // Check if we've reached the target time, and stop ourselves:
+            if((weeks < 1)
+             && (days < 1)
+             && (hours < 1)
+             && (minutes < 1)
+             && (seconds < 1)) {
+                 this.stop();
+                 this.displayTargetTimeReachedMessage();
+                 return;
+            }
+
+            collapseIfLessThan1(weeks, this.weeksElement);
+            collapseIfLessThan1(days, this.daysElement);
+            collapseIfLessThan1(hours, this.hoursElement);
+            collapseIfLessThan1(minutes, this.minutesElement);
+            
+            this.secondsElement.textContent = seconds;
+
+            this.currentMessage = generateMessage(weeks, days, hours, minutes, seconds, this.visibleSegments);
+        }
+
+        start() {
+            // Schedule a tick to that offset
+            this.tickToken = this.clock.registerTick(this.tick.bind(this));
+        }
+
+        stop() {
+            if(this.tickToken) {
+                this.clock.unregisterTick(this.tickToken);
+                this.tickToken = null;
+            }
         }
 
         displayTargetTimeReachedMessage()
@@ -415,7 +480,8 @@
     }
 
     class Shortcuts {
-        constructor(countdown, themeManager, container) {
+        constructor(countdown, clock, themeManager, container) {
+            this.clock = clock;
             this.countdown = countdown;
             this.container = container;
             this.themeManager = themeManager;
@@ -441,7 +507,7 @@
                 
                 case "p":
                 case "P":
-                    this.countdown.togglePlayPause();
+                    this.clock.togglePlayPause();
                     break;
                 
                 case "t":
@@ -468,9 +534,9 @@
                 case "a":
                 case "A":
                     if (keyEvent.shiftKey) {
-                        this.countdown.goFaster(100, 48);
+                        this.clock.goFaster(100, 48);
                     } else {
-                        this.countdown.goFaster();
+                        this.clock.goFaster();
                     }
                     break;
                 
@@ -568,10 +634,22 @@
     themeHelper.applyThemeBasedOnConfig();
 
     document.addEventListener("DOMContentLoaded", () => {
+        // Start the single clock ticker
+        const clock = window.Clock = new Clock();
+
+        // Create the count downs
         const countdowns = [
-            new Countdown(document.getElementById("countdown-container"))
+            new Countdown(document.getElementById("countdown-container"), clock)
         ];
+
         window.Countdowns = countdowns;
-        window.Shortcuts = new Shortcuts(countdowns[0], themeHelper, document.querySelector(".shortcuts-container"));
+        window.Shortcuts = new Shortcuts(
+            countdowns[0],
+            clock,
+            themeHelper,
+            document.querySelector(".shortcuts-container")
+        );
+
+        clock.start();
     });
 })();
