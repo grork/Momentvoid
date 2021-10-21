@@ -289,11 +289,11 @@
     }
     
     class Countdown {
-        constructor(countdownContainer, clock) {
+        constructor(countdownContainer, clock, targetDate) {
             this.clock = clock;
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
-            this.targetDate = DEFAULT_TARGET;
+            this.targetDate = targetDate;
             this.visibleSegments = AllSegments.slice();
             this.loadSegmentsFromStorage();
 
@@ -315,15 +315,9 @@
 
             this.containerElement = parts.container;
 
-            const params = new URLSearchParams(window.location.search);
-            let targetParam = params.get("target");
-            if(targetParam) {   
-                const targetAsDate = new Date(targetParam);
-                this.targetDate = targetAsDate.getTime(); 
-                if(isNaN(this.targetDate)) {
-                    this.displayInvalidDateError();
-                    return;
-                }
+            if (!targetDate) {
+                this.displayInvalidDateError();
+                return;
             }
 
             this.updateSegmentDOMState();
@@ -637,9 +631,20 @@
         // Start the single clock ticker
         const clock = window.Clock = new Clock();
 
+        let firstTargetDate = DEFAULT_TARGET;
+        const params = new URLSearchParams(window.location.search);
+        let targetParam = params.get("target");
+        if(targetParam) {   
+            const targetAsDate = new Date(targetParam);
+            firstTargetDate = targetAsDate.getTime(); 
+            if(isNaN(firstTargetDate)) {
+                firstTargetDate = null;
+            }
+        }
+
         // Create the count downs
         const countdowns = [
-            new Countdown(document.getElementById("countdown-container"), clock)
+            new Countdown(document.getElementById("countdown-container"), clock, firstTargetDate)
         ];
 
         window.Countdowns = countdowns;
