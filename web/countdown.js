@@ -1,5 +1,6 @@
 (function () {
     const DEFAULT_TARGET = new Date("2021-11-30");
+    const DEFAULT_TICK_INTERVAL = 1000;
     
     const MS_IN_SECOND = 1000;
     const MS_IN_MINUTE = MS_IN_SECOND * 60;
@@ -201,11 +202,12 @@
 
     class Clock {
         constructor() {
-            this.accelerateTime = 0;
+            this.timeOffset = 0;
             this.accelerationFactor = 0;
             this.handlers = new Map(); // Anyone listening for a tick
             this.nextHandlerId = 0;
             this.intervalToken = 0;
+            this.tickInterval = DEFAULT_TICK_INTERVAL;
         }
 
         tick() {
@@ -226,8 +228,9 @@
         // Generates the tickdata to pass to handlers so they are all working
         // of a shared clock, which may or may not be time shifted.
         getCurrentTickData() {
+            const newTime = this.getTime();
             const tickData = {
-                getTime: () => this.getTime(),
+                getTime: () => newTime
             };
 
             return tickData;
@@ -252,15 +255,15 @@
 
         getTime() {
             let time = new Date().getTime();
-            if (this.accelerateTime) {
-                time += ((this.accelerateTime += this.accelerationFactor) * 1000);
+            if (this.timeOffset || this.accelerationFactor) {
+                time += ((this.timeOffset += this.accelerationFactor) * 1000);
             }
 
             return time;
         }
 
         start(tickInterval) {
-            tickInterval = tickInterval || 1000;
+            this.tickInterval = tickInterval || this.tickInterval;
             this.tick();
             
             // Calculate approximate offset to the nearest whole second with
@@ -270,7 +273,7 @@
             // Schedule a tick to that offset
             this.intervalToken = setTimeout(() => {
                 // Actually start our 'on the second' tick
-                this.intervalToken = window.setInterval(this.tick.bind(this), tickInterval);
+                this.intervalToken = window.setInterval(this.tick.bind(this), this.tickInterval);
                 this.tick();
             }, currentSecondOffset);
         }
@@ -282,20 +285,40 @@
             }
         }
 
-        goFaster(accelerationFactor = 1, interval = 250) {
+        setClockSpeed(accelerationFactor = 1, interval = DEFAULT_TICK_INTERVAL) {
             this.stop();
-            let newInterval = 0;
 
-            if (this.accelerateTime) {
-                this.accelerateTime = 0;
-                this.accelerationFactor = 0;
-            } else {
-                this.accelerateTime = 1;
-                this.accelerationFactor = accelerationFactor;
-                newInterval = interval;
+            this.accelerationFactor = accelerationFactor;
+
+            this.start(interval);
+        }
+
+        resumeNormalSpeed() {
+            this.stop();
+            this.accelerationFactor = 0;
+            this.tickInterval = DEFAULT_TICK_INTERVAL;
+
+            this.start();
+        }
+
+        resetToCurrentTime() {
+            this.stop();
+            this.timeOffset = 0;
+            this.resumeNormalSpeed();
+        }
+
+        goFaster() {
+            let newAccelerationFactor = this.accelerationFactor * 10;
+            if (newAccelerationFactor === 0) {
+                newAccelerationFactor = 1;
             }
 
-            this.start(newInterval);
+            newAccelerationFactor = Math.min(newAccelerationFactor, 10000);
+
+            let newTickInterval = this.tickInterval / 10;
+            newTickInterval = Math.max(newTickInterval, 16);
+
+            this.setClockSpeed(newAccelerationFactor, newTickInterval);
         }
 
         togglePlayPause() {
@@ -489,6 +512,38 @@
                 return;
             }
 
+            if (keyEvent.shiftKey) {
+                this.handleShiftKeyDown(keyEvent);
+                return;
+            }
+
+            if (keyEvent.ctrlKey) {
+                this.handleControlKeyDown(keyEvent);
+                return;
+            }
+
+            this.handleNoModifierKeyDown(keyEvent);
+        }
+
+        handleControlKeyDown(keyEvent) {
+        }
+
+        handleShiftKeyDown(keyEvent) {
+            switch (keyEvent.key) {
+                case "r":
+                case "R":
+                    window.localStorage.clear();
+                    window.location.reload();
+                    break;
+                
+                case "f":
+                case "F":
+                    toggleFullscreen();
+                    break;
+            }
+        }
+
+        handleNoModifierKeyDown(keyEvent) {
             switch (keyEvent.key)
             {
                 case "m":
@@ -512,30 +567,25 @@
                 case "C":
                     this.putCountdownTimesOnClipboard();
                     break;
-
+                
+                case "n":
+                case "N":
+                    this.clock.resetToCurrentTime();
+                    break;
+                
                 case "f":
                 case "F":
-                    toggleFullscreen();
-                    break;
-                
-                case "r":
-                case "R":
-                    window.localStorage.clear();
-                    window.location.reload();
-                    break;
-                
-                case "a":
-                case "A":
-                    if (keyEvent.shiftKey) {
-                        this.clock.goFaster(100, 48);
-                    } else {
-                        this.clock.goFaster();
-                    }
+                    this.clock.goFaster();
                     break;
                 
                 case "s":
                 case "S":
                     this.hideNextSegmentOnCountdowns();
+                    break;
+                
+                case "0":
+                    this.clock.resumeNormalSpeed();
+                    break;
             }
         }
 
