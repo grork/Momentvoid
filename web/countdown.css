@@ -34,12 +34,23 @@ html {
     -webkit-app-region: drag;
 }
 
+/* To help with multiple timers having different heights we need to wrap the
+ countdowns themselves in a separate container to center the row. Then elements
+ within that row are then aligned to the start of that row */
+.countdown-centering-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
 .countdown-wrapper {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: start;
     justify-content: center;
-    min-height: 100%;
+    max-height: 80vh;
 }
 
 /* The first the countdown is the anchor, and therefore shouldn't have a title */

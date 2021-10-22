@@ -1,5 +1,5 @@
 (function () {
-    const DEFAULT_TARGET = new Date("2021-11-30");
+    const DEFAULT_TARGET = new Date("2021-11-30T23:59:59");
     const DEFAULT_TICK_INTERVAL = 1000;
     
     const MS_IN_SECOND = 1000;
