@@ -179,6 +179,26 @@
         return parts;
     }
 
+    function toggleFullscreen() {
+        if (document.body.webkitRequestFullscreen) {
+            // Assuming webkit
+            if (!document.webkitFullscreenElement) {
+                document.body.webkitRequestFullscreen();
+            } else {
+                document.webkitExitFullscreen();
+            }
+
+            return;
+        }
+
+        // Assume not-webkit
+        if (!document.fullscreenElement) {
+            document.body.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
     class Clock {
         constructor() {
             this.accelerateTime = 0;
@@ -378,30 +398,6 @@
             this.containerElement.textContent = "Invalid date! You need to use an ISO formatted date";
         }
 
-        putOnClipboard() {
-            navigator.clipboard.writeText(this.currentMessage);
-        }
-
-        toggleFullscreen() {
-            if (document.body.webkitRequestFullscreen) {
-                // Assuming webkit
-                if (!document.webkitFullscreenElement) {
-                    document.body.webkitRequestFullscreen();
-                } else {
-                    document.webkitExitFullscreen();
-                }
-
-                return;
-            }
-
-            // Assume not-webkit
-            if (!document.fullscreenElement) {
-                document.body.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
         hideNextSegment() {
             this.cycleSegmentVisibility();
             this.updateSegmentDOMState();
@@ -474,9 +470,9 @@
     }
 
     class Shortcuts {
-        constructor(countdown, clock, themeManager, container) {
+        constructor(countdowns, clock, themeManager, container) {
             this.clock = clock;
-            this.countdown = countdown;
+            this.countdowns = countdowns;
             this.container = container;
             this.themeManager = themeManager;
 
@@ -511,12 +507,12 @@
                 
                 case "c":
                 case "C":
-                    this.countdown.putOnClipboard();
+                    this.putCountdownTimesOnClipboard();
                     break;
 
                 case "f":
                 case "F":
-                    this.countdown.toggleFullscreen()
+                    toggleFullscreen();
                     break;
                 
                 case "r":
@@ -536,13 +532,42 @@
                 
                 case "s":
                 case "S":
-                    this.countdown.hideNextSegment();
+                    this.hideNextSegmentOnCountdowns();
             }
         }
 
         handleKeyUp()
         {
             this.container.style = "display: none";
+        }
+
+        putCountdownTimesOnClipboard() {
+            let message = null;
+
+            if (this.countdowns.length === 1) {
+                message = this.countdowns[0].currentMessage;
+            } else {
+
+                this.countdowns.forEach((c, index) => {
+                    const countdownMessage = c.currentMessage;
+
+                    if (!message) {
+                        message = `Countdown 1: ${countdownMessage}`;
+                        return;
+                    }
+
+                    // Yeah, this is weird. But this allows to get the correct
+                    // platforms specific newline without detecting the user agent.
+                    message = `${message}
+Countdown ${index + 1}: ${countdownMessage}`;
+                })
+            }
+
+            navigator.clipboard.writeText(message);
+        }
+
+        hideNextSegmentOnCountdowns() {
+            this.countdowns.forEach((c) => c.hideNextSegment());
         }
     }
 
@@ -649,7 +674,7 @@
 
         window.Countdowns = countdowns;
         window.Shortcuts = new Shortcuts(
-            countdowns[0],
+            countdowns,
             clock,
             themeHelper,
             document.querySelector(".shortcuts-container")
