@@ -415,6 +415,10 @@
             }
         }
 
+        removeFromDom() {
+            this.containerElement.parentElement.removeChild(this.containerElement);
+        }
+
         displayTargetTimeReachedMessage()
         {
             this.containerElement.textContent = this.currentMessage = "You are living in the future";
@@ -736,6 +740,15 @@ Countdown ${index + 1}: ${countdownMessage}`;
         window.AddCountdown = function (isoTargetTime, title) {
             const countdown = new Countdown(document.getElementById("countdown-container"), clock, new Date(isoTargetTime), title);
             countdowns.push(countdown);
+        }
+
+        window.RemoveCountdown = function (isoTargetTime) {
+            const matchedCountdowns = countdowns.filter((c) => c.targetDate === new Date(isoTargetTime).getTime());
+            matchedCountdowns.forEach((c) => {
+                c.stop();
+                c.removeFromDom();
+                removeFromArray(countdowns, c);
+            });
         }
 
         clock.start();
