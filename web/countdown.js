@@ -309,7 +309,7 @@
     }
     
     class Countdown {
-        constructor(countdownContainer, clock, targetDate) {
+        constructor(countdownContainer, clock, targetDate, title = "countdown") {
             this.clock = clock;
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
@@ -324,7 +324,8 @@
                 "hours",
                 "minutes",
                 "seconds",
-                "container"
+                "container",
+                "title"
             ]);
             
             this.weeksElement = parts.weeks;
@@ -332,8 +333,10 @@
             this.hoursElement = parts.hours;
             this.minutesElement = parts.minutes;
             this.secondsElement = parts.seconds;
-
+            this.titleElement = parts.title;
             this.containerElement = parts.container;
+
+            this.titleElement.textContent = title;
 
             if (!targetDate) {
                 this.displayInvalidDateError();
