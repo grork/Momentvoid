@@ -1,5 +1,5 @@
 (function () {
-    const DEFAULT_TARGET = new Date("2021-11-30T23:59:59").getTime();
+    const DEFAULT_TARGET = new Date("2021-11-30");
     
     const MS_IN_SECOND = 1000;
     const MS_IN_MINUTE = MS_IN_SECOND * 60;
@@ -313,7 +313,7 @@
             this.clock = clock;
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
-            this.targetDate = targetDate;
+            this.targetDate = targetDate.getTime();
             this.visibleSegments = AllSegments.slice();
             this.loadSegmentsFromStorage();
 
@@ -682,6 +682,11 @@ Countdown ${index + 1}: ${countdownMessage}`;
             themeHelper,
             document.querySelector(".shortcuts-container")
         );
+
+        window.AddCountdown = function (isoTargetTime, title) {
+            const countdown = new Countdown(document.getElementById("countdown-container"), clock, new Date(isoTargetTime), title);
+            countdowns.push(countdown);
+        }
 
         clock.start();
     });
