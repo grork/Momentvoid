@@ -1,5 +1,5 @@
 (function () {
-    const DEFAULT_TARGET = new Date("2021-11-30T23:59:59");
+    const DEFAULT_TARGET = new Date("2021-11-30T00:00:00");
     const DEFAULT_TICK_INTERVAL = 1000;
     
     const MS_IN_SECOND = 1000;
@@ -200,6 +200,42 @@
         }
     }
 
+    function saveCountdownsToStorage(countdowns) {
+        const targetTimes = [];
+
+        countdowns.forEach((countdown) => {
+            if (!countdown.targetDate) {
+                // Don't capture items with invalid target dates
+                return;
+            }
+            const time = new Date(countdown.targetDate);
+            const timeAsString = time.toISOString();
+            
+            targetTimes.push({
+                targetDate: timeAsString,
+                title: countdown.title
+            });
+        });
+
+        window.localStorage.setItem("countdowns", JSON.stringify(targetTimes));
+    }
+
+    function loadCountdownsFromStorage() {
+        const persistedCountdowns = JSON.parse(window.localStorage.getItem("countdowns"));
+
+        if (!persistedCountdowns) {
+            return [];
+        }
+
+        return persistedCountdowns.map((persistedCountdown) => {
+            const time = new Date(persistedCountdown.targetDate);
+            return {
+                targetDate: time,
+                title: persistedCountdown.title
+            };
+        });
+    }
+
     class Clock {
         constructor() {
             this.timeOffset = 0;
@@ -339,6 +375,7 @@
             this.targetDate = targetDate.getTime();
             this.visibleSegments = AllSegments.slice();
             this.loadSegmentsFromStorage();
+            this.title = title;
 
             const template = document.querySelector("[data-template='countdown-template']");
             const parts = cloneIntoWithParts(template, countdownContainer, [
@@ -724,10 +761,21 @@ Countdown ${index + 1}: ${countdownMessage}`;
             }
         }
 
-        // Create the count downs
-        const countdowns = [
-            new Countdown(document.getElementById("countdown-container"), clock, firstTargetDate)
-        ];
+        let persistedCountdowns = loadCountdownsFromStorage();
+        if (!persistedCountdowns.length) {
+            // If we didn't find any persisted countdowns, create a default one
+            persistedCountdowns = [{ targetDate: firstTargetDate }];
+        }
+
+        // Create the count downs from any saved state
+        const countdowns = persistedCountdowns.map((persistedCountdown) => {
+            return new Countdown(
+                document.getElementById("countdown-container"),
+                clock,
+                persistedCountdown.targetDate,
+                persistedCountdown.title
+            );
+        });
 
         window.Countdowns = countdowns;
         window.Shortcuts = new Shortcuts(
@@ -740,6 +788,9 @@ Countdown ${index + 1}: ${countdownMessage}`;
         window.AddCountdown = function (isoTargetTime, title) {
             const countdown = new Countdown(document.getElementById("countdown-container"), clock, new Date(isoTargetTime), title);
             countdowns.push(countdown);
+
+            saveCountdownsToStorage(countdowns);
+            clock.start();
         }
 
         window.RemoveCountdown = function (isoTargetTime) {
@@ -749,6 +800,8 @@ Countdown ${index + 1}: ${countdownMessage}`;
                 c.removeFromDom();
                 removeFromArray(countdowns, c);
             });
+
+            saveCountdownsToStorage(countdowns);
         }
 
         clock.start();
