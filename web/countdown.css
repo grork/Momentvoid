@@ -141,22 +141,22 @@ html {
     font-size: 18px;
 }
 
-.shortcuts-shortcuts-list {
+.shortcuts-item-list {
     display: grid;
     grid-template-columns: 1fr auto;
     font-weight: 100;
 }
 
-.shortcuts-shortcuts-operation {
+.shortcuts-item-list-title {
     align-self: center;
     grid-column: 1;
 }
 
-.shortcuts-shortcuts-operation > * {
+.shortcuts-item-list-title > * {
     display: block;
 }
 
-.shortcuts-shortcuts-key {
+.shortcuts-item-list-detail {
     justify-self: end;
     grid-column: 2;
 }
@@ -192,7 +192,7 @@ html {
     padding: 4px;
 }
 
-.shortcuts-shortcuts-button {
+.shortcuts-button {
     color: var(--text-colour);
     align-self: end;
     font-size: 14px;
@@ -204,7 +204,7 @@ html {
     border-width: 0px;
 }
 
-.shortcuts-shortcuts-button:hover {
+.shortcuts-button:hover {
     background-color: var(--text-colour);
     color: var(--page-background);
 }
