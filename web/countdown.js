@@ -562,7 +562,17 @@
 
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
             window.addEventListener("keyup", this.handleKeyUp.bind(this));
+            window.addEventListener("click", this.handleClick.bind(this));
             this.parts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
+        }
+
+        handleClick(event) {
+            // We only want clicks directly on the container element
+            if(event.target !== this.container) {
+                return;
+            }
+
+            this.container.style.display = "none";
         }
 
         handleKeyDown(keyEvent) {
@@ -654,6 +664,11 @@
                 
                 case "0":
                     this.clock.resumeNormalSpeed();
+                    break;
+                
+                case "Escape":
+                    this.container.style.display = "none";
+                    keyEvent.preventDefault();
                     break;
             }
         }
