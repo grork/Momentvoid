@@ -70,45 +70,45 @@
             </div>
         </template>
         <template data-template="countdown-list-template">
-            <div class="shortcuts-item-list-title" data-part="label"></div>
-            <button class="shortcuts-item-list-detail shortcuts-button shortcuts-remove-countdown" data-part="remove">del</button>
+            <div class="menu-item-list-title" data-part="label"></div>
+            <button class="menu-item-list-detail menu-button menu-remove-countdown" data-part="remove">del</button>
         </template>
         <div class="countdown-centering-container">
             <div class="countdown-wrapper" id="countdown-container">
             </div>
         </div>
-        <div class="shortcuts-container" style="display: none">
-            <div id="shortcuts-content">
-                <div class="shortcuts-title">Shortcuts</div>
-                <div class="shortcuts-item-list">
-                    <div class="shortcuts-item-list-title">Pause / Play</div><div class="shortcuts-item-list-detail">p</div>
-                    <div class="shortcuts-item-list-title">Go faster</div><div class="shortcuts-item-list-detail">f</div>
-                    <div class="shortcuts-item-list-title">Normal speed</div><div class="shortcuts-item-list-detail">0</div>
-                    <div class="shortcuts-item-list-title">Go to now</div><div class="shortcuts-item-list-detail">n</div>
-                    <div class="shortcuts-item-list-title">Toggle Theme</div><div class="shortcuts-item-list-detail">t</div>
-                    <div class="shortcuts-item-list-title">Copy</div><div class="shortcuts-item-list-detail">c</div>
-                    <div class="shortcuts-item-list-title">Toggle fullscreen</div><div class="shortcuts-item-list-detail">Shift + f</div>
-                    <div class="shortcuts-item-list-title">Clear setting &amp reload</div><div class="shortcuts-item-list-detail">Shift + r</div>
-                    <div class="shortcuts-item-list-title">Cycle visible segments</div><div class="shortcuts-item-list-detail">s</div>
-                    <div class="shortcuts-item-list-title">Hide menu</div><div class="shortcuts-item-list-detail">m</div>
+        <div class="menu-container" style="display: none">
+            <div id="menu-content">
+                <div class="menu-title">Shortcuts</div>
+                <div class="menu-item-list">
+                    <div class="menu-item-list-title">Pause / Play</div><div class="menu-item-list-detail">p</div>
+                    <div class="menu-item-list-title">Go faster</div><div class="menu-item-list-detail">f</div>
+                    <div class="menu-item-list-title">Normal speed</div><div class="menu-item-list-detail">0</div>
+                    <div class="menu-item-list-title">Go to now</div><div class="menu-item-list-detail">n</div>
+                    <div class="menu-item-list-title">Toggle Theme</div><div class="menu-item-list-detail">t</div>
+                    <div class="menu-item-list-title">Copy</div><div class="menu-item-list-detail">c</div>
+                    <div class="menu-item-list-title">Toggle fullscreen</div><div class="menu-item-list-detail">Shift + f</div>
+                    <div class="menu-item-list-title">Clear setting &amp reload</div><div class="menu-item-list-detail">Shift + r</div>
+                    <div class="menu-item-list-title">Cycle visible segments</div><div class="menu-item-list-detail">s</div>
+                    <div class="menu-item-list-title">Hide menu</div><div class="menu-item-list-detail">m</div>
                 </div>
 
-                <div class="shortcuts-subtitle">Countdowns</div>
+                <div class="menu-subtitle">Countdowns</div>
                 <!-- Showing existing countdowns that can be deleted -->
-                <div class="shortcuts-item-list" data-part="countdownList"></div>
+                <div class="menu-item-list" data-part="countdownList"></div>
                 <!-- Adding an additional countdown -->
-                <div class="shortcuts-add-countdown-container">
-                    <div class="shortcuts-item-list">
-                        <div class="shortcuts-item-list-title">
+                <div class="menu-add-countdown-container">
+                    <div class="menu-item-list">
+                        <div class="menu-item-list-title">
                             <label>Date<br/>   
-                                <input class="shortcuts-date-to-add" type="datetime-local" value="2021-12-17T00:00:00" data-part="targetDate">
+                                <input class="menu-date-to-add" type="datetime-local" value="2021-12-17T00:00:00" data-part="targetDate">
                             </label>
                             <label>Title<br/>   
-                                <input class="shortcuts-date-title" placeholder="countdown title" data-part="titleTextbox">
+                                <input class="menu-date-title" placeholder="countdown title" data-part="titleTextbox">
                             </label>
                         </div>
 
-                        <button class="shortcuts-item-list-detail shortcuts-button" data-part="addButton">Add</button>
+                        <button class="menu-item-list-detail menu-button" data-part="addButton">Add</button>
                     </div>
                 </div>
             </div>

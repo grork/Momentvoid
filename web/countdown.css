@@ -106,7 +106,7 @@ html {
 }
 
 /* Keyboard Shortcuts */
-.shortcuts-container {
+.menu-container {
     position: absolute;
     width: 100vw;
     height: 100vh;
@@ -120,7 +120,7 @@ html {
     justify-items: center;
 }
 
-#shortcuts-content {
+#menu-content {
     width: 240px;
     padding: 12px 24px 12px 24px;
     background-color: var(--shortcut-background);
@@ -133,38 +133,38 @@ html {
     -moz-backdrop-filter: blur(20px);
 }
 
-.shortcuts-title {
+.menu-title {
     font-weight: 800;
     font-size: 36px;
 }
 
-.shortcuts-subtitle {
+.menu-subtitle {
     margin-top: 12px;
     font-weight: 800;
     font-size: 18px;
 }
 
-.shortcuts-item-list {
+.menu-item-list {
     display: grid;
     grid-template-columns: 1fr auto;
     font-weight: 100;
 }
 
-.shortcuts-item-list-title {
+.menu-item-list-title {
     align-self: center;
     grid-column: 1;
 }
 
-.shortcuts-item-list-title > * {
+.menu-item-list-title > * {
     display: block;
 }
 
-.shortcuts-item-list-detail {
+.menu-item-list-detail {
     justify-self: end;
     grid-column: 2;
 }
 
-.shortcuts-add-countdown-container {
+.menu-add-countdown-container {
     background-color: var(--page-background);
     border-radius: 4px;
     padding: 12px;
@@ -174,8 +174,8 @@ html {
     margin-top: 8px;
 }
 
-.shortcuts-date-to-add,
-.shortcuts-date-title {
+.menu-date-to-add,
+.menu-date-title {
     background-color: var(--date-add-text-background-colour);
     border-radius: 4px;
     border-width: 0px;
@@ -187,15 +187,15 @@ html {
     font-weight: normal;
 }
 
-.shortcuts-date-title::placeholder {
+.menu-date-title::placeholder {
     color: var(--text-colour);
 }
 
-.shortcuts-date-title {
+.menu-date-title {
     padding: 4px;
 }
 
-.shortcuts-button {
+.menu-button {
     color: var(--text-colour);
     align-self: end;
     font-size: 14px;
@@ -207,11 +207,11 @@ html {
     border-width: 0px;
 }
 
-.shortcuts-button:hover {
+.menu-button:hover {
     background-color: var(--text-colour);
     color: var(--page-background);
 }
 
-.shortcuts-remove-countdown {
+.menu-remove-countdown {
     align-self: start;
 }

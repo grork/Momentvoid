@@ -545,7 +545,7 @@
         }
     }
 
-    class Shortcuts {
+    class Menu {
         constructor(countdowns, clock, themeManager, container) {
             this.clock = clock;
             this.countdowns = countdowns;
@@ -851,11 +851,11 @@ ${countdownText}`;
         });
 
         window.Countdowns = countdowns;
-        window.Shortcuts = new Shortcuts(
+        window.Menu = new Menu(
             countdowns,
             clock,
             themeHelper,
-            document.querySelector(".shortcuts-container")
+            document.querySelector(".menu-container")
         );
 
         clock.start();
