@@ -572,7 +572,7 @@
                 return;
             }
 
-            this.container.style.display = "none";
+            this.dismissMenu();
         }
 
         handleKeyDown(keyEvent) {
@@ -628,7 +628,7 @@
                         this.renderExistingCountdowns();
                         this.container.style.display = "";
                     } else {
-                        this.container.style.display = "none";
+                        this.dismissMenu();
                     }
                     break;
                 
@@ -667,7 +667,7 @@
                     break;
                 
                 case "Escape":
-                    this.container.style.display = "none";
+                    this.dismissMenu();
                     keyEvent.preventDefault();
                     break;
             }
@@ -679,7 +679,7 @@
 
         handleAddButtonClick() {
             this.addCountdown(new Date(this.parts.targetDate.value), this.parts.titleTextbox.value);
-            this.container.style.display = "none";
+            this.dismissMenu();
         }
 
         renderExistingCountdowns() {
@@ -750,6 +750,10 @@ ${countdownText}`;
 
             saveCountdownsToStorage(this.countdowns);
             this.renderExistingCountdowns();
+        }
+
+        dismissMenu() {
+            this.container.style.display = "none";
         }
     }
 
