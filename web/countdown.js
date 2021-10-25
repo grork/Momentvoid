@@ -145,39 +145,48 @@
     
             // If we were asked to match parts, we'll do so.
             if (partNames?.length) {
-                let locatedPartNames = []; // Track which ones we've located, so
-                                           // we can remove them after. We only
-                                           // support finding the first part with
-                                           // a specific name.
-                partNames.forEach((item) => {
-                    const selector = `[data-part='${item}']`;                        
-                    let foundPart = clonedChild.querySelector(selector);
-    
-                    // querySelector only finds *decendents*, so if we didn't find
-                    // the item, maybe the element itself is the part.
-                    if (!foundPart && clonedChild.matches(selector)) {
-                        // Note; matches only gives you 'does selector match'
-                        // and doesn't return the element.
-                        foundPart = clonedChild;
-                    }
-
-                    if (!foundPart) {
-                        return;
-                    }
-    
-                    // Since we found a part, we'll want to remove it later, but
-                    // since we're enumerating the item, we can't remove it yet
-                    locatedPartNames.push(item);
-                    parts[item] = foundPart;
-                });
-    
-                // Now we can remove the part names we'd found so we don't
-                // search for them again.
-                locatedPartNames.forEach((itemToRemove) => removeFromArray(partNames, itemToRemove));
+                locatePartsFromDOM(clonedChild, partNames, parts);
             }
         }
     
         return parts;
+    }
+
+    function locatePartsFromDOM(element, partNames, parts) {
+        // No elements or part names, give up.
+        if (!partNames?.length || !element || !parts) {
+            return;
+        }
+
+        let locatedPartNames = []; // Track which ones we've located, so
+                                    // we can remove them after. We only
+                                    // support finding the first part with
+                                    // a specific name.
+        partNames.forEach((item) => {
+            const selector = `[data-part='${item}']`;                        
+            let foundPart = element.querySelector(selector);
+
+            // querySelector only finds *decendents*, so if we didn't find
+            // the item, maybe the element itself is the part.
+            if (!foundPart && element.matches(selector)) {
+                // Note; matches only gives you 'does selector match'
+                // and doesn't return the element.
+                foundPart = element;
+            }
+
+            if (!foundPart) {
+                return;
+            }
+
+            // Since we found a part, we'll want to remove it later, but
+            // since we're enumerating the item, we can't remove it yet
+            locatedPartNames.push(item);
+            parts[item] = foundPart;
+        });
+
+        // Now we can remove the part names we'd found so we don't
+        // search for them again.
+        locatedPartNames.forEach((itemToRemove) => removeFromArray(partNames, itemToRemove));
     }
 
     function toggleFullscreen() {
@@ -368,14 +377,14 @@
     }
     
     class Countdown {
-        constructor(countdownContainer, clock, targetDate, title = "countdown") {
+        constructor(countdownContainer, clock, targetDate, title) {
             this.clock = clock;
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
             this.targetDate = targetDate.getTime();
             this.visibleSegments = AllSegments.slice();
             this.loadSegmentsFromStorage();
-            this.title = title;
+            this.title = title || "countdown";
 
             const template = document.querySelector("[data-template='countdown-template']");
             const parts = cloneIntoWithParts(template, countdownContainer, [
@@ -396,7 +405,7 @@
             this.titleElement = parts.title;
             this.containerElement = parts.container;
 
-            this.titleElement.textContent = title;
+            this.titleElement.textContent = this.title;
 
             if (!targetDate) {
                 this.displayInvalidDateError();
@@ -542,12 +551,26 @@
             this.countdowns = countdowns;
             this.container = container;
             this.themeManager = themeManager;
+            this.parts = {};
+
+            locatePartsFromDOM(this.container, [
+                "countdownList",
+                "targetDate",
+                "titleTextbox",
+                "addButton"
+            ], this.parts);
 
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
             window.addEventListener("keyup", this.handleKeyUp.bind(this));
+            this.parts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
         }
 
         handleKeyDown(keyEvent) {
+            // When typing into a text box, don't process shortcuts.
+            if (keyEvent.target.tagName === "INPUT") {
+                return;
+            }
+            
             // Don't handle the event again if they key is being held down
             if (keyEvent.repeat) {
                 return;
@@ -591,7 +614,12 @@
                 case "M":
                 case "?":
                 case "/":
-                    this.container.style = "";
+                    if (this.container.style.display === "none") {
+                        this.renderExistingCountdowns();
+                        this.container.style.display = "";
+                    } else {
+                        this.container.style.display = "none";
+                    }
                     break;
                 
                 case "p":
@@ -632,7 +660,31 @@
 
         handleKeyUp()
         {
-            this.container.style = "display: none";
+        }
+
+        handleAddButtonClick() {
+            this.addCountdown(new Date(this.parts.targetDate.value), this.parts.titleTextbox.value);
+            this.container.style.display = "none";
+        }
+
+        renderExistingCountdowns() {
+            this.parts.countdownList.innerHTML = "";
+
+            if (this.countdowns.length === 1) {
+                return;
+            }
+
+            const template = document.querySelector("[data-template='countdown-list-template'");
+
+            this.countdowns.forEach(countdown => {
+                const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
+                const asDateTime = new Date(countdown.targetDate);
+                parts.label.textContent = `${countdown.title} (${asDateTime.toLocaleDateString()})`;
+
+                parts.remove.addEventListener("click", () => {
+                    this.removeCountdown(asDateTime.toISOString());
+                });
+            });
         }
 
         putCountdownTimesOnClipboard() {
@@ -641,19 +693,18 @@
             if (this.countdowns.length === 1) {
                 message = this.countdowns[0].currentMessage;
             } else {
-
                 this.countdowns.forEach((c, index) => {
                     const countdownMessage = c.currentMessage;
 
                     if (!message) {
-                        message = `Countdown 1: ${countdownMessage}`;
+                        message = `${c.title}: ${countdownMessage}`;
                         return;
                     }
 
                     // Yeah, this is weird. But this allows to get the correct
                     // platforms specific newline without detecting the user agent.
                     message = `${message}
-Countdown ${index + 1}: ${countdownMessage}`;
+${c.title}: ${countdownMessage}`;
                 })
             }
 
@@ -662,6 +713,28 @@ Countdown ${index + 1}: ${countdownMessage}`;
 
         hideNextSegmentOnCountdowns() {
             this.countdowns.forEach((c) => c.hideNextSegment());
+        }
+
+        addCountdown(isoTargetTime, title) {
+            const countdown = new Countdown(document.getElementById("countdown-container"), this.clock, new Date(isoTargetTime), title);
+            this.countdowns.push(countdown);
+
+            saveCountdownsToStorage(this.countdowns);
+            this.clock.start();
+
+            this.renderExistingCountdowns();
+        }
+
+        removeCountdown(isoTargetTime) {
+            const matchedCountdowns = this.countdowns.filter((c) => c.targetDate === new Date(isoTargetTime).getTime());
+            matchedCountdowns.forEach((c) => {
+                c.stop();
+                c.removeFromDom();
+                removeFromArray(this.countdowns, c);
+            });
+
+            saveCountdownsToStorage(this.countdowns);
+            this.renderExistingCountdowns();
         }
     }
 
@@ -784,25 +857,6 @@ Countdown ${index + 1}: ${countdownMessage}`;
             themeHelper,
             document.querySelector(".shortcuts-container")
         );
-
-        window.AddCountdown = function (isoTargetTime, title) {
-            const countdown = new Countdown(document.getElementById("countdown-container"), clock, new Date(isoTargetTime), title);
-            countdowns.push(countdown);
-
-            saveCountdownsToStorage(countdowns);
-            clock.start();
-        }
-
-        window.RemoveCountdown = function (isoTargetTime) {
-            const matchedCountdowns = countdowns.filter((c) => c.targetDate === new Date(isoTargetTime).getTime());
-            matchedCountdowns.forEach((c) => {
-                c.stop();
-                c.removeFromDom();
-                removeFromArray(countdowns, c);
-            });
-
-            saveCountdownsToStorage(countdowns);
-        }
 
         clock.start();
     });

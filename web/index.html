@@ -69,6 +69,10 @@
                 </div>
             </div>
         </template>
+        <template data-template="countdown-list-template">
+            <div class="shortcuts-shortcuts-operation" data-part="label"></div>
+            <button class="shortcuts-shortcuts-key shortcuts-shortcuts-button shortcuts-remove-countdown" data-part="remove">del</button>
+        </template>
         <div class="countdown-centering-container">
             <div class="countdown-wrapper" id="countdown-container">
             </div>
@@ -86,6 +90,26 @@
                     <div class="shortcuts-shortcuts-operation">Toggle fullscreen</div><div class="shortcuts-shortcuts-key">Shift + f</div>
                     <div class="shortcuts-shortcuts-operation">Clear setting &amp reload</div><div class="shortcuts-shortcuts-key">Shift + r</div>
                     <div class="shortcuts-shortcuts-operation">Cycle visible segments</div><div class="shortcuts-shortcuts-key">s</div>
+                    <div class="shortcuts-shortcuts-operation">Hide menu</div><div class="shortcuts-shortcuts-key">m</div>
+                </div>
+
+                <div class="shortcuts-subtitle">Countdowns</div>
+                <!-- Showing existing countdowns that can be deleted -->
+                <div class="shortcuts-shortcuts-list" data-part="countdownList"></div>
+                <!-- Adding an additional countdown -->
+                <div class="shortcuts-add-countdown-container">
+                    <div class="shortcuts-shortcuts-list">
+                        <div class="shortcuts-shortcuts-operation">
+                            <label for="">Date<br/>   
+                                <input class="shortcuts-date-to-add" type="datetime-local" value="2021-12-17T00:00:00" data-part="targetDate">
+                            </label>
+                            <label for="">Title<br/>   
+                                <input class="shortcuts-date-title" placeholder="countdown title" data-part="titleTextbox">
+                            </label>
+                        </div>
+
+                        <button class="shortcuts-shortcuts-key shortcuts-shortcuts-button" data-part="addButton">Add</button>
+                    </div>
                 </div>
             </div>
         </div>
