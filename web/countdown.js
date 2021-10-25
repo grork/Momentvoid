@@ -694,17 +694,17 @@
                 message = this.countdowns[0].currentMessage;
             } else {
                 this.countdowns.forEach((c, index) => {
-                    const countdownMessage = c.currentMessage;
+                    const countdownText = `${c.title}: ${c.currentMessage}`;
 
                     if (!message) {
-                        message = `${c.title}: ${countdownMessage}`;
+                        message = countdownText;
                         return;
                     }
 
                     // Yeah, this is weird. But this allows to get the correct
                     // platforms specific newline without detecting the user agent.
                     message = `${message}
-${c.title}: ${countdownMessage}`;
+${countdownText}`;
                 })
             }
 
