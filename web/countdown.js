@@ -376,8 +376,8 @@
         }
     }
     
-    class Countdown {
-        constructor(countdownContainer, clock, targetDate, title) {
+    class CountdownControl {
+        constructor(container, clock, targetDate, title) {
             this.clock = clock;
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
@@ -387,7 +387,7 @@
             this.title = title || "countdown";
 
             const template = document.querySelector("[data-template='countdown-template']");
-            const parts = cloneIntoWithParts(template, countdownContainer, [
+            const parts = cloneIntoWithParts(template, container, [
                 "weeks",
                 "days",
                 "hours",
@@ -731,7 +731,7 @@ ${countdownText}`;
         }
 
         addCountdown(isoTargetTime, title) {
-            const countdown = new Countdown(document.getElementById("countdown-container"), this.clock, new Date(isoTargetTime), title);
+            const countdown = new CountdownControl(document.getElementById("countdown-container"), this.clock, new Date(isoTargetTime), title);
             this.countdowns.push(countdown);
 
             saveCountdownsToStorage(this.countdowns);
@@ -861,7 +861,7 @@ ${countdownText}`;
 
         // Create the count downs from any saved state
         const countdowns = persistedCountdowns.map((persistedCountdown) => {
-            return new Countdown(
+            return new CountdownControl(
                 document.getElementById("countdown-container"),
                 clock,
                 persistedCountdown.targetDate,
