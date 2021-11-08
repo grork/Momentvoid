@@ -217,8 +217,8 @@
                 // Don't capture items with invalid target dates
                 return;
             }
-            const time = new Date(countdown.targetDate);
-            const timeAsString = time.toISOString();
+
+            const timeAsString = countdown.targetDate.toISOString();
             
             targetTimes.push({
                 targetDate: timeAsString,
@@ -238,6 +238,7 @@
 
         return persistedCountdowns.map((persistedCountdown) => {
             const time = new Date(persistedCountdown.targetDate);
+
             return {
                 targetDate: time,
                 title: persistedCountdown.title
@@ -261,7 +262,7 @@
             // Call all the handlers with the tick data so they can do whatever
             // it is they need to do. Note that they might throw, so lets
             // swallow it, and log any info when someone complains.
-            for (const [key, handler] of this.handlers) {
+            for (const [_, handler] of this.handlers) {
                 try {
                     handler(tickData);
                 } catch(e) {
@@ -292,14 +293,13 @@
             
             return token;
         }
-
         
         unregisterTick(token) {
             this.handlers.delete(token);
         }
 
         getTime() {
-            let time = new Date().getTime();
+            let time = Date.now();
             if (this.timeOffset || this.accelerationFactor) {
                 time += ((this.timeOffset += this.accelerationFactor) * 1000);
             }
@@ -381,7 +381,7 @@
             this.clock = clock;
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
-            this.targetDate = targetDate.getTime();
+            this.targetDate = targetDate;
             this.visibleSegments = AllSegments.slice();
             this.loadSegmentsFromStorage();
             this.title = title || "countdown";
@@ -419,7 +419,7 @@
 
         tick(tickData) {
             const now = tickData.getTime();
-            const remaining = this.targetDate - now;
+            const remaining = this.targetDate.getTime() - now;
 
             // Time calculations for days, hours, minutes and seconds
             var weeks = Math.floor(remaining / MS_IN_WEEK);
@@ -664,7 +664,10 @@
         }
 
         handleAddButtonClick() {
+            // Note that the value from the date picker is actually a *string*
+            // so does need to be parsed.
             this.addCountdown(new Date(this.parts.targetDate.value), this.parts.titleTextbox.value);
+
             this.dismissMenu();
         }
 
@@ -679,11 +682,10 @@
 
             this.countdowns.forEach(countdown => {
                 const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
-                const asDateTime = new Date(countdown.targetDate);
-                parts.label.textContent = `${countdown.title} (${asDateTime.toLocaleDateString()})`;
+                parts.label.textContent = `${countdown.title} (${countdown.targetDate.toLocaleDateString()})`;
 
                 parts.remove.addEventListener("click", () => {
-                    this.removeCountdown(asDateTime.toISOString());
+                    this.removeCountdown(countdown.targetDate);
                 });
             });
         }
@@ -716,8 +718,8 @@ ${countdownText}`;
             this.countdowns.forEach((c) => c.hideNextSegment());
         }
 
-        addCountdown(isoTargetTime, title) {
-            const countdown = new CountdownControl(document.getElementById("countdown-container"), this.clock, new Date(isoTargetTime), title);
+        addCountdown(targetTime, title) {
+            const countdown = new CountdownControl(document.getElementById("countdown-container"), this.clock, targetTime, title);
             this.countdowns.push(countdown);
 
             saveCountdownsToStorage(this.countdowns);
@@ -726,8 +728,9 @@ ${countdownText}`;
             this.renderExistingCountdowns();
         }
 
-        removeCountdown(isoTargetTime) {
-            const matchedCountdowns = this.countdowns.filter((c) => c.targetDate === new Date(isoTargetTime).getTime());
+        removeCountdown(targetTime) {
+            const matchedCountdowns = this.countdowns.filter((c) => c.targetDate == targetTime);
+            
             matchedCountdowns.forEach((c) => {
                 c.stop();
                 c.removeFromDom();
@@ -833,9 +836,9 @@ ${countdownText}`;
         let targetParam = params.get("target");
         if(targetParam) {   
             const targetAsDate = new Date(targetParam);
-            firstTargetDate = targetAsDate.getTime(); 
+            firstTargetDate = targetAsDate; 
             if(isNaN(firstTargetDate)) {
-                firstTargetDate = null;
+                firstTargetDate = new Date(DEFAULT_TARGET);
             }
         }
 
