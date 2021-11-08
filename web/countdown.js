@@ -381,10 +381,9 @@
             this.clock = clock;
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
-            this.targetDate = countdown.targetDate;
+            this.countdown = countdown;
             this.visibleSegments = AllSegments.slice();
             this.loadSegmentsFromStorage();
-            this.title = countdown.title || "countdown";
 
             const template = document.querySelector("[data-template='countdown-template']");
             const parts = cloneIntoWithParts(template, container, [
@@ -419,7 +418,7 @@
 
         tick(tickData) {
             const now = tickData.getTime();
-            const remaining = this.targetDate.getTime() - now;
+            const remaining = this.countdown.targetDate.getTime() - now;
 
             // Time calculations for days, hours, minutes and seconds
             var weeks = Math.floor(remaining / MS_IN_WEEK);
@@ -683,10 +682,10 @@
 
             this.countdowns.forEach(countdown => {
                 const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
-                parts.label.textContent = `${countdown.title} (${countdown.targetDate.toLocaleDateString()})`;
+                parts.label.textContent = `${countdown.title} (${countdown.countdown.targetDate.toLocaleDateString()})`;
 
                 parts.remove.addEventListener("click", () => {
-                    this.removeCountdown(countdown.targetDate);
+                    this.removeCountdown(countdown.countdown.targetDate);
                 });
             });
         }
@@ -723,14 +722,16 @@ ${countdownText}`;
             const countdownControl = new CountdownControl(document.getElementById("countdown-container"), this.clock, countdown);
             this.countdowns.push(countdownControl);
 
-            saveCountdownsToStorage(this.countdowns);
+            const countdownData = this.countdowns.map(c => c.countdown);
+
+            saveCountdownsToStorage(countdownData);
             this.clock.start();
 
             this.renderExistingCountdowns();
         }
 
         removeCountdown(targetTime) {
-            const matchedCountdowns = this.countdowns.filter((c) => c.targetDate == targetTime);
+            const matchedCountdowns = this.countdowns.filter((c) => c.countdown.targetDate == targetTime);
 
             matchedCountdowns.forEach((c) => {
                 c.stop();
@@ -738,7 +739,8 @@ ${countdownText}`;
                 removeFromArray(this.countdowns, c);
             });
 
-            saveCountdownsToStorage(this.countdowns);
+            const countdownData = this.countdowns.map(c => c.countdown);
+            saveCountdownsToStorage(countdownData);
             this.renderExistingCountdowns();
         }
 
