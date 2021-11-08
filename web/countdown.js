@@ -561,7 +561,6 @@
             ], this.parts);
 
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
-            window.addEventListener("keyup", this.handleKeyUp.bind(this));
             window.addEventListener("click", this.handleClick.bind(this));
             this.parts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
         }
@@ -591,74 +590,65 @@
                 return;
             }
 
-            if (keyEvent.ctrlKey) {
-                this.handleControlKeyDown(keyEvent);
-                return;
-            }
-
             this.handleNoModifierKeyDown(keyEvent);
         }
 
-        handleControlKeyDown(keyEvent) {
-        }
-
         handleShiftKeyDown(keyEvent) {
-            switch (keyEvent.key) {
+            switch (keyEvent.key.toLowerCase()) {
                 case "r":
-                case "R":
                     window.localStorage.clear();
                     window.location.reload();
                     break;
                 
                 case "f":
-                case "F":
                     toggleFullscreen();
+                    break;
+                
+                case "?":
+                    this.toggleMenuVisibility();
                     break;
             }
         }
 
+        toggleMenuVisibility() {
+            if (this.container.style.display === "none") {
+                this.renderExistingCountdowns();
+                this.container.style.display = "";
+            } else {
+                this.dismissMenu();
+            }
+        }
+
         handleNoModifierKeyDown(keyEvent) {
-            switch (keyEvent.key)
+            const keyToMatch = keyEvent.key.toLowerCase();
+            switch (keyToMatch)
             {
                 case "m":
-                case "M":
-                case "?":
                 case "/":
-                    if (this.container.style.display === "none") {
-                        this.renderExistingCountdowns();
-                        this.container.style.display = "";
-                    } else {
-                        this.dismissMenu();
-                    }
+                    this.toggleMenuVisibility();
                     break;
                 
                 case "p":
-                case "P":
                     this.clock.togglePlayPause();
                     break;
                 
                 case "t":
-                case "T":
                     this.themeManager.toggleTheme();
                     break;
                 
                 case "c":
-                case "C":
                     this.putCountdownTimesOnClipboard();
                     break;
                 
                 case "n":
-                case "N":
                     this.clock.resetToCurrentTime();
                     break;
                 
                 case "f":
-                case "F":
                     this.clock.goFaster();
                     break;
                 
                 case "s":
-                case "S":
                     this.hideNextSegmentOnCountdowns();
                     break;
                 
@@ -671,10 +661,6 @@
                     keyEvent.preventDefault();
                     break;
             }
-        }
-
-        handleKeyUp()
-        {
         }
 
         handleAddButtonClick() {
