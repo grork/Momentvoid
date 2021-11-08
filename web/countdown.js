@@ -213,12 +213,12 @@
         const targetTimes = [];
 
         countdowns.forEach((countdown) => {
-            if (!countdown.targetDate) {
-                // Don't capture items with invalid target dates
+            const timeAsString = countdown.toISOString();
+
+            if (!timeAsString) {
+                // Don't capture invalid countdowns
                 return;
             }
-
-            const timeAsString = countdown.targetDate.toISOString();
             
             targetTimes.push({
                 targetDate: timeAsString,
@@ -238,11 +238,8 @@
 
         return persistedCountdowns.map((persistedCountdown) => {
             const time = new Date(persistedCountdown.targetDate);
-
-            return {
-                targetDate: time,
-                title: persistedCountdown.title
-            };
+            const countdown = new Countdown(time, persistedCountdown.title);
+            return countdown;
         });
     }
 
@@ -375,6 +372,33 @@
             this.start();
         }
     }
+
+    class Countdown {
+        #targetDateAsMs;
+        #targetDate;
+
+        constructor(targetDate, title) {
+            this.#targetDate = targetDate;
+            this.#targetDateAsMs = targetDate.getTime();
+            this.title = title;
+        }
+
+        getTime() {
+            return this.#targetDateAsMs;
+        }
+
+        toISOString() {
+            if (!this.#targetDate) {
+                return null;
+            }
+
+            return this.#targetDate.toISOString();
+        }
+
+        toLocaleDateString() {
+            return this.#targetDate.toLocaleDateString();
+        }
+    }
     
     class CountdownControl {
         constructor(container, clock, countdown) {
@@ -406,7 +430,7 @@
 
             this.titleElement.textContent = this.countdown.title;
 
-            if (!countdown.targetDate) {
+            if (!countdown) {
                 this.displayInvalidDateError();
                 return;
             }
@@ -418,7 +442,7 @@
 
         tick(tickData) {
             const now = tickData.getTime();
-            const remaining = this.countdown.targetDate.getTime() - now;
+            const remaining = this.countdown.getTime() - now;
 
             // Time calculations for days, hours, minutes and seconds
             var weeks = Math.floor(remaining / MS_IN_WEEK);
@@ -665,7 +689,7 @@
         handleAddButtonClick() {
             // Note that the value from the date picker is actually a *string*
             // so does need to be parsed.
-            const countdown = { targetDate: new Date(this.parts.targetDate.value), title: this.parts.titleTextbox.value };
+            const countdown = new Countdown(new Date(this.parts.targetDate.value), this.parts.titleTextbox.value);
             this.addCountdown(countdown);
 
             this.dismissMenu();
@@ -683,10 +707,10 @@
             this.countdowns.forEach(countdown => {
                 const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
                 const title = countdown.title || "";
-                parts.label.textContent = `${title} (${countdown.countdown.targetDate.toLocaleDateString()})`;
+                parts.label.textContent = `${title} (${countdown.countdown.toLocaleDateString()})`;
 
                 parts.remove.addEventListener("click", () => {
-                    this.removeCountdown(countdown.countdown.targetDate);
+                    this.removeCountdown(countdown.countdown);
                 });
             });
         }
@@ -731,8 +755,8 @@ ${countdownText}`;
             this.renderExistingCountdowns();
         }
 
-        removeCountdown(targetTime) {
-            const matchedCountdowns = this.countdowns.filter((c) => c.countdown.targetDate == targetTime);
+        removeCountdown(countdownToRemove) {
+            const matchedCountdowns = this.countdowns.filter((c) => c.countdown === countdownToRemove);
 
             matchedCountdowns.forEach((c) => {
                 c.stop();
@@ -849,7 +873,7 @@ ${countdownText}`;
         let persistedCountdowns = loadCountdownsFromStorage();
         if (!persistedCountdowns.length) {
             // If we didn't find any persisted countdowns, create a default one
-            persistedCountdowns = [{ targetDate: firstTargetDate }];
+            persistedCountdowns = [new Countdown(firstTargetDate)];
         }
 
         // Create the count downs from any saved state
