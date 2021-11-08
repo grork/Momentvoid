@@ -377,14 +377,14 @@
     }
     
     class CountdownControl {
-        constructor(container, clock, targetDate, title) {
+        constructor(container, clock, countdown) {
             this.clock = clock;
             this.accelerateTime = 0;
             this.accelerationFactor = 0;
-            this.targetDate = targetDate;
+            this.targetDate = countdown.targetDate;
             this.visibleSegments = AllSegments.slice();
             this.loadSegmentsFromStorage();
-            this.title = title || "countdown";
+            this.title = countdown.title || "countdown";
 
             const template = document.querySelector("[data-template='countdown-template']");
             const parts = cloneIntoWithParts(template, container, [
@@ -407,7 +407,7 @@
 
             this.titleElement.textContent = this.title;
 
-            if (!targetDate) {
+            if (!countdown.targetDate) {
                 this.displayInvalidDateError();
                 return;
             }
@@ -666,7 +666,8 @@
         handleAddButtonClick() {
             // Note that the value from the date picker is actually a *string*
             // so does need to be parsed.
-            this.addCountdown(new Date(this.parts.targetDate.value), this.parts.titleTextbox.value);
+            const countdown = { targetDate: new Date(this.parts.targetDate.value), title: this.parts.titleTextbox.value };
+            this.addCountdown(countdown);
 
             this.dismissMenu();
         }
@@ -718,9 +719,9 @@ ${countdownText}`;
             this.countdowns.forEach((c) => c.hideNextSegment());
         }
 
-        addCountdown(targetTime, title) {
-            const countdown = new CountdownControl(document.getElementById("countdown-container"), this.clock, targetTime, title);
-            this.countdowns.push(countdown);
+        addCountdown(countdown) {
+            const countdownControl = new CountdownControl(document.getElementById("countdown-container"), this.clock, countdown);
+            this.countdowns.push(countdownControl);
 
             saveCountdownsToStorage(this.countdowns);
             this.clock.start();
@@ -730,7 +731,7 @@ ${countdownText}`;
 
         removeCountdown(targetTime) {
             const matchedCountdowns = this.countdowns.filter((c) => c.targetDate == targetTime);
-            
+
             matchedCountdowns.forEach((c) => {
                 c.stop();
                 c.removeFromDom();
@@ -853,8 +854,7 @@ ${countdownText}`;
             return new CountdownControl(
                 document.getElementById("countdown-container"),
                 clock,
-                persistedCountdown.targetDate,
-                persistedCountdown.title
+                persistedCountdown
             );
         });
 
