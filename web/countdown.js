@@ -404,7 +404,7 @@
             this.titleElement = parts.title;
             this.containerElement = parts.container;
 
-            this.titleElement.textContent = this.title;
+            this.titleElement.textContent = this.countdown.title;
 
             if (!countdown.targetDate) {
                 this.displayInvalidDateError();
@@ -682,7 +682,8 @@
 
             this.countdowns.forEach(countdown => {
                 const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
-                parts.label.textContent = `${countdown.title} (${countdown.countdown.targetDate.toLocaleDateString()})`;
+                const title = countdown.title || "";
+                parts.label.textContent = `${title} (${countdown.countdown.targetDate.toLocaleDateString()})`;
 
                 parts.remove.addEventListener("click", () => {
                     this.removeCountdown(countdown.countdown.targetDate);
