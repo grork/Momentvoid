@@ -407,7 +407,7 @@
             this.accelerationFactor = 0;
             this.countdown = countdown;
             this.visibleSegments = AllSegments.slice();
-            this.loadSegmentsFromStorage();
+            this.loadSegmentConfigurationFromStorage();
 
             const template = document.querySelector("[data-template='countdown-template']");
             const parts = cloneIntoWithParts(template, container, [
@@ -500,7 +500,7 @@
         hideNextSegment() {
             this.cycleSegmentVisibility();
             this.updateSegmentDOMState();
-            this.saveSegmentsToStorage();
+            this.saveSegmentConfigurationToStorage();
         }
 
         updateSegmentDOMState() {
@@ -544,10 +544,10 @@
             }
 
             this.visibleSegments = AllSegments.slice();
-            this.saveSegmentsToStorage();
+            this.saveSegmentConfigurationToStorage();
         }
 
-        loadSegmentsFromStorage() {
+        loadSegmentConfigurationFromStorage() {
             const storageValue = window.localStorage.getItem("segmentConfig");
             if (storageValue === null) {
                 // Nothing persisted, give up
@@ -563,7 +563,7 @@
             this.visibleSegments = storageConfig;
         }
 
-        saveSegmentsToStorage() {
+        saveSegmentConfigurationToStorage() {
             window.localStorage.setItem("segmentConfig", JSON.stringify(this.visibleSegments));
         }
     }
