@@ -569,9 +569,9 @@
     }
 
     class Menu {
-        constructor(countdowns, clock, themeManager, container) {
+        constructor(countdownControls, clock, themeManager, container) {
             this.clock = clock;
-            this.countdowns = countdowns;
+            this.countdownControls = countdownControls;
             this.container = container;
             this.themeManager = themeManager;
             this.parts = {};
@@ -698,13 +698,13 @@
         renderExistingCountdowns() {
             this.parts.countdownList.innerHTML = "";
 
-            if (this.countdowns.length === 1) {
+            if (this.countdownControls.length === 1) {
                 return;
             }
 
             const template = document.querySelector("[data-template='countdown-list-template'");
 
-            this.countdowns.forEach(countdown => {
+            this.countdownControls.forEach(countdown => {
                 const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
                 const title = countdown.title || "";
                 parts.label.textContent = `${title} (${countdown.countdown.toLocaleDateString()})`;
@@ -718,10 +718,10 @@
         putCountdownTimesOnClipboard() {
             let message = null;
 
-            if (this.countdowns.length === 1) {
-                message = this.countdowns[0].currentMessage;
+            if (this.countdownControls.length === 1) {
+                message = this.countdownControls[0].currentMessage;
             } else {
-                this.countdowns.forEach((c, index) => {
+                this.countdownControls.forEach((c, index) => {
                     const countdownText = `${c.title}: ${c.currentMessage}`;
 
                     if (!message) {
@@ -740,14 +740,14 @@ ${countdownText}`;
         }
 
         hideNextSegmentOnCountdowns() {
-            this.countdowns.forEach((c) => c.hideNextSegment());
+            this.countdownControls.forEach((c) => c.hideNextSegment());
         }
 
         addCountdown(countdown) {
             const countdownControl = new CountdownControl(document.getElementById("countdown-container"), this.clock, countdown);
-            this.countdowns.push(countdownControl);
+            this.countdownControls.push(countdownControl);
 
-            const countdownData = this.countdowns.map(c => c.countdown);
+            const countdownData = this.countdownControls.map(c => c.countdown);
 
             saveCountdownsToStorage(countdownData);
             this.clock.start();
@@ -756,15 +756,15 @@ ${countdownText}`;
         }
 
         removeCountdown(countdownToRemove) {
-            const matchedCountdowns = this.countdowns.filter((c) => c.countdown === countdownToRemove);
+            const matchedCountdowns = this.countdownControls.filter((c) => c.countdown === countdownToRemove);
 
             matchedCountdowns.forEach((c) => {
                 c.stop();
                 c.removeFromDom();
-                removeFromArray(this.countdowns, c);
+                removeFromArray(this.countdownControls, c);
             });
 
-            const countdownData = this.countdowns.map(c => c.countdown);
+            const countdownData = this.countdownControls.map(c => c.countdown);
             saveCountdownsToStorage(countdownData);
             this.renderExistingCountdowns();
         }
@@ -877,7 +877,7 @@ ${countdownText}`;
         }
 
         // Create the count downs from any saved state
-        const countdowns = persistedCountdowns.map((persistedCountdown) => {
+        const countdownControls = persistedCountdowns.map((persistedCountdown) => {
             return new CountdownControl(
                 document.getElementById("countdown-container"),
                 clock,
@@ -885,9 +885,9 @@ ${countdownText}`;
             );
         });
 
-        window.Countdowns = countdowns;
+        window.CountdownControls = countdownControls;
         window.Menu = new Menu(
-            countdowns,
+            countdownControls,
             clock,
             themeHelper,
             document.querySelector(".menu-container")
