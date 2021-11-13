@@ -1,0 +1,27 @@
+{
+  "name": "momentvoid",
+  "version": "0.1.0",
+  "description": "Simple countdown tracker in an SPA",
+  "main": "countdown.js",
+  "scripts": {
+    "build": "tsc countdown.js -allowJs -out output/countdown.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grork/momentvoid.git"
+  },
+  "keywords": [
+    "countdown",
+    "typescript",
+    "javascript"
+  ],
+  "author": "Dominic Hopton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/grork/momentvoid/issues"
+  },
+  "homepage": "https://github.com/grork/momentvoid#readme",
+  "dependencies": {
+    "typescript": "^4.4.4"
+  }
+}
