@@ -569,7 +569,8 @@
     }
 
     class Menu {
-        constructor(countdownControls, clock, themeManager, container) {
+        constructor(countdownControls, countdowns, clock, themeManager, container) {
+            this.countdowns = countdowns;
             this.clock = clock;
             this.countdownControls = countdownControls;
             this.container = container;
@@ -698,19 +699,19 @@
         renderExistingCountdowns() {
             this.parts.countdownList.innerHTML = "";
 
-            if (this.countdownControls.length === 1) {
+            if (this.countdowns.length === 1) {
                 return;
             }
 
             const template = document.querySelector("[data-template='countdown-list-template'");
 
-            this.countdownControls.forEach(countdown => {
+            this.countdowns.forEach(countdown => {
                 const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
                 const title = countdown.title || "";
-                parts.label.textContent = `${title} (${countdown.countdown.toLocaleDateString()})`;
+                parts.label.textContent = `${title} (${countdown.toLocaleDateString()})`;
 
                 parts.remove.addEventListener("click", () => {
-                    this.removeCountdown(countdown.countdown);
+                    this.removeCountdown(countdown);
                 });
             });
         }
@@ -744,6 +745,7 @@ ${countdownText}`;
         }
 
         addCountdown(countdown) {
+            this.countdowns.push(countdown);
             const countdownControl = new CountdownControl(document.getElementById("countdown-container"), this.clock, countdown);
             this.countdownControls.push(countdownControl);
 
@@ -756,16 +758,16 @@ ${countdownText}`;
         }
 
         removeCountdown(countdownToRemove) {
-            const matchedCountdowns = this.countdownControls.filter((c) => c.countdown === countdownToRemove);
+            const matchedCountdownControls = this.countdownControls.filter((c) => c.countdown === countdownToRemove);
 
-            matchedCountdowns.forEach((c) => {
+            matchedCountdownControls.forEach((c) => {
                 c.stop();
                 c.removeFromDom();
                 removeFromArray(this.countdownControls, c);
+                removeFromArray(this.countdowns, c.countdown);
             });
 
-            const countdownData = this.countdownControls.map(c => c.countdown);
-            saveCountdownsToStorage(countdownData);
+            saveCountdownsToStorage(this.countdowns);
             this.renderExistingCountdowns();
         }
 
@@ -870,24 +872,25 @@ ${countdownText}`;
             }
         }
 
-        let persistedCountdowns = loadCountdownsFromStorage();
-        if (!persistedCountdowns.length) {
+        let countdowns = loadCountdownsFromStorage();
+        if (!countdowns.length) {
             // If we didn't find any persisted countdowns, create a default one
-            persistedCountdowns = [new Countdown(firstTargetDate)];
+            countdowns = [new Countdown(firstTargetDate)];
         }
 
         // Create the count downs from any saved state
-        const countdownControls = persistedCountdowns.map((persistedCountdown) => {
+        const countdownControls = countdowns.map((countdown) => {
             return new CountdownControl(
                 document.getElementById("countdown-container"),
                 clock,
-                persistedCountdown
+                countdown
             );
         });
 
         window.CountdownControls = countdownControls;
         window.Menu = new Menu(
             countdownControls,
+            countdowns,
             clock,
             themeHelper,
             document.querySelector(".menu-container")
