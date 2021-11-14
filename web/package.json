@@ -10,7 +10,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/grork/momentvoid.git"
+    "url": "https://github.com/grork/momentvoid.git",
+    "directory": "web"
   },
   "keywords": [
     "countdown",

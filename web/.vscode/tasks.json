@@ -4,7 +4,6 @@
 		{
 			"type": "npm",
 			"script": "build",
-			"path": "web/",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -12,7 +11,7 @@
 			"problemMatcher": [
 				"$tsc"
 			],
-			"label": "Build /web",
+			"label": "Build",
 			"detail": "Compiles the TS files into the output folder",
 			"presentation": {
 				"echo": true,
@@ -26,7 +25,6 @@
 		{
 			"type": "npm",
 			"script": "clean",
-			"path": "web/",
 			"label": "Clean outputs",
 			"detail": "Removed all files in the ./outputs folder",
 			"problemMatcher": []

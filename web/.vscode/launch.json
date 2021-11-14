@@ -8,8 +8,8 @@
             "type": "pwa-msedge",
             "request": "launch",
             "name": "Launch Edge against local file",
-            "file": "${workspaceFolder}/web/output/index.html",
-            "webRoot": "${workspaceFolder}"
+            "file": "${workspaceFolder}/output/index.html",
+            "webRoot": "${workspaceFolder}/output"
         }
     ]
 }
