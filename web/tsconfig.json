@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "outDir": "./output",
+      "allowJs": true,
+      "sourceMap": true,
+      "target": "ES2021"
+    },
+    "include": ["./*.js", "./*.ts"],
+    "exclude": ["./node_modules", "./output"]
+}

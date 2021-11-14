@@ -4,7 +4,9 @@
   "description": "Simple countdown tracker in an SPA",
   "main": "countdown.js",
   "scripts": {
-    "build": "tsc countdown.js -allowJs -out output/countdown.js"
+    "clean": "rm -rf ./output",
+    "build": "tsc",
+    "postbuild": "cp index.html output/ && cp countdown.css output/"
   },
   "repository": {
     "type": "git",
@@ -21,7 +23,7 @@
     "url": "https://github.com/grork/momentvoid/issues"
   },
   "homepage": "https://github.com/grork/momentvoid#readme",
-  "dependencies": {
+  "devDependencies": {
     "typescript": "^4.4.4"
   }
 }
