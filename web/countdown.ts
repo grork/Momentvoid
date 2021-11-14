@@ -1,4 +1,4 @@
-(function () {
+namespace Codevoid.Momentvoid {
     const DEFAULT_TARGET = new Date("2021-11-30T00:00:00");
     const DEFAULT_TICK_INTERVAL = 1000;
     
@@ -31,11 +31,11 @@
         Segments.SECONDS
     ];
 
-    function collapseIfLessThan1(value, element) {
+    function collapseIfLessThan1(value: number, element: HTMLElement): void {
         var parent = element.parentElement;
 
-        if(value > 0) {
-            element.textContent = value;
+        if (value > 0) {
+            element.textContent = <string><unknown>value;
             parent.style.display = "";
             return;
         }
@@ -44,7 +44,7 @@
         parent.style.display = "none"
     }
 
-    function addCommaIfNeeded(source) {
+    function addCommaIfNeeded(source: string): string {
         if (source.length === 0) {
             return source;
         }
@@ -52,7 +52,7 @@
         return source + ", ";
     }
 
-    function generateMessage(weeks, days, hours, minutes, seconds, segments) {
+    function generateMessage(weeks: number, days: number, hours: number, minutes: number, seconds: number, segments: string[]): string {
         let message = "";
 
         if (segments.includes(Segments.WEEKS)) {
@@ -124,7 +124,7 @@
         return message;
     }
 
-    function removeFromArray(source, itemToRemove) {
+    function removeFromArray<T>(source: T[], itemToRemove: T) {
         let itemIndex = source.indexOf(itemToRemove);
         if (itemIndex < 0) {
             return;
@@ -133,14 +133,14 @@
         source.splice(itemIndex, 1);
     }
 
-    function cloneIntoWithParts(template, target, partNames) {
-        let parts = {};
+    function cloneIntoWithParts(template: HTMLTemplateElement, target: HTMLElement, partNames: string[]): { [key: string]: HTMLElement } {
+        let parts: { [key: string]: HTMLElement } = {};
         let content = template.content;
     
         for (var index = 0; index < content.children.length; index += 1) {
             // Clone the node, and append it directly to the supplied container
             const templateChild = content.children[index];
-            const clonedChild = templateChild.cloneNode(true);
+            const clonedChild = <HTMLElement>templateChild.cloneNode(true);
             target.appendChild(clonedChild);
     
             // If we were asked to match parts, we'll do so.
@@ -152,19 +152,19 @@
         return parts;
     }
 
-    function locatePartsFromDOM(element, partNames, parts) {
+    function locatePartsFromDOM(element: HTMLElement, partNames: string[], parts: {[key: string]: HTMLElement}): void {
         // No elements or part names, give up.
         if (!partNames?.length || !element || !parts) {
             return;
         }
 
         let locatedPartNames = []; // Track which ones we've located, so
-                                    // we can remove them after. We only
-                                    // support finding the first part with
-                                    // a specific name.
+        // we can remove them after. We only
+        // support finding the first part with
+        // a specific name.
         partNames.forEach((item) => {
-            const selector = `[data-part='${item}']`;                        
-            let foundPart = element.querySelector(selector);
+            const selector = `[data-part='${item}']`;
+            let foundPart = <HTMLElement>element.querySelector(selector);
 
             // querySelector only finds *decendents*, so if we didn't find
             // the item, maybe the element itself is the part.
@@ -189,7 +189,7 @@
         locatedPartNames.forEach((itemToRemove) => removeFromArray(partNames, itemToRemove));
     }
 
-    function toggleFullscreen() {
+    function toggleFullscreen(): void {
         if (document.body.webkitRequestFullscreen) {
             // Assuming webkit
             if (!document.webkitFullscreenElement) {
@@ -209,7 +209,7 @@
         }
     }
 
-    function saveCountdownsToStorage(countdowns) {
+    function saveCountdownsToStorage(countdowns): void {
         const targetTimes = [];
 
         countdowns.forEach((countdown) => {
@@ -243,17 +243,19 @@
         });
     }
 
-    class Clock {
-        constructor() {
-            this.timeOffset = 0;
-            this.accelerationFactor = 0;
-            this.handlers = new Map(); // Anyone listening for a tick
-            this.nextHandlerId = 0;
-            this.intervalToken = 0;
-            this.tickInterval = DEFAULT_TICK_INTERVAL;
-        }
+    interface ITickData {
+        getTime(): number;
+    }
 
-        tick() {
+    class Clock {
+        private timeOffset: number = 0;
+        private accelerationFactor: number = 0;
+        private handlers: Map<number, (ITickData) => void> = new Map();
+        private nextHandlerId = 0;
+        private tickInterval: number = DEFAULT_TICK_INTERVAL;
+        private intervalToken: number = 0;
+
+        private tick() {
             const tickData = this.getCurrentTickData();
 
             // Call all the handlers with the tick data so they can do whatever
@@ -262,15 +264,15 @@
             for (const [_, handler] of this.handlers) {
                 try {
                     handler(tickData);
-                } catch(e) {
-                    console.log("A tick handler failed: " + e.toString());
+                } catch (e) {
+                    console.log(`A tick handler failed: ${e.toString()}`);
                 }
             }
         }
 
         // Generates the tickdata to pass to handlers so they are all working
         // of a shared clock, which may or may not be time shifted.
-        getCurrentTickData() {
+        private getCurrentTickData(): ITickData {
             const newTime = this.getTime();
             const tickData = {
                 getTime: () => newTime
@@ -280,7 +282,7 @@
         }
 
         // Register a callback for when a tick, ticks.
-        registerTick(handler) {
+        registerTick(handler: (ITickData) => void): number {
             // so that people can easily unregister their tick handler, we give
             // them an ID they can use for clearing that register if they need
             // to. This is not fancy, but it gets the job done.
@@ -291,11 +293,11 @@
             return token;
         }
         
-        unregisterTick(token) {
+        unregisterTick(token: number): void {
             this.handlers.delete(token);
         }
 
-        getTime() {
+        private getTime(): number {
             let time = Date.now();
             if (this.timeOffset || this.accelerationFactor) {
                 time += ((this.timeOffset += this.accelerationFactor) * 1000);
@@ -304,7 +306,7 @@
             return time;
         }
 
-        start(tickInterval) {
+        start(tickInterval?: number): void {
             this.tickInterval = tickInterval || this.tickInterval;
             this.tick();
             
@@ -320,14 +322,14 @@
             }, currentSecondOffset);
         }
 
-        stop() {
-            if(this.intervalToken) {
+        stop(): void {
+            if (this.intervalToken) {
                 window.clearInterval(this.intervalToken);
                 this.intervalToken = null;
             }
         }
 
-        setClockSpeed(accelerationFactor = 1, interval = DEFAULT_TICK_INTERVAL) {
+        setClockSpeed(accelerationFactor: number = 1, interval: number = DEFAULT_TICK_INTERVAL): void {
             this.stop();
 
             this.accelerationFactor = accelerationFactor;
@@ -335,7 +337,7 @@
             this.start(interval);
         }
 
-        resumeNormalSpeed() {
+        resumeNormalSpeed(): void {
             this.stop();
             this.accelerationFactor = 0;
             this.tickInterval = DEFAULT_TICK_INTERVAL;
@@ -343,13 +345,13 @@
             this.start();
         }
 
-        resetToCurrentTime() {
+        resetToCurrentTime(): void {
             this.stop();
             this.timeOffset = 0;
             this.resumeNormalSpeed();
         }
 
-        goFaster() {
+        goFaster(): void {
             let newAccelerationFactor = this.accelerationFactor * 10;
             if (newAccelerationFactor === 0) {
                 newAccelerationFactor = 1;
@@ -363,7 +365,7 @@
             this.setClockSpeed(newAccelerationFactor, newTickInterval);
         }
 
-        togglePlayPause() {
+        togglePlayPause(): void {
             if (this.intervalToken) {
                 this.stop();
                 return;
@@ -374,42 +376,54 @@
     }
 
     class Countdown {
-        #targetDateAsMs;
-        #targetDate;
+        private targetDateAsMs: number;
 
-        constructor(targetDate, title) {
-            this.#targetDate = targetDate;
-            this.#targetDateAsMs = targetDate.getTime();
+        constructor(private targetDate: Date, public readonly title?: string) {
+            this.targetDateAsMs = targetDate.getTime();
             this.title = title;
         }
 
         getTime() {
-            return this.#targetDateAsMs;
+            return this.targetDateAsMs;
         }
 
         toISOString() {
-            if (!this.#targetDate) {
-                return null;
+            if (!this.targetDate) {
+                return "";
             }
 
-            return this.#targetDate.toISOString();
+            return this.targetDate.toISOString();
         }
 
         toLocaleDateString() {
-            return this.#targetDate.toLocaleDateString();
+            if(!this.targetDate) {
+                return "";
+            }
+
+            return this.targetDate.toLocaleDateString();
         }
     }
     
     class CountdownControl {
-        constructor(container, clock, countdown) {
-            this.clock = clock;
-            this.accelerateTime = 0;
-            this.accelerationFactor = 0;
-            this.countdown = countdown;
-            this.visibleSegments = AllSegments.slice();
+        private weeksElement: HTMLElement;
+        private daysElement: HTMLElement;
+        private hoursElement: HTMLElement;
+        private minutesElement: HTMLElement;
+        private secondsElement: HTMLElement;
+        private titleElement: HTMLElement;
+        private containerElement: HTMLElement;
+        private visibleSegments: string[] = AllSegments.slice();
+        private tickToken: number;
+        private _currentMessage: string;
+
+        public get currentMessage(): string {
+            return this._currentMessage;
+        }
+
+        constructor(container: HTMLElement, private clock: Clock, public readonly countdown: Countdown) {
             this.loadSegmentConfigurationFromStorage();
 
-            const template = document.querySelector("[data-template='countdown-template']");
+            const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-template']");
             const parts = cloneIntoWithParts(template, container, [
                 "weeks",
                 "days",
@@ -440,26 +454,26 @@
             this.start();
         }
 
-        tick(tickData) {
+        private tick(tickData: ITickData): void {
             const now = tickData.getTime();
             const remaining = this.countdown.getTime() - now;
 
             // Time calculations for days, hours, minutes and seconds
             var weeks = Math.floor(remaining / MS_IN_WEEK);
-            var days = Math.floor( (remaining % MS_IN_WEEK) / MS_IN_DAY);
-            var hours = Math.floor( (remaining % MS_IN_DAY ) / MS_IN_HOUR);
-            var minutes = Math.floor( (remaining % MS_IN_HOUR) / MS_IN_MINUTE);
-            var seconds = Math.floor( (remaining % MS_IN_MINUTE) / MS_IN_SECOND);
+            var days = Math.floor((remaining % MS_IN_WEEK) / MS_IN_DAY);
+            var hours = Math.floor((remaining % MS_IN_DAY) / MS_IN_HOUR);
+            var minutes = Math.floor((remaining % MS_IN_HOUR) / MS_IN_MINUTE);
+            var seconds = Math.floor((remaining % MS_IN_MINUTE) / MS_IN_SECOND);
 
             // Check if we've reached the target time, and stop ourselves:
-            if((weeks < 1)
-             && (days < 1)
-             && (hours < 1)
-             && (minutes < 1)
-             && (seconds < 1)) {
-                 this.stop();
-                 this.displayTargetTimeReachedMessage();
-                 return;
+            if ((weeks < 1)
+                && (days < 1)
+                && (hours < 1)
+                && (minutes < 1)
+                && (seconds < 1)) {
+                this.stop();
+                this.displayTargetTimeReachedMessage();
+                return;
             }
 
             collapseIfLessThan1(weeks, this.weeksElement);
@@ -467,43 +481,42 @@
             collapseIfLessThan1(hours, this.hoursElement);
             collapseIfLessThan1(minutes, this.minutesElement);
             
-            this.secondsElement.textContent = seconds;
+            this.secondsElement.textContent = <string><unknown>seconds;
 
-            this.currentMessage = generateMessage(weeks, days, hours, minutes, seconds, this.visibleSegments);
+            this._currentMessage = generateMessage(weeks, days, hours, minutes, seconds, this.visibleSegments);
         }
 
-        start() {
+        start(): void {
             // Schedule a tick to that offset
             this.tickToken = this.clock.registerTick(this.tick.bind(this));
         }
 
-        stop() {
-            if(this.tickToken) {
+        stop(): void {
+            if (this.tickToken) {
                 this.clock.unregisterTick(this.tickToken);
                 this.tickToken = null;
             }
         }
 
-        removeFromDom() {
+        removeFromDom(): void {
             this.containerElement.parentElement.removeChild(this.containerElement);
         }
 
-        displayTargetTimeReachedMessage()
-        {
-            this.containerElement.textContent = this.currentMessage = "You are living in the future";
+        private displayTargetTimeReachedMessage(): void {
+            this.containerElement.textContent = this._currentMessage = "You are living in the future";
         }
 
-        displayInvalidDateError() {
+        private displayInvalidDateError(): void {
             this.containerElement.textContent = "Invalid date! You need to use an ISO formatted date";
         }
 
-        hideNextSegment() {
+        hideNextSegment(): void {
             this.cycleSegmentVisibility();
             this.updateSegmentDOMState();
             this.saveSegmentConfigurationToStorage();
         }
 
-        updateSegmentDOMState() {
+        private updateSegmentDOMState(): void {
             const secondsVisible = !this.visibleSegments.includes(Segments.SECONDS);
             const minuteVisible = !this.visibleSegments.includes(Segments.MINUTES);
             const hoursVisible = !this.visibleSegments.includes(Segments.HOURS)
@@ -517,7 +530,7 @@
             this.weeksElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, weeksVisible);
         }
 
-        cycleSegmentVisibility() {
+        cycleSegmentVisibility(): void {
             const secondsHidden = !this.visibleSegments.includes(Segments.SECONDS);
             const minutesHidden = !this.visibleSegments.includes(Segments.MINUTES);
             const hoursHidden = !this.visibleSegments.includes(Segments.HOURS)
@@ -547,7 +560,7 @@
             this.saveSegmentConfigurationToStorage();
         }
 
-        loadSegmentConfigurationFromStorage() {
+        private loadSegmentConfigurationFromStorage(): void {
             const storageValue = window.localStorage.getItem("segmentConfig");
             if (storageValue === null) {
                 // Nothing persisted, give up
@@ -563,19 +576,20 @@
             this.visibleSegments = storageConfig;
         }
 
-        saveSegmentConfigurationToStorage() {
+        private saveSegmentConfigurationToStorage(): void {
             window.localStorage.setItem("segmentConfig", JSON.stringify(this.visibleSegments));
         }
     }
 
     class Menu {
-        constructor(countdownControls, countdowns, clock, themeManager, container) {
-            this.countdowns = countdowns;
-            this.clock = clock;
-            this.countdownControls = countdownControls;
-            this.container = container;
-            this.themeManager = themeManager;
-            this.parts = {};
+        private parts: { [key: string]: HTMLElement } = {};
+
+        constructor(
+            private countdownControls: CountdownControl[],
+            private countdowns: Countdown[],
+            private clock: Clock,
+            private themeManager: ThemeManager,
+            private container: HTMLElement) {
 
             locatePartsFromDOM(this.container, [
                 "countdownList",
@@ -589,18 +603,18 @@
             this.parts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
         }
 
-        handleClick(event) {
+        private handleClick(event: MouseEvent): void {
             // We only want clicks directly on the container element
-            if(event.target !== this.container) {
+            if (event.target !== this.container) {
                 return;
             }
 
             this.dismissMenu();
         }
 
-        handleKeyDown(keyEvent) {
+        private handleKeyDown(keyEvent: KeyboardEvent): void {
             // When typing into a text box, don't process shortcuts.
-            if (keyEvent.target.tagName === "INPUT") {
+            if ((<HTMLElement>keyEvent.target).tagName === "INPUT") {
                 return;
             }
             
@@ -617,7 +631,7 @@
             this.handleNoModifierKeyDown(keyEvent);
         }
 
-        handleShiftKeyDown(keyEvent) {
+        private handleShiftKeyDown(keyEvent: KeyboardEvent): void {
             switch (keyEvent.key.toLowerCase()) {
                 case "r":
                     window.localStorage.clear();
@@ -634,7 +648,7 @@
             }
         }
 
-        toggleMenuVisibility() {
+        private toggleMenuVisibility(): void {
             if (this.container.style.display === "none") {
                 this.renderExistingCountdowns();
                 this.container.style.display = "";
@@ -643,10 +657,9 @@
             }
         }
 
-        handleNoModifierKeyDown(keyEvent) {
+        private handleNoModifierKeyDown(keyEvent: KeyboardEvent): void {
             const keyToMatch = keyEvent.key.toLowerCase();
-            switch (keyToMatch)
-            {
+            switch (keyToMatch) {
                 case "m":
                 case "/":
                     this.toggleMenuVisibility();
@@ -687,23 +700,25 @@
             }
         }
 
-        handleAddButtonClick() {
+        private handleAddButtonClick(): void {
             // Note that the value from the date picker is actually a *string*
             // so does need to be parsed.
-            const countdown = new Countdown(new Date(this.parts.targetDate.value), this.parts.titleTextbox.value);
+            const countdown = new Countdown(
+                new Date((<HTMLInputElement>this.parts.targetDate).value),
+                (<HTMLInputElement>this.parts.titleTextbox).value);
             this.addCountdown(countdown);
 
             this.dismissMenu();
         }
 
-        renderExistingCountdowns() {
+        private renderExistingCountdowns(): void {
             this.parts.countdownList.innerHTML = "";
 
             if (this.countdowns.length === 1) {
                 return;
             }
 
-            const template = document.querySelector("[data-template='countdown-list-template'");
+            const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-list-template'");
 
             this.countdowns.forEach(countdown => {
                 const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
@@ -716,14 +731,14 @@
             });
         }
 
-        putCountdownTimesOnClipboard() {
-            let message = null;
+        private putCountdownTimesOnClipboard(): void {
+            let message: string = null;
 
             if (this.countdownControls.length === 1) {
                 message = this.countdownControls[0].currentMessage;
             } else {
-                this.countdownControls.forEach((c, index) => {
-                    const countdownText = `${c.title}: ${c.currentMessage}`;
+                this.countdownControls.forEach((c): void => {
+                    const countdownText = `${c.countdown.title}: ${c.currentMessage}`;
 
                     if (!message) {
                         message = countdownText;
@@ -740,11 +755,11 @@ ${countdownText}`;
             navigator.clipboard.writeText(message);
         }
 
-        hideNextSegmentOnCountdowns() {
+        private hideNextSegmentOnCountdowns(): void {
             this.countdownControls.forEach((c) => c.hideNextSegment());
         }
 
-        addCountdown(countdown) {
+        private addCountdown(countdown: Countdown): void {
             this.countdowns.push(countdown);
             const countdownControl = new CountdownControl(document.getElementById("countdown-container"), this.clock, countdown);
             this.countdownControls.push(countdownControl);
@@ -757,7 +772,7 @@ ${countdownText}`;
             this.renderExistingCountdowns();
         }
 
-        removeCountdown(countdownToRemove) {
+        private removeCountdown(countdownToRemove: Countdown): void {
             const matchedCountdownControls = this.countdownControls.filter((c) => c.countdown === countdownToRemove);
 
             matchedCountdownControls.forEach((c) => {
@@ -771,12 +786,15 @@ ${countdownText}`;
             this.renderExistingCountdowns();
         }
 
-        dismissMenu() {
+        private dismissMenu(): void {
             this.container.style.display = "none";
         }
     }
 
     class ThemeManager {
+        private themeConfig: { dark: string; light: string };
+        private isSystemDarkMediaQuery: MediaQueryList;
+
         constructor() {
             this.themeConfig = {
                 dark: "default",
@@ -787,14 +805,14 @@ ${countdownText}`;
             this.isSystemDarkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
         }
 
-        loadFromStorage() {
+        private loadFromStorage(): void {
             const storageValue = window.localStorage.getItem("themeConfig");
             if (storageValue === null) {
                 // Nothing persisted, give up
                 return;
             }
 
-            const storageConfig = JSON.parse(storageValue);
+            const storageConfig: any = JSON.parse(storageValue);
             if (!storageConfig.hasOwnProperty("dark") && !storageConfig.hasOwnProperty("light")) {
                 // Not a valid object. we'll stomp it later.
                 return;
@@ -803,11 +821,11 @@ ${countdownText}`;
             this.themeConfig = storageConfig;
         }
 
-        saveConfigToStorage() {
+        private saveConfigToStorage(): void {
             window.localStorage.setItem("themeConfig", JSON.stringify(this.themeConfig));
         }
 
-        toggleTheme() {
+        toggleTheme(): void {
             const themeState = this.getCurrentThemeState();
             const isDefaultForTheme = (themeState.currentThemeSetting === THEME_DEFAULT);
             const setting = (isDefaultForTheme) ? THEME_TOGGLED : THEME_DEFAULT;
@@ -818,7 +836,7 @@ ${countdownText}`;
             this.saveConfigToStorage();
         }
 
-        applyThemeBasedOnConfig() {
+        applyThemeBasedOnConfig(): void {
             const themeState = this.getCurrentThemeState();
             const isOverriden = (themeState.currentThemeSetting !== THEME_DEFAULT);
             const alternativeTheme = (themeState.isSystemDark) ? "force-light" : "force-dark";
@@ -841,7 +859,7 @@ ${countdownText}`;
             }
         }
 
-        getCurrentThemeState() {
+        private getCurrentThemeState(): { isSystemDark: boolean; currentThemeKey: string; currentThemeSetting: string } {
             const isSystemDark = this.isSystemDarkMediaQuery.matches;
             const themeKey = (isSystemDark) ? DARK_THEME_KEY : LIGHT_THEME_KEY;
             const setting = this.themeConfig[themeKey];
@@ -859,15 +877,15 @@ ${countdownText}`;
 
     document.addEventListener("DOMContentLoaded", () => {
         // Start the single clock ticker
-        const clock = window.Clock = new Clock();
+        const clock = (<any>window).Clock = new Clock();
 
         let firstTargetDate = DEFAULT_TARGET;
         const params = new URLSearchParams(window.location.search);
         let targetParam = params.get("target");
-        if(targetParam) {   
+        if (targetParam) {
             const targetAsDate = new Date(targetParam);
-            firstTargetDate = targetAsDate; 
-            if(isNaN(firstTargetDate)) {
+            firstTargetDate = targetAsDate;
+            if (firstTargetDate.toString() == "Invalid Date") {
                 firstTargetDate = new Date(DEFAULT_TARGET);
             }
         }
@@ -887,8 +905,8 @@ ${countdownText}`;
             );
         });
 
-        window.CountdownControls = countdownControls;
-        window.Menu = new Menu(
+        (<any>window).CountdownControls = countdownControls;
+        (<any>window).Menu = new Menu(
             countdownControls,
             countdowns,
             clock,
@@ -898,4 +916,4 @@ ${countdownText}`;
 
         clock.start();
     });
-})();
+}
