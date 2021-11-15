@@ -15,13 +15,13 @@ namespace Codevoid.Momentvoid {
     
     const HIDE_SEGMENT_CLASS = "countdown-element-hide";
 
-    const Segments = {
-        WEEKS: 'WEEKS',
-        DAYS: 'DAYS',
-        HOURS: 'HOURS',
-        MINUTES: 'MINUTES',
-        SECONDS: 'SECONDS'
-    };
+    const enum Segments {
+        WEEKS = "WEEKS",
+        DAYS = "DAYS",
+        HOURS = "HOURS",
+        MINUTES = "MINUTES",
+        SECONDS = "SECONDS"
+    }
 
     const AllSegments = [
         Segments.WEEKS,
@@ -31,7 +31,15 @@ namespace Codevoid.Momentvoid {
         Segments.SECONDS
     ];
 
-    function collapseIfLessThan1(value: number, element: HTMLElement): void {
+    interface IHtmlParts {
+        [partName: string]: Element;
+    }
+
+    interface IImmutableHtmlParts extends IHtmlParts {
+        readonly [partName: string]: Element
+    }
+
+    function collapseIfLessThan1(value: number, element: Element): void {
         var parent = element.parentElement;
 
         if (value > 0) {
@@ -52,7 +60,7 @@ namespace Codevoid.Momentvoid {
         return source + ", ";
     }
 
-    function generateMessage(weeks: number, days: number, hours: number, minutes: number, seconds: number, segments: string[]): string {
+    function generateMessage(weeks: number, days: number, hours: number, minutes: number, seconds: number, segments: Segments[]): string {
         let message = "";
 
         if (segments.includes(Segments.WEEKS)) {
@@ -133,8 +141,8 @@ namespace Codevoid.Momentvoid {
         source.splice(itemIndex, 1);
     }
 
-    function cloneIntoWithParts(template: HTMLTemplateElement, target: HTMLElement, partNames: string[]): { [key: string]: HTMLElement } {
-        let parts: { [key: string]: HTMLElement } = {};
+    function cloneIntoWithParts(template: HTMLTemplateElement, target: Element, partNames: string[]): IImmutableHtmlParts {
+        let parts: IHtmlParts = {};
         let content = template.content;
     
         for (var index = 0; index < content.children.length; index += 1) {
@@ -152,7 +160,7 @@ namespace Codevoid.Momentvoid {
         return parts;
     }
 
-    function locatePartsFromDOM(element: HTMLElement, partNames: string[], parts: {[key: string]: HTMLElement}): void {
+    function locatePartsFromDOM(element: Element, partNames: string[], parts: IHtmlParts): void {
         // No elements or part names, give up.
         if (!partNames?.length || !element || !parts) {
             return;
@@ -164,7 +172,7 @@ namespace Codevoid.Momentvoid {
         // a specific name.
         partNames.forEach((item) => {
             const selector = `[data-part='${item}']`;
-            let foundPart = <HTMLElement>element.querySelector(selector);
+            let foundPart = element.querySelector(selector);
 
             // querySelector only finds *decendents*, so if we didn't find
             // the item, maybe the element itself is the part.
@@ -405,16 +413,10 @@ namespace Codevoid.Momentvoid {
     }
     
     class CountdownControl {
-        private weeksElement: HTMLElement;
-        private daysElement: HTMLElement;
-        private hoursElement: HTMLElement;
-        private minutesElement: HTMLElement;
-        private secondsElement: HTMLElement;
-        private titleElement: HTMLElement;
-        private containerElement: HTMLElement;
-        private visibleSegments: string[] = AllSegments.slice();
+        private visibleSegments: Segments[] = AllSegments.slice();
         private tickToken: number;
         private _currentMessage: string;
+        private parts: IImmutableHtmlParts;
 
         public get currentMessage(): string {
             return this._currentMessage;
@@ -424,7 +426,7 @@ namespace Codevoid.Momentvoid {
             this.loadSegmentConfigurationFromStorage();
 
             const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-template']");
-            const parts = cloneIntoWithParts(template, container, [
+            this.parts = cloneIntoWithParts(template, container, [
                 "weeks",
                 "days",
                 "hours",
@@ -433,16 +435,8 @@ namespace Codevoid.Momentvoid {
                 "container",
                 "title"
             ]);
-            
-            this.weeksElement = parts.weeks;
-            this.daysElement = parts.days;
-            this.hoursElement = parts.hours;
-            this.minutesElement = parts.minutes;
-            this.secondsElement = parts.seconds;
-            this.titleElement = parts.title;
-            this.containerElement = parts.container;
 
-            this.titleElement.textContent = this.countdown.title;
+            this.parts.title.textContent = this.countdown.title;
 
             if (!countdown) {
                 this.displayInvalidDateError();
@@ -476,12 +470,12 @@ namespace Codevoid.Momentvoid {
                 return;
             }
 
-            collapseIfLessThan1(weeks, this.weeksElement);
-            collapseIfLessThan1(days, this.daysElement);
-            collapseIfLessThan1(hours, this.hoursElement);
-            collapseIfLessThan1(minutes, this.minutesElement);
+            collapseIfLessThan1(weeks, this.parts.weeks);
+            collapseIfLessThan1(days, this.parts.days);
+            collapseIfLessThan1(hours, this.parts.hours);
+            collapseIfLessThan1(minutes, this.parts.minutes);
             
-            this.secondsElement.textContent = <string><unknown>seconds;
+            this.parts.seconds.textContent = <string><unknown>seconds;
 
             this._currentMessage = generateMessage(weeks, days, hours, minutes, seconds, this.visibleSegments);
         }
@@ -499,15 +493,15 @@ namespace Codevoid.Momentvoid {
         }
 
         removeFromDom(): void {
-            this.containerElement.parentElement.removeChild(this.containerElement);
+            this.parts.container.parentElement.removeChild(this.parts.container);
         }
 
         private displayTargetTimeReachedMessage(): void {
-            this.containerElement.textContent = this._currentMessage = "You are living in the future";
+            this.parts.container.textContent = this._currentMessage = "You are living in the future";
         }
 
         private displayInvalidDateError(): void {
-            this.containerElement.textContent = "Invalid date! You need to use an ISO formatted date";
+            this.parts.container.textContent = "Invalid date! You need to use an ISO formatted date";
         }
 
         hideNextSegment(): void {
@@ -523,11 +517,11 @@ namespace Codevoid.Momentvoid {
             const daysVisible = !this.visibleSegments.includes(Segments.DAYS);
             const weeksVisible = !this.visibleSegments.includes(Segments.WEEKS);
 
-            this.secondsElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, secondsVisible);
-            this.minutesElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, minuteVisible);
-            this.hoursElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, hoursVisible);
-            this.daysElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, daysVisible);
-            this.weeksElement.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, weeksVisible);
+            this.parts.seconds.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, secondsVisible);
+            this.parts.minutes.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, minuteVisible);
+            this.parts.hours.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, hoursVisible);
+            this.parts.days.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, daysVisible);
+            this.parts.weeks.parentElement.classList.toggle(HIDE_SEGMENT_CLASS, weeksVisible);
         }
 
         cycleSegmentVisibility(): void {
@@ -582,7 +576,7 @@ namespace Codevoid.Momentvoid {
     }
 
     class Menu {
-        private parts: { [key: string]: HTMLElement } = {};
+        private parts: IHtmlParts = {};
 
         constructor(
             private countdownControls: CountdownControl[],
@@ -875,9 +869,16 @@ ${countdownText}`;
     const themeHelper = new ThemeManager();
     themeHelper.applyThemeBasedOnConfig();
 
+    let State: {
+        Clock: Clock;
+        CountdownControls: CountdownControl[];
+        Countdowns: Countdown[];
+        Menu: Menu;
+    };
+
     document.addEventListener("DOMContentLoaded", () => {
         // Start the single clock ticker
-        const clock = (<any>window).Clock = new Clock();
+        const clock = new Clock();
 
         let firstTargetDate = DEFAULT_TARGET;
         const params = new URLSearchParams(window.location.search);
@@ -905,14 +906,20 @@ ${countdownText}`;
             );
         });
 
-        (<any>window).CountdownControls = countdownControls;
-        (<any>window).Menu = new Menu(
+        const menu = new Menu(
             countdownControls,
             countdowns,
             clock,
             themeHelper,
             document.querySelector(".menu-container")
         );
+
+        State = {
+            Clock: clock,
+            CountdownControls: countdownControls,
+            Countdowns: countdowns,
+            Menu: menu
+        };
 
         clock.start();
     });
