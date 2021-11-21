@@ -27,7 +27,7 @@ namespace Codevoid.Momentvoid {
     }
 
     class Menu {
-        private parts: IHtmlParts = {};
+        private parts: IImmutableHtmlParts = {};
 
         constructor(
             private countdownControls: CountdownControl[],
@@ -233,6 +233,7 @@ ${countdownText}`;
 
         private dismissMenu(): void {
             this.container.style.display = "none";
+            (<HTMLInputElement>this.parts.titleTextbox).value = "";
         }
     }
 
