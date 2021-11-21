@@ -1,6 +1,11 @@
 namespace Codevoid.Momentvoid {
-    export function saveCountdownsToStorage(countdowns): void {
-        const targetTimes = [];
+    interface IPersistedCountdown {
+        title: NullableString;
+        targetDate: string;
+    }
+
+    export function saveCountdownsToStorage(countdowns: Countdown[]): void {
+        const targetTimes: IPersistedCountdown[] = [];
 
         countdowns.forEach((countdown) => {
             const timeAsString = countdown.toISOString();
@@ -19,9 +24,13 @@ namespace Codevoid.Momentvoid {
         window.localStorage.setItem("countdowns", JSON.stringify(targetTimes));
     }
 
-    export function loadCountdownsFromStorage() {
-        const persistedCountdowns = JSON.parse(window.localStorage.getItem("countdowns"));
+    export function loadCountdownsFromStorage(): Countdown[] {
+        const storageValue = window.localStorage.getItem("countdowns");
+        if (!storageValue) {
+            return [];
+        }
 
+        const persistedCountdowns: IPersistedCountdown[] = JSON.parse(storageValue);
         if (!persistedCountdowns) {
             return [];
         }
@@ -32,10 +41,11 @@ namespace Codevoid.Momentvoid {
             return countdown;
         });
     }
+
     export class Countdown {
         private targetDateAsMs: number;
 
-        constructor(private targetDate: Date, public readonly title?: string) {
+        constructor(private targetDate: Date, public readonly title: string | null) {
             this.targetDateAsMs = targetDate.getTime();
             this.title = title;
         }

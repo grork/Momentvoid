@@ -8,7 +8,7 @@ namespace Codevoid.Momentvoid {
     export class Clock {
         private timeOffset: number = 0;
         private accelerationFactor: number = 0;
-        private handlers: Map<number, (ITickData) => void> = new Map();
+        private handlers: Map<number, (data: ITickData) => void> = new Map();
         private nextHandlerId = 0;
         private tickInterval: number = DEFAULT_TICK_INTERVAL;
         private intervalToken: number = 0;
@@ -22,7 +22,7 @@ namespace Codevoid.Momentvoid {
             for (const [_, handler] of this.handlers) {
                 try {
                     handler(tickData);
-                } catch (e) {
+                } catch (e: any) {
                     console.log(`A tick handler failed: ${e.toString()}`);
                 }
             }
@@ -40,7 +40,7 @@ namespace Codevoid.Momentvoid {
         }
 
         // Register a callback for when a tick, ticks.
-        registerTick(handler: (ITickData) => void): number {
+        registerTick(handler: (_: ITickData) => void): number {
             // so that people can easily unregister their tick handler, we give
             // them an ID they can use for clearing that register if they need
             // to. This is not fancy, but it gets the job done.
@@ -83,7 +83,7 @@ namespace Codevoid.Momentvoid {
         stop(): void {
             if (this.intervalToken) {
                 window.clearInterval(this.intervalToken);
-                this.intervalToken = null;
+                this.intervalToken = -1;
             }
         }
 

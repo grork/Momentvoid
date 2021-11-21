@@ -1,4 +1,6 @@
 namespace Codevoid.Momentvoid {
+    export type NullableString = string | null;
+    
     export interface IHtmlParts {
         [partName: string]: Element;
     }
@@ -8,7 +10,7 @@ namespace Codevoid.Momentvoid {
     }
 
     export function collapseIfLessThan1(value: number, element: Element): void {
-        var parent = element.parentElement;
+        const parent = element.parentElement!;
 
         if (value > 0) {
             element.textContent = <string><unknown>value;
@@ -134,7 +136,7 @@ namespace Codevoid.Momentvoid {
             return;
         }
 
-        let locatedPartNames = []; // Track which ones we've located, so
+        let locatedPartNames: string[] = []; // Track which ones we've located, so
         // we can remove them after. We only
         // support finding the first part with
         // a specific name.

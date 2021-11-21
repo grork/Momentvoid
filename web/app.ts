@@ -177,7 +177,7 @@ namespace Codevoid.Momentvoid {
         }
 
         private putCountdownTimesOnClipboard(): void {
-            let message: string = null;
+            let message: string = "";
 
             if (this.countdownControls.length === 1) {
                 message = this.countdownControls[0].currentMessage;
@@ -206,7 +206,7 @@ ${countdownText}`;
 
         private addCountdown(countdown: Countdown): void {
             this.countdowns.push(countdown);
-            const countdownControl = new CountdownControl(document.getElementById("countdown-container"), this.clock, countdown);
+            const countdownControl = new CountdownControl(document.getElementById("countdown-container")!, this.clock, countdown);
             this.countdownControls.push(countdownControl);
 
             const countdownData = this.countdownControls.map(c => c.countdown);
@@ -292,7 +292,7 @@ ${countdownText}`;
                 // Now we need to update the safari et al window chrome colour
                 // so that it matches the background of the page.
                 let finalStyle = window.getComputedStyle(document.body);
-                let meta = document.querySelector('meta[name="theme-color"]');
+                let meta = document.querySelector('meta[name="theme-color"]')!;
                 meta.setAttribute("content", finalStyle.backgroundColor);
             }
             
@@ -304,7 +304,7 @@ ${countdownText}`;
             }
         }
 
-        private getCurrentThemeState(): { isSystemDark: boolean; currentThemeKey: string; currentThemeSetting: string } {
+        private getCurrentThemeState(): { isSystemDark: boolean; currentThemeKey: "dark" | "light"; currentThemeSetting: string } {
             const isSystemDark = this.isSystemDarkMediaQuery.matches;
             const themeKey = (isSystemDark) ? DARK_THEME_KEY : LIGHT_THEME_KEY;
             const setting = this.themeConfig[themeKey];
@@ -345,13 +345,13 @@ ${countdownText}`;
         let countdowns = loadCountdownsFromStorage();
         if (!countdowns.length) {
             // If we didn't find any persisted countdowns, create a default one
-            countdowns = [new Countdown(firstTargetDate)];
+            countdowns = [new Countdown(firstTargetDate, null)];
         }
 
         // Create the count downs from any saved state
         const countdownControls = countdowns.map((countdown) => {
             return new CountdownControl(
-                document.getElementById("countdown-container"),
+                document.getElementById("countdown-container")!,
                 clock,
                 countdown
             );
@@ -362,7 +362,7 @@ ${countdownText}`;
             countdowns,
             clock,
             themeHelper,
-            document.querySelector(".menu-container")
+            document.querySelector(".menu-container")!
         );
 
         State = {
