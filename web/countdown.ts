@@ -1,45 +1,13 @@
 namespace Codevoid.Momentvoid {
-    const DEFAULT_TARGET = new Date("2021-11-30T00:00:00");
-    const DEFAULT_TICK_INTERVAL = 1000;
-    
-    const MS_IN_SECOND = 1000;
-    const MS_IN_MINUTE = MS_IN_SECOND * 60;
-    const MS_IN_HOUR = MS_IN_MINUTE * 60;
-    const MS_IN_DAY = MS_IN_HOUR * 24;
-    const MS_IN_WEEK = MS_IN_DAY * 7;
-
-    const DARK_THEME_KEY = "dark";
-    const LIGHT_THEME_KEY = "light";
-    const THEME_DEFAULT = "default";
-    const THEME_TOGGLED = "toggled";
-    
-    const HIDE_SEGMENT_CLASS = "countdown-element-hide";
-
-    const enum Segments {
-        WEEKS = "WEEKS",
-        DAYS = "DAYS",
-        HOURS = "HOURS",
-        MINUTES = "MINUTES",
-        SECONDS = "SECONDS"
-    }
-
-    const AllSegments = [
-        Segments.WEEKS,
-        Segments.DAYS,
-        Segments.HOURS,
-        Segments.MINUTES,
-        Segments.SECONDS
-    ];
-
-    interface IHtmlParts {
+    export interface IHtmlParts {
         [partName: string]: Element;
     }
 
-    interface IImmutableHtmlParts extends IHtmlParts {
+    export interface IImmutableHtmlParts extends IHtmlParts {
         readonly [partName: string]: Element
     }
 
-    function collapseIfLessThan1(value: number, element: Element): void {
+    export function collapseIfLessThan1(value: number, element: Element): void {
         var parent = element.parentElement;
 
         if (value > 0) {
@@ -52,7 +20,7 @@ namespace Codevoid.Momentvoid {
         parent.style.display = "none"
     }
 
-    function addCommaIfNeeded(source: string): string {
+    export function addCommaIfNeeded(source: string): string {
         if (source.length === 0) {
             return source;
         }
@@ -60,7 +28,7 @@ namespace Codevoid.Momentvoid {
         return source + ", ";
     }
 
-    function generateMessage(weeks: number, days: number, hours: number, minutes: number, seconds: number, segments: Segments[]): string {
+    export function generateMessage(weeks: number, days: number, hours: number, minutes: number, seconds: number, segments: Segments[]): string {
         let message = "";
 
         if (segments.includes(Segments.WEEKS)) {
@@ -132,7 +100,7 @@ namespace Codevoid.Momentvoid {
         return message;
     }
 
-    function removeFromArray<T>(source: T[], itemToRemove: T) {
+    export function removeFromArray<T>(source: T[], itemToRemove: T) {
         let itemIndex = source.indexOf(itemToRemove);
         if (itemIndex < 0) {
             return;
@@ -141,7 +109,7 @@ namespace Codevoid.Momentvoid {
         source.splice(itemIndex, 1);
     }
 
-    function cloneIntoWithParts(template: HTMLTemplateElement, target: Element, partNames: string[]): IImmutableHtmlParts {
+    export function cloneIntoWithParts(template: HTMLTemplateElement, target: Element, partNames: string[]): IImmutableHtmlParts {
         let parts: IHtmlParts = {};
         let content = template.content;
     
@@ -160,7 +128,7 @@ namespace Codevoid.Momentvoid {
         return parts;
     }
 
-    function locatePartsFromDOM(element: Element, partNames: string[], parts: IHtmlParts): void {
+    export function locatePartsFromDOM(element: Element, partNames: string[], parts: IHtmlParts): void {
         // No elements or part names, give up.
         if (!partNames?.length || !element || !parts) {
             return;
@@ -196,66 +164,16 @@ namespace Codevoid.Momentvoid {
         // search for them again.
         locatedPartNames.forEach((itemToRemove) => removeFromArray(partNames, itemToRemove));
     }
+}
 
-    function toggleFullscreen(): void {
-        if (document.body.webkitRequestFullscreen) {
-            // Assuming webkit
-            if (!document.webkitFullscreenElement) {
-                document.body.webkitRequestFullscreen();
-            } else {
-                document.webkitExitFullscreen();
-            }
+namespace Codevoid.Momentvoid {
+    const DEFAULT_TICK_INTERVAL = 1000;
 
-            return;
-        }
-
-        // Assume not-webkit
-        if (!document.fullscreenElement) {
-            document.body.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    }
-
-    function saveCountdownsToStorage(countdowns): void {
-        const targetTimes = [];
-
-        countdowns.forEach((countdown) => {
-            const timeAsString = countdown.toISOString();
-
-            if (!timeAsString) {
-                // Don't capture invalid countdowns
-                return;
-            }
-            
-            targetTimes.push({
-                targetDate: timeAsString,
-                title: countdown.title
-            });
-        });
-
-        window.localStorage.setItem("countdowns", JSON.stringify(targetTimes));
-    }
-
-    function loadCountdownsFromStorage() {
-        const persistedCountdowns = JSON.parse(window.localStorage.getItem("countdowns"));
-
-        if (!persistedCountdowns) {
-            return [];
-        }
-
-        return persistedCountdowns.map((persistedCountdown) => {
-            const time = new Date(persistedCountdown.targetDate);
-            const countdown = new Countdown(time, persistedCountdown.title);
-            return countdown;
-        });
-    }
-
-    interface ITickData {
+    export interface ITickData {
         getTime(): number;
     }
 
-    class Clock {
+    export class Clock {
         private timeOffset: number = 0;
         private accelerationFactor: number = 0;
         private handlers: Map<number, (ITickData) => void> = new Map();
@@ -382,8 +300,43 @@ namespace Codevoid.Momentvoid {
             this.start();
         }
     }
+}
 
-    class Countdown {
+namespace Codevoid.Momentvoid {
+    export function saveCountdownsToStorage(countdowns): void {
+        const targetTimes = [];
+
+        countdowns.forEach((countdown) => {
+            const timeAsString = countdown.toISOString();
+
+            if (!timeAsString) {
+                // Don't capture invalid countdowns
+                return;
+            }
+            
+            targetTimes.push({
+                targetDate: timeAsString,
+                title: countdown.title
+            });
+        });
+
+        window.localStorage.setItem("countdowns", JSON.stringify(targetTimes));
+    }
+
+    export function loadCountdownsFromStorage() {
+        const persistedCountdowns = JSON.parse(window.localStorage.getItem("countdowns"));
+
+        if (!persistedCountdowns) {
+            return [];
+        }
+
+        return persistedCountdowns.map((persistedCountdown) => {
+            const time = new Date(persistedCountdown.targetDate);
+            const countdown = new Countdown(time, persistedCountdown.title);
+            return countdown;
+        });
+    }
+    export class Countdown {
         private targetDateAsMs: number;
 
         constructor(private targetDate: Date, public readonly title?: string) {
@@ -404,15 +357,41 @@ namespace Codevoid.Momentvoid {
         }
 
         toLocaleDateString() {
-            if(!this.targetDate) {
+            if (!this.targetDate) {
                 return "";
             }
 
             return this.targetDate.toLocaleDateString();
         }
     }
-    
-    class CountdownControl {
+}
+
+namespace Codevoid.Momentvoid {
+    const MS_IN_SECOND = 1000;
+    const MS_IN_MINUTE = MS_IN_SECOND * 60;
+    const MS_IN_HOUR = MS_IN_MINUTE * 60;
+    const MS_IN_DAY = MS_IN_HOUR * 24;
+    const MS_IN_WEEK = MS_IN_DAY * 7;
+
+    const HIDE_SEGMENT_CLASS = "countdown-element-hide";
+
+    export const enum Segments {
+        WEEKS = "WEEKS",
+        DAYS = "DAYS",
+        HOURS = "HOURS",
+        MINUTES = "MINUTES",
+        SECONDS = "SECONDS"
+    }
+
+    const AllSegments = [
+        Segments.WEEKS,
+        Segments.DAYS,
+        Segments.HOURS,
+        Segments.MINUTES,
+        Segments.SECONDS
+    ];
+
+    export class CountdownControl {
         private visibleSegments: Segments[] = AllSegments.slice();
         private tickToken: number;
         private _currentMessage: string;
@@ -572,6 +551,35 @@ namespace Codevoid.Momentvoid {
 
         private saveSegmentConfigurationToStorage(): void {
             window.localStorage.setItem("segmentConfig", JSON.stringify(this.visibleSegments));
+        }
+    }
+}
+
+namespace Codevoid.Momentvoid {
+    const DEFAULT_TARGET = new Date("2021-11-30T00:00:00");
+
+    const DARK_THEME_KEY = "dark";
+    const LIGHT_THEME_KEY = "light";
+    const THEME_DEFAULT = "default";
+    const THEME_TOGGLED = "toggled";
+
+    function toggleFullscreen(): void {
+        if (document.body.webkitRequestFullscreen) {
+            // Assuming webkit
+            if (!document.webkitFullscreenElement) {
+                document.body.webkitRequestFullscreen();
+            } else {
+                document.webkitExitFullscreen();
+            }
+
+            return;
+        }
+
+        // Assume not-webkit
+        if (!document.fullscreenElement) {
+            document.body.requestFullscreen();
+        } else {
+            document.exitFullscreen();
         }
     }
 
