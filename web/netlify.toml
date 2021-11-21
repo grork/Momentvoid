@@ -1,0 +1,9 @@
+[build]
+  publish = "output/"
+  command = "npm run build"
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    X-Codevoid-Message = "Meowhalo"
