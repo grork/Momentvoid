@@ -1,6 +1,7 @@
 :root {
     color-scheme: light dark;
     --text-colour: rgb(19, 19, 19);
+    --alt-text-colour: rgb(223, 221, 221);
     --page-background: white;
     --shortcut-background: rgba(209, 209, 209, 0.5);
     --date-add-text-background-colour: #a7a7a7;
@@ -9,6 +10,7 @@
 @media (prefers-color-scheme: light) {
     .force-dark {
         --text-colour: white;
+        --alt-text-colour: rgb(121, 121, 121);
         --page-background: rgb(48, 48, 48);
         --shortcut-background: rgba(19, 19, 19, 0.5);
         --date-add-text-background-colour: #363636;
@@ -18,6 +20,7 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --text-colour: white;
+        --alt-text-colour: rgb(121, 121, 121);
         --page-background: rgb(48, 48, 48);
         --shortcut-background: rgba(19, 19, 19, 0.5);
         --date-add-text-background-colour: #363636;
@@ -25,6 +28,7 @@
 
     .force-light {
         --text-colour: rgb(19, 19, 19);
+        --alt-text-colour: rgb(223, 221, 221);
         --page-background: white;
         --shortcut-background: rgba(209, 209, 209, 0.5);
         --date-add-text-background-colour: #a7a7a7;
@@ -188,8 +192,14 @@ html {
 }
 
 .menu-date-title::placeholder {
-    color: var(--text-colour);
+    color: var(--alt-text-colour);
+    font-style: italic;
 }
+
+.menu-date-title:focus::placeholder {
+    color: transparent;
+}
+
 
 .menu-date-title {
     padding: 4px;
