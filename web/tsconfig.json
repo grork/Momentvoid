@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
       "outDir": "./output",
+      "outFile": "./output/countdown.js",
       "allowJs": true,
       "sourceMap": true,
       "target": "ES2021"
