@@ -4,7 +4,7 @@ namespace Codevoid.Momentvoid {
         targetDate: string;
     }
 
-    export function saveCountdownsToStorage(countdowns: Countdown[]): void {
+    function saveCountdownsToStorage(countdowns: Countdown[]): void {
         const targetTimes: IPersistedCountdown[] = [];
 
         countdowns.forEach((countdown) => {
@@ -24,7 +24,7 @@ namespace Codevoid.Momentvoid {
         window.localStorage.setItem("countdowns", JSON.stringify(targetTimes));
     }
 
-    export function loadCountdownsFromStorage(): Countdown[] {
+    function loadCountdownsFromStorage(): Countdown[] {
         const storageValue = window.localStorage.getItem("countdowns");
         if (!storageValue) {
             return [];
@@ -68,6 +68,39 @@ namespace Codevoid.Momentvoid {
             }
 
             return this.targetDate.toLocaleDateString();
+        }
+    }
+
+    export class CountdownManager {
+        private _countdowns: Countdown[] = [];
+
+        constructor(defaultTargetDate: Date) {
+            this._countdowns = loadCountdownsFromStorage();
+
+            if (!this._countdowns.length) {
+                // If we didn't find any persisted countdowns, create a default one
+                this._countdowns = [new Countdown(defaultTargetDate, null)];
+            }
+        }
+
+        addCountdown(targetDate: Date, title: NullableString): Countdown {
+            const countdown = new Countdown(targetDate, title);
+            this._countdowns.push(countdown);
+            
+            saveCountdownsToStorage(this._countdowns);
+            return countdown;
+        }
+
+        removeCountdown(countdown: Countdown): void {
+            const countdownsToRemove = this._countdowns.filter((c) => c === countdown);
+
+            countdownsToRemove.forEach((c) => removeFromArray(this._countdowns, c));
+
+            saveCountdownsToStorage(this._countdowns);
+        }
+
+        getCountdownsSnapshot(): Countdown[] {
+            return this._countdowns.slice();
         }
     }
 }

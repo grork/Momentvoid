@@ -31,7 +31,7 @@ namespace Codevoid.Momentvoid {
 
         constructor(
             private countdownControls: CountdownControl[],
-            private countdowns: Countdown[],
+            private countdownManager: CountdownManager,
             private clock: Clock,
             private themeManager: ThemeManager,
             private container: HTMLElement) {
@@ -95,7 +95,7 @@ namespace Codevoid.Momentvoid {
 
         private toggleMenuVisibility(): void {
             if (this.container.style.display === "none") {
-                this.renderExistingCountdowns();
+                this.renderCountdownManagementList();
                 this.container.style.display = "";
             } else {
                 this.dismissMenu();
@@ -148,24 +148,25 @@ namespace Codevoid.Momentvoid {
         private handleAddButtonClick(): void {
             // Note that the value from the date picker is actually a *string*
             // so does need to be parsed.
-            const countdown = new Countdown(
-                new Date((<HTMLInputElement>this.parts.targetDate).value),
-                (<HTMLInputElement>this.parts.titleTextbox).value);
-            this.addCountdown(countdown);
+            const targetDate = new Date((<HTMLInputElement>this.parts.targetDate).value);
+            const title = (<HTMLInputElement>this.parts.titleTextbox).value;
+            this.addCountdown(targetDate, title);
 
             this.dismissMenu();
         }
 
-        private renderExistingCountdowns(): void {
+        private renderCountdownManagementList(): void {
             this.parts.countdownList.innerHTML = "";
 
-            if (this.countdowns.length === 1) {
+            const currentCountdowns = this.countdownManager.getCountdownsSnapshot();
+
+            if (currentCountdowns.length === 1) {
                 return;
             }
 
             const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-list-template'");
 
-            this.countdowns.forEach(countdown => {
+            currentCountdowns.forEach(countdown => {
                 const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
                 const title = countdown.title || "";
                 parts.label.textContent = `${title} (${countdown.toLocaleDateString()})`;
@@ -204,17 +205,15 @@ ${countdownText}`;
             this.countdownControls.forEach((c) => c.hideNextSegment());
         }
 
-        private addCountdown(countdown: Countdown): void {
-            this.countdowns.push(countdown);
-            const countdownControl = new CountdownControl(document.getElementById("countdown-container")!, this.clock, countdown);
+        private addCountdown(targetDate: Date, title: NullableString): void {
+            const newCountdown = this.countdownManager.addCountdown(targetDate, title);
+            const countdownControl = new CountdownControl(document.getElementById("countdown-container")!, this.clock, newCountdown);
             this.countdownControls.push(countdownControl);
 
-            const countdownData = this.countdownControls.map(c => c.countdown);
-
-            saveCountdownsToStorage(countdownData);
+            // Force a the countdown to start if it wasn't already running
             this.clock.start();
 
-            this.renderExistingCountdowns();
+            this.renderCountdownManagementList();
         }
 
         private removeCountdown(countdownToRemove: Countdown): void {
@@ -224,11 +223,11 @@ ${countdownText}`;
                 c.stop();
                 c.removeFromDom();
                 removeFromArray(this.countdownControls, c);
-                removeFromArray(this.countdowns, c.countdown);
             });
 
-            saveCountdownsToStorage(this.countdowns);
-            this.renderExistingCountdowns();
+            this.countdownManager.removeCountdown(countdownToRemove);
+
+            this.renderCountdownManagementList();
         }
 
         private dismissMenu(): void {
@@ -324,7 +323,7 @@ ${countdownText}`;
     let State: {
         Clock: Clock;
         CountdownControls: CountdownControl[];
-        Countdowns: Countdown[];
+        CountdownManager: CountdownManager;
         Menu: Menu;
     };
 
@@ -343,14 +342,11 @@ ${countdownText}`;
             }
         }
 
-        let countdowns = loadCountdownsFromStorage();
-        if (!countdowns.length) {
-            // If we didn't find any persisted countdowns, create a default one
-            countdowns = [new Countdown(firstTargetDate, null)];
-        }
+        const countdownManager = new CountdownManager(firstTargetDate);
+        
 
         // Create the count downs from any saved state
-        const countdownControls = countdowns.map((countdown) => {
+        const countdownControls = countdownManager.getCountdownsSnapshot().map((countdown) => {
             return new CountdownControl(
                 document.getElementById("countdown-container")!,
                 clock,
@@ -360,7 +356,7 @@ ${countdownText}`;
 
         const menu = new Menu(
             countdownControls,
-            countdowns,
+            countdownManager,
             clock,
             themeHelper,
             document.querySelector(".menu-container")!
@@ -369,7 +365,7 @@ ${countdownText}`;
         State = {
             Clock: clock,
             CountdownControls: countdownControls,
-            Countdowns: countdowns,
+            CountdownManager: countdownManager,
             Menu: menu
         };
 
