@@ -124,7 +124,7 @@ namespace Codevoid.Momentvoid {
         }
 
         togglePlayPause(): void {
-            if (this.intervalToken) {
+            if (this.intervalToken > -1) {
                 this.stop();
                 return;
             }
