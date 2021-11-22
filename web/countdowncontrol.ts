@@ -57,6 +57,13 @@ namespace Codevoid.Momentvoid {
             this.updateSegmentDOMState();
 
             this.start();
+
+            this.parts.container.addEventListener("input", (e: Event) => {
+                const realEvent = <InputEvent>e;
+                const newTitle = (<Element>realEvent.target).textContent;
+
+                this.countdown.title = newTitle!;
+            });
         }
 
         private tick(tickData: ITickData): void {

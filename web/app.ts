@@ -58,8 +58,10 @@ namespace Codevoid.Momentvoid {
         }
 
         private handleKeyDown(keyEvent: KeyboardEvent): void {
+            const source = (<HTMLElement>keyEvent.target);
+
             // When typing into a text box, don't process shortcuts.
-            if ((<HTMLElement>keyEvent.target).tagName === "INPUT") {
+            if ((source.tagName === "INPUT") || (source.isContentEditable)) {
                 return;
             }
             

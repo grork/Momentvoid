@@ -4,6 +4,8 @@ namespace Codevoid.Momentvoid {
         targetDate: string;
     }
 
+    type CountdownChangedCallback = (countdown: Countdown) => void;
+
     function saveCountdownsToStorage(countdowns: Countdown[]): void {
         const targetTimes: IPersistedCountdown[] = [];
 
@@ -44,10 +46,22 @@ namespace Codevoid.Momentvoid {
 
     export class Countdown {
         private targetDateAsMs: number;
+        private changedHandlers: Map<number, CountdownChangedCallback> = new Map();
+        private nextChangeHandlerId = 0;
+        private _title: string;
 
-        constructor(private targetDate: Date, public readonly title: string | null) {
+        constructor(private targetDate: Date, title: NullableString) {
             this.targetDateAsMs = targetDate.getTime();
-            this.title = title;
+            this._title = title || "";
+        }
+
+        get title(): string {
+            return this._title!;
+        }
+
+        set title(value: string) {
+            this._title = value;
+            this.callChangeCallbacks();
         }
 
         getTime() {
@@ -69,10 +83,37 @@ namespace Codevoid.Momentvoid {
 
             return this.targetDate.toLocaleDateString();
         }
+
+        registerChangeHandler(callback: CountdownChangedCallback): number {
+            var token = (this.nextChangeHandlerId += 1);
+
+            this.changedHandlers.set(token, callback);
+
+            return token;
+        }
+
+        unregisterChangeHandler(token: number): void {
+            this.changedHandlers.delete(token);
+        }
+
+        private callChangeCallbacks() {
+            for (const [_, handler] of this.changedHandlers) {
+                try {
+                    handler(this);
+                } catch (e: any) {
+                    console.log(`A change handler failed: ${e.toString()}`);
+                }
+            }
+        }
+
+        dispose(): void {
+            this.changedHandlers.clear();
+        }
     }
 
     export class CountdownManager {
         private _countdowns: Countdown[] = [];
+        private _boundChangeHandler: CountdownChangedCallback = this.handleCountdownChanged.bind(this);
 
         constructor(defaultTargetDate: Date) {
             this._countdowns = loadCountdownsFromStorage();
@@ -81,10 +122,18 @@ namespace Codevoid.Momentvoid {
                 // If we didn't find any persisted countdowns, create a default one
                 this._countdowns = [new Countdown(defaultTargetDate, null)];
             }
+
+            this._countdowns.forEach((c) => c.registerChangeHandler(this._boundChangeHandler));
+        }
+
+        private handleCountdownChanged(countdown: Countdown): void {
+            saveCountdownsToStorage(this._countdowns);
         }
 
         addCountdown(targetDate: Date, title: NullableString): Countdown {
             const countdown = new Countdown(targetDate, title);
+            countdown.registerChangeHandler(this._boundChangeHandler);
+
             this._countdowns.push(countdown);
             
             saveCountdownsToStorage(this._countdowns);
@@ -94,7 +143,10 @@ namespace Codevoid.Momentvoid {
         removeCountdown(countdown: Countdown): void {
             const countdownsToRemove = this._countdowns.filter((c) => c === countdown);
 
-            countdownsToRemove.forEach((c) => removeFromArray(this._countdowns, c));
+            countdownsToRemove.forEach((c) => {
+                c.dispose();
+                removeFromArray(this._countdowns, c);
+            });
 
             saveCountdownsToStorage(this._countdowns);
         }
