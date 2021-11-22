@@ -12,9 +12,14 @@ namespace Codevoid.Momentvoid {
         private nextHandlerId = 0;
         private tickInterval: number = DEFAULT_TICK_INTERVAL;
         private intervalToken: number = 0;
+        private lastTick: ITickData;
+
+        constructor() {
+            this.lastTick = this.generateCurrentTickData();
+        }
 
         private tick() {
-            const tickData = this.getCurrentTickData();
+            const tickData = this.lastTick = this.generateCurrentTickData();
 
             // Call all the handlers with the tick data so they can do whatever
             // it is they need to do. Note that they might throw, so lets
@@ -30,13 +35,17 @@ namespace Codevoid.Momentvoid {
 
         // Generates the tickdata to pass to handlers so they are all working
         // of a shared clock, which may or may not be time shifted.
-        private getCurrentTickData(): ITickData {
+        private generateCurrentTickData(): ITickData {
             const newTime = this.getTime();
             const tickData = {
                 getTime: () => newTime
             };
 
             return tickData;
+        }
+
+        getCurrentTickData(): ITickData {
+            return this.lastTick;
         }
 
         // Register a callback for when a tick, ticks.
