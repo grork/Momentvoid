@@ -65,16 +65,12 @@ html {
     max-height: 80vh;
 }
 
-/* The first the countdown is the anchor, and therefore shouldn't have a title */
-.countdown-wrapper > .countdown-container:nth-child(1) .countdown-title {
-    visibility: hidden;
-}
-
 .countdown-element-container {
     padding-left: 12px;
     padding-right: 12px;
     margin-left: 48px;
     margin-right: 48px;
+    cursor: default;
 }
 
 .countdown-element-hide {
@@ -102,11 +98,26 @@ html {
 }
 
 .countdown-title {
+    display: inline;
     font-size: 14pt;
-    max-width: calc(85vh / 4);
-    overflow-x: hidden;
     white-space: nowrap;
     height: 24px;
+}
+
+.countdown-title-container {
+    max-width: calc(85vh / 4);
+    overflow-x: hidden;
+    height: 24px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    border-radius: 4px;
+    cursor: text;
+}
+
+.countdown-title-container:focus-within,
+.countdown-title-container:hover {
+    border-color: var(--alt-text-colour);
 }
 
 /* Keyboard Shortcuts */
