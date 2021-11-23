@@ -8,8 +8,7 @@ namespace Codevoid.Momentvoid {
     export class Clock {
         private timeOffset: number = 0;
         private accelerationFactor: number = 0;
-        private handlers: Map<number, (data: ITickData) => void> = new Map();
-        private nextHandlerId = 0;
+        private eventSource = new EventManager<ITickData>();
         private tickInterval: number = DEFAULT_TICK_INTERVAL;
         private intervalToken: number = 0;
         private lastTick: ITickData;
@@ -21,16 +20,7 @@ namespace Codevoid.Momentvoid {
         private tick() {
             const tickData = this.lastTick = this.generateCurrentTickData();
 
-            // Call all the handlers with the tick data so they can do whatever
-            // it is they need to do. Note that they might throw, so lets
-            // swallow it, and log any info when someone complains.
-            for (const [_, handler] of this.handlers) {
-                try {
-                    handler(tickData);
-                } catch (e: any) {
-                    console.log(`A tick handler failed: ${e.toString()}`);
-                }
-            }
+            this.eventSource.raise(tickData);
         }
 
         // Generates the tickdata to pass to handlers so they are all working
@@ -48,20 +38,13 @@ namespace Codevoid.Momentvoid {
             return this.lastTick;
         }
 
-        // Register a callback for when a tick, ticks.
+        // Register a handler for when a tick, ticks.
         registerTick(handler: (_: ITickData) => void): number {
-            // so that people can easily unregister their tick handler, we give
-            // them an ID they can use for clearing that register if they need
-            // to. This is not fancy, but it gets the job done.
-            var token = (this.nextHandlerId += 1);
-
-            this.handlers.set(token, handler);
-            
-            return token;
+            return this.eventSource.registerHandler(handler);
         }
         
         unregisterTick(token: number): void {
-            this.handlers.delete(token);
+            this.eventSource.unregisterHandler(token);
         }
 
         private getTime(): number {

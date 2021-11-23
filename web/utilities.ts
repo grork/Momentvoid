@@ -166,4 +166,37 @@ namespace Codevoid.Momentvoid {
         // search for them again.
         locatedPartNames.forEach((itemToRemove) => removeFromArray(partNames, itemToRemove));
     }
+
+    // Helps manage "Event" like callback pattern. Supports mutiple listeners,
+    // and easy raising of the event to all registered handlers.
+    export class EventManager<T> {
+        private handlers: Map<number, (data: T) => void> = new Map();
+        private nextHandlerId = 0;
+
+        registerHandler(handler: (data: T) => void): number {
+            const token = (this.nextHandlerId += 1);
+
+            this.handlers.set(token, handler);
+
+            return token;
+        }
+
+        unregisterHandler(token: number): void {
+            this.handlers.delete(token);
+        }
+
+        raise(data: T): void {
+            for (const [_, handler] of this.handlers) {
+                try {
+                    handler(data);
+                } catch (e: any) {
+                    console.log(`A handler failed: ${e.toString()}`);
+                }
+            }
+        }
+
+        reset() {
+            this.handlers.clear();
+        }
+    }
 }

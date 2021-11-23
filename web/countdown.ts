@@ -4,13 +4,12 @@ namespace Codevoid.Momentvoid {
         targetDate: string;
     }
 
-    type CountdownChangedCallback = (countdown: Countdown) => void;
-    type CountdownsChangedCallback = (countdowns: Countdown[]) => void;
+    type CountdownChangedHandler = (countdown: Countdown) => void;
+    type CountdownsChangedHandler = (countdowns: Countdown[]) => void;
 
     export class Countdown {
         private targetDateAsMs: number;
-        private changedHandlers: Map<number, CountdownChangedCallback> = new Map();
-        private nextChangeHandlerId = 0;
+        private eventSource = new EventManager<Countdown>();
         private _title: string;
 
         constructor(private targetDate: Date, title: NullableString) {
@@ -24,7 +23,7 @@ namespace Codevoid.Momentvoid {
 
         set title(value: string) {
             this._title = value;
-            this.callChangeCallbacks();
+            this.eventSource.raise(this);
         }
 
         getTime() {
@@ -47,38 +46,23 @@ namespace Codevoid.Momentvoid {
             return this.targetDate.toLocaleDateString();
         }
 
-        registerChangeHandler(callback: CountdownChangedCallback): number {
-            var token = (this.nextChangeHandlerId += 1);
-
-            this.changedHandlers.set(token, callback);
-
-            return token;
+        registerChangeHandler(handler: CountdownChangedHandler): number {
+            return this.eventSource.registerHandler(handler);
         }
 
         unregisterChangeHandler(token: number): void {
-            this.changedHandlers.delete(token);
-        }
-
-        private callChangeCallbacks() {
-            for (const [_, handler] of this.changedHandlers) {
-                try {
-                    handler(this);
-                } catch (e: any) {
-                    console.log(`A change handler failed: ${e.toString()}`);
-                }
-            }
+            this.eventSource.unregisterHandler(token);
         }
 
         dispose(): void {
-            this.changedHandlers.clear();
+            this.eventSource.reset();
         }
     }
 
     export class CountdownManager {
         private countdowns: Countdown[] = [];
-        private countdownsChangedHandlers: Map<number, CountdownsChangedCallback> = new Map();
-        private boundCountdownChangeHandler: CountdownChangedCallback = this.handleCountdownChanged.bind(this);
-        private nextChangeHandlerId = 0;
+        private boundCountdownChangeHandler: CountdownChangedHandler = this.handleCountdownChanged.bind(this);
+        private eventSource = new EventManager<Countdown[]>();
 
         constructor(defaultTargetDate: Date) {
             this.loadCountdownsFromStorage();
@@ -141,7 +125,7 @@ namespace Codevoid.Momentvoid {
             
             this.saveCountdownsToStorage();
 
-            this.callChangeCallbacks();
+            this.callChangeHandlers();
             return countdown;
         }
 
@@ -155,34 +139,24 @@ namespace Codevoid.Momentvoid {
 
             this.saveCountdownsToStorage();
 
-            this.callChangeCallbacks();
+            this.callChangeHandlers();
         }
 
         getCountdownsSnapshot(): Countdown[] {
             return this.countdowns.slice();
         }
 
-        registerChangeHandler(callback: CountdownsChangedCallback): number {
-            var token = (this.nextChangeHandlerId += 1);
-
-            this.countdownsChangedHandlers.set(token, callback);
-
-            return token;
+        registerChangeHandler(handler: CountdownsChangedHandler): number {
+            return this.eventSource.registerHandler(handler);
         }
 
         unregisterChangeHandler(token: number): void {
-            this.countdownsChangedHandlers.delete(token);
+            this.eventSource.unregisterHandler(token);
         }
 
-        private callChangeCallbacks() {
+        private callChangeHandlers() {
             const snapshot = this.getCountdownsSnapshot();
-            for (const [_, handler] of this.countdownsChangedHandlers) {
-                try {
-                    handler(snapshot);
-                } catch (e: any) {
-                    console.log(`A change handler failed: ${e.toString()}`);
-                }
-            }
+            this.eventSource.raise(snapshot);
         }
     }
 }
