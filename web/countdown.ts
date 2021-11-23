@@ -7,44 +7,6 @@ namespace Codevoid.Momentvoid {
     type CountdownChangedCallback = (countdown: Countdown) => void;
     type CountdownsChangedCallback = (countdowns: Countdown[]) => void;
 
-    function saveCountdownsToStorage(countdowns: Countdown[]): void {
-        const targetTimes: IPersistedCountdown[] = [];
-
-        countdowns.forEach((countdown) => {
-            const timeAsString = countdown.toISOString();
-
-            if (!timeAsString) {
-                // Don't capture invalid countdowns
-                return;
-            }
-            
-            targetTimes.push({
-                targetDate: timeAsString,
-                title: countdown.title
-            });
-        });
-
-        window.localStorage.setItem("countdowns", JSON.stringify(targetTimes));
-    }
-
-    function loadCountdownsFromStorage(): Countdown[] {
-        const storageValue = window.localStorage.getItem("countdowns");
-        if (!storageValue) {
-            return [];
-        }
-
-        const persistedCountdowns: IPersistedCountdown[] = JSON.parse(storageValue);
-        if (!persistedCountdowns) {
-            return [];
-        }
-
-        return persistedCountdowns.map((persistedCountdown) => {
-            const time = new Date(persistedCountdown.targetDate);
-            const countdown = new Countdown(time, persistedCountdown.title);
-            return countdown;
-        });
-    }
-
     export class Countdown {
         private targetDateAsMs: number;
         private changedHandlers: Map<number, CountdownChangedCallback> = new Map();
@@ -120,7 +82,7 @@ namespace Codevoid.Momentvoid {
         private _boundCountdownChangeHandler: CountdownChangedCallback = this.handleCountdownChanged.bind(this);
 
         constructor(defaultTargetDate: Date) {
-            this._countdowns = loadCountdownsFromStorage();
+            this.loadCountdownsFromStorage();
 
             if (!this._countdowns.length) {
                 // If we didn't find any persisted countdowns, create a default one
@@ -130,8 +92,46 @@ namespace Codevoid.Momentvoid {
             this._countdowns.forEach((c) => c.registerChangeHandler(this._boundCountdownChangeHandler));
         }
 
+        private saveCountdownsToStorage(): void {
+            const targetTimes: IPersistedCountdown[] = [];
+
+            this._countdowns.forEach((countdown) => {
+                const timeAsString = countdown.toISOString();
+    
+                if (!timeAsString) {
+                    // Don't capture invalid countdowns
+                    return;
+                }
+                
+                targetTimes.push({
+                    targetDate: timeAsString,
+                    title: countdown.title
+                });
+            });
+    
+            window.localStorage.setItem("countdowns", JSON.stringify(targetTimes));
+        }
+
+        private loadCountdownsFromStorage(): void {
+            const storageValue = window.localStorage.getItem("countdowns");
+            if (!storageValue) {
+                return;
+            }
+
+            const persistedCountdowns: IPersistedCountdown[] = JSON.parse(storageValue);
+            if (!persistedCountdowns) {
+                return;
+            }
+
+            this._countdowns = persistedCountdowns.map((persistedCountdown) => {
+                const time = new Date(persistedCountdown.targetDate);
+                const countdown = new Countdown(time, persistedCountdown.title);
+                return countdown;
+            });
+        }
+
         private handleCountdownChanged(countdown: Countdown): void {
-            saveCountdownsToStorage(this._countdowns);
+            this.saveCountdownsToStorage();
         }
 
         addCountdown(targetDate: Date, title: NullableString): Countdown {
@@ -140,7 +140,7 @@ namespace Codevoid.Momentvoid {
 
             this._countdowns.push(countdown);
             
-            saveCountdownsToStorage(this._countdowns);
+            this.saveCountdownsToStorage();
 
             this.callChangeCallbacks();
             return countdown;
@@ -154,7 +154,7 @@ namespace Codevoid.Momentvoid {
                 removeFromArray(this._countdowns, c);
             });
 
-            saveCountdownsToStorage(this._countdowns);
+            this.saveCountdownsToStorage();
 
             this.callChangeCallbacks();
         }
