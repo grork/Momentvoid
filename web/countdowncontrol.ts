@@ -101,6 +101,7 @@ namespace Codevoid.Momentvoid {
         start(): void {
             // Schedule a tick to that offset
             this.tickToken = this.clock.registerTick(this.tick.bind(this));
+            this.tick(this.clock.getCurrentTickData());
         }
 
         stop(): void {

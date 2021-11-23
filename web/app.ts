@@ -212,9 +212,6 @@ ${countdownText}`;
             const countdownControl = new CountdownControl(document.getElementById("countdown-container")!, this.clock, newCountdown);
             this.countdownControls.push(countdownControl);
 
-            // Force a the countdown to start if it wasn't already running
-            this.clock.start();
-
             this.renderCountdownManagementList();
         }
 
