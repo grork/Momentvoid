@@ -75,27 +75,26 @@ namespace Codevoid.Momentvoid {
     }
 
     export class CountdownManager {
-        private _countdowns: Countdown[] = [];
-        private _countdownsChangedHandlers: Map<number, CountdownsChangedCallback> = new Map();
-        private _nextChangeHandlerId = 0;
-
-        private _boundCountdownChangeHandler: CountdownChangedCallback = this.handleCountdownChanged.bind(this);
+        private countdowns: Countdown[] = [];
+        private countdownsChangedHandlers: Map<number, CountdownsChangedCallback> = new Map();
+        private boundCountdownChangeHandler: CountdownChangedCallback = this.handleCountdownChanged.bind(this);
+        private nextChangeHandlerId = 0;
 
         constructor(defaultTargetDate: Date) {
             this.loadCountdownsFromStorage();
 
-            if (!this._countdowns.length) {
+            if (!this.countdowns.length) {
                 // If we didn't find any persisted countdowns, create a default one
-                this._countdowns = [new Countdown(defaultTargetDate, null)];
+                this.countdowns = [new Countdown(defaultTargetDate, null)];
             }
 
-            this._countdowns.forEach((c) => c.registerChangeHandler(this._boundCountdownChangeHandler));
+            this.countdowns.forEach((c) => c.registerChangeHandler(this.boundCountdownChangeHandler));
         }
 
         private saveCountdownsToStorage(): void {
             const targetTimes: IPersistedCountdown[] = [];
 
-            this._countdowns.forEach((countdown) => {
+            this.countdowns.forEach((countdown) => {
                 const timeAsString = countdown.toISOString();
     
                 if (!timeAsString) {
@@ -123,7 +122,7 @@ namespace Codevoid.Momentvoid {
                 return;
             }
 
-            this._countdowns = persistedCountdowns.map((persistedCountdown) => {
+            this.countdowns = persistedCountdowns.map((persistedCountdown) => {
                 const time = new Date(persistedCountdown.targetDate);
                 const countdown = new Countdown(time, persistedCountdown.title);
                 return countdown;
@@ -136,9 +135,9 @@ namespace Codevoid.Momentvoid {
 
         addCountdown(targetDate: Date, title: NullableString): Countdown {
             const countdown = new Countdown(targetDate, title);
-            countdown.registerChangeHandler(this._boundCountdownChangeHandler);
+            countdown.registerChangeHandler(this.boundCountdownChangeHandler);
 
-            this._countdowns.push(countdown);
+            this.countdowns.push(countdown);
             
             this.saveCountdownsToStorage();
 
@@ -147,11 +146,11 @@ namespace Codevoid.Momentvoid {
         }
 
         removeCountdown(countdown: Countdown): void {
-            const countdownsToRemove = this._countdowns.filter((c) => c === countdown);
+            const countdownsToRemove = this.countdowns.filter((c) => c === countdown);
 
             countdownsToRemove.forEach((c) => {
                 c.dispose();
-                removeFromArray(this._countdowns, c);
+                removeFromArray(this.countdowns, c);
             });
 
             this.saveCountdownsToStorage();
@@ -160,24 +159,24 @@ namespace Codevoid.Momentvoid {
         }
 
         getCountdownsSnapshot(): Countdown[] {
-            return this._countdowns.slice();
+            return this.countdowns.slice();
         }
 
         registerChangeHandler(callback: CountdownsChangedCallback): number {
-            var token = (this._nextChangeHandlerId += 1);
+            var token = (this.nextChangeHandlerId += 1);
 
-            this._countdownsChangedHandlers.set(token, callback);
+            this.countdownsChangedHandlers.set(token, callback);
 
             return token;
         }
 
         unregisterChangeHandler(token: number): void {
-            this._countdownsChangedHandlers.delete(token);
+            this.countdownsChangedHandlers.delete(token);
         }
 
         private callChangeCallbacks() {
             const snapshot = this.getCountdownsSnapshot();
-            for (const [_, handler] of this._countdownsChangedHandlers) {
+            for (const [_, handler] of this.countdownsChangedHandlers) {
                 try {
                     handler(snapshot);
                 } catch (e: any) {
