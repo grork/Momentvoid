@@ -112,7 +112,7 @@ namespace Codevoid.Momentvoid {
         }
 
         removeFromDom(): void {
-            this.parts.container.parentElement!.removeChild(this.parts.container);
+            this.parts.container.parentElement?.removeChild(this.parts.container);
         }
 
         private displayTargetTimeReachedMessage(): void {
@@ -136,11 +136,11 @@ namespace Codevoid.Momentvoid {
             const daysVisible = !this.visibleSegments.includes(Segments.DAYS);
             const weeksVisible = !this.visibleSegments.includes(Segments.WEEKS);
 
-            this.parts.seconds.parentElement!.classList.toggle(HIDE_SEGMENT_CLASS, secondsVisible);
-            this.parts.minutes.parentElement!.classList.toggle(HIDE_SEGMENT_CLASS, minuteVisible);
-            this.parts.hours.parentElement!.classList.toggle(HIDE_SEGMENT_CLASS, hoursVisible);
-            this.parts.days.parentElement!.classList.toggle(HIDE_SEGMENT_CLASS, daysVisible);
-            this.parts.weeks.parentElement!.classList.toggle(HIDE_SEGMENT_CLASS, weeksVisible);
+            this.parts.seconds.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, secondsVisible);
+            this.parts.minutes.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, minuteVisible);
+            this.parts.hours.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, hoursVisible);
+            this.parts.days.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, daysVisible);
+            this.parts.weeks.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, weeksVisible);
         }
 
         cycleSegmentVisibility(): void {
