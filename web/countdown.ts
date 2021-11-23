@@ -5,6 +5,7 @@ namespace Codevoid.Momentvoid {
     }
 
     type CountdownChangedCallback = (countdown: Countdown) => void;
+    type CountdownsChangedCallback = (countdowns: Countdown[]) => void;
 
     function saveCountdownsToStorage(countdowns: Countdown[]): void {
         const targetTimes: IPersistedCountdown[] = [];
@@ -113,7 +114,10 @@ namespace Codevoid.Momentvoid {
 
     export class CountdownManager {
         private _countdowns: Countdown[] = [];
-        private _boundChangeHandler: CountdownChangedCallback = this.handleCountdownChanged.bind(this);
+        private _countdownsChangedHandlers: Map<number, CountdownsChangedCallback> = new Map();
+        private _nextChangeHandlerId = 0;
+
+        private _boundCountdownChangeHandler: CountdownChangedCallback = this.handleCountdownChanged.bind(this);
 
         constructor(defaultTargetDate: Date) {
             this._countdowns = loadCountdownsFromStorage();
@@ -123,7 +127,7 @@ namespace Codevoid.Momentvoid {
                 this._countdowns = [new Countdown(defaultTargetDate, null)];
             }
 
-            this._countdowns.forEach((c) => c.registerChangeHandler(this._boundChangeHandler));
+            this._countdowns.forEach((c) => c.registerChangeHandler(this._boundCountdownChangeHandler));
         }
 
         private handleCountdownChanged(countdown: Countdown): void {
@@ -132,11 +136,13 @@ namespace Codevoid.Momentvoid {
 
         addCountdown(targetDate: Date, title: NullableString): Countdown {
             const countdown = new Countdown(targetDate, title);
-            countdown.registerChangeHandler(this._boundChangeHandler);
+            countdown.registerChangeHandler(this._boundCountdownChangeHandler);
 
             this._countdowns.push(countdown);
             
             saveCountdownsToStorage(this._countdowns);
+
+            this.callChangeCallbacks();
             return countdown;
         }
 
@@ -149,10 +155,35 @@ namespace Codevoid.Momentvoid {
             });
 
             saveCountdownsToStorage(this._countdowns);
+
+            this.callChangeCallbacks();
         }
 
         getCountdownsSnapshot(): Countdown[] {
             return this._countdowns.slice();
+        }
+
+        registerChangeHandler(callback: CountdownsChangedCallback): number {
+            var token = (this._nextChangeHandlerId += 1);
+
+            this._countdownsChangedHandlers.set(token, callback);
+
+            return token;
+        }
+
+        unregisterChangeHandler(token: number): void {
+            this._countdownsChangedHandlers.delete(token);
+        }
+
+        private callChangeCallbacks() {
+            const snapshot = this.getCountdownsSnapshot();
+            for (const [_, handler] of this._countdownsChangedHandlers) {
+                try {
+                    handler(snapshot);
+                } catch (e: any) {
+                    console.log(`A change handler failed: ${e.toString()}`);
+                }
+            }
         }
     }
 }

@@ -46,6 +46,8 @@ namespace Codevoid.Momentvoid {
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
             window.addEventListener("click", this.handleClick.bind(this));
             this.parts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
+
+            countdownManager.registerChangeHandler(this.renderCountdownManagementList.bind(this));
         }
 
         private handleClick(event: MouseEvent): void {
@@ -97,7 +99,7 @@ namespace Codevoid.Momentvoid {
 
         private toggleMenuVisibility(): void {
             if (this.container.style.display === "none") {
-                this.renderCountdownManagementList();
+                this.renderCountdownManagementList(this.countdownManager.getCountdownsSnapshot());
                 this.container.style.display = "";
             } else {
                 this.dismissMenu();
@@ -152,15 +154,14 @@ namespace Codevoid.Momentvoid {
             // so does need to be parsed.
             const targetDate = new Date((<HTMLInputElement>this.parts.targetDate).value);
             const title = (<HTMLInputElement>this.parts.titleTextbox).value;
-            this.addCountdown(targetDate, title);
+
+            this.countdownManager.addCountdown(targetDate, title);
 
             this.dismissMenu();
         }
 
-        private renderCountdownManagementList(): void {
+        private renderCountdownManagementList(currentCountdowns: Countdown[]): void {
             this.parts.countdownList.innerHTML = "";
-
-            const currentCountdowns = this.countdownManager.getCountdownsSnapshot();
 
             if (currentCountdowns.length === 1) {
                 return;
@@ -174,7 +175,7 @@ namespace Codevoid.Momentvoid {
                 parts.label.textContent = `${title} (${countdown.toLocaleDateString()})`;
 
                 parts.remove.addEventListener("click", () => {
-                    this.removeCountdown(countdown);
+                    this.countdownManager.removeCountdown(countdown);
                 });
             });
         }
@@ -205,28 +206,6 @@ ${countdownText}`;
 
         private hideNextSegmentOnCountdowns(): void {
             this.countdownControls.forEach((c) => c.hideNextSegment());
-        }
-
-        private addCountdown(targetDate: Date, title: NullableString): void {
-            const newCountdown = this.countdownManager.addCountdown(targetDate, title);
-            const countdownControl = new CountdownControl(document.getElementById("countdown-container")!, this.clock, newCountdown);
-            this.countdownControls.push(countdownControl);
-
-            this.renderCountdownManagementList();
-        }
-
-        private removeCountdown(countdownToRemove: Countdown): void {
-            const matchedCountdownControls = this.countdownControls.filter((c) => c.countdown === countdownToRemove);
-
-            matchedCountdownControls.forEach((c) => {
-                c.stop();
-                c.removeFromDom();
-                removeFromArray(this.countdownControls, c);
-            });
-
-            this.countdownManager.removeCountdown(countdownToRemove);
-
-            this.renderCountdownManagementList();
         }
 
         private dismissMenu(): void {
@@ -342,15 +321,37 @@ ${countdownText}`;
         }
 
         const countdownManager = new CountdownManager(firstTargetDate);
-        
+        const countdownContainer = document.getElementById("countdown-container")!;
 
         // Create the count downs from any saved state
         const countdownControls = countdownManager.getCountdownsSnapshot().map((countdown) => {
             return new CountdownControl(
-                document.getElementById("countdown-container")!,
+                countdownContainer,
                 clock,
                 countdown
             );
+        });
+
+        // Listen for any changes in the list of countdowns. Note, the intent
+        // here to scorched-earth the content, rather than trying to work out
+        // what is new, what is old & render the deltas.
+        countdownManager.registerChangeHandler((countdowns) => {
+            while (countdownControls.length) {
+                let toCleanup = countdownControls.pop();
+                toCleanup?.stop();
+            }
+
+            countdownContainer.innerHTML = "";
+
+            countdowns.forEach((c) => {
+                const newControl = new CountdownControl(
+                    countdownContainer,
+                    clock,
+                    c
+                );
+
+                countdownControls.push(newControl);
+            });
         });
 
         const menu = new Menu(
