@@ -47,6 +47,7 @@ namespace Codevoid.Momentvoid {
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
             window.addEventListener("click", this.handleClick.bind(this));
             this.parts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
+            document.body.addEventListener("copy", this.putCountdownTimesOnClipboard.bind(this));
 
             countdownManager.registerChangeHandler(this.renderCountdownManagementList.bind(this));
         }
@@ -123,10 +124,6 @@ namespace Codevoid.Momentvoid {
                     this.themeManager.toggleTheme();
                     break;
                 
-                case "c":
-                    this.putCountdownTimesOnClipboard();
-                    break;
-                
                 case "n":
                     this.clock.resetToCurrentTime();
                     break;
@@ -147,7 +144,7 @@ namespace Codevoid.Momentvoid {
                     this.clock.resumeNormalSpeed();
                     break;
                 
-                case "Escape":
+                case "escape":
                     this.dismissMenu();
                     keyEvent.preventDefault();
                     break;
@@ -191,8 +188,9 @@ namespace Codevoid.Momentvoid {
             if (this.countdownControls.length === 1) {
                 message = this.countdownControls[0].currentMessage;
             } else {
-                this.countdownControls.forEach((c): void => {
-                    const countdownText = `${c.countdown.title}: ${c.currentMessage}`;
+                this.countdownControls.forEach((c, index): void => {
+                    const countdownTitle = c.countdown.title || `Countdown ${index + 1}`;
+                    const countdownText = `${countdownTitle}: ${c.currentMessage}`;
 
                     if (!message) {
                         message = countdownText;
