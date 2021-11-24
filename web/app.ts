@@ -138,6 +138,10 @@ namespace Codevoid.Momentvoid {
                     this.hideNextSegmentOnCountdowns();
                     break;
                 
+                case "o":
+                    this.countdownManager.cycleSortOrder();
+                    break;
+                
                 case "0":
                     this.clock.resumeNormalSpeed();
                     break;

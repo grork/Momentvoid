@@ -4,15 +4,35 @@ namespace Codevoid.Momentvoid {
         targetDate: string;
     }
 
+    enum SortMode {
+        NoSorting = "NoSorting",
+        ClosestFirst = "ClosestFirst",
+        FurthestFirst = "FurthestFirst"
+    }
+
     type CountdownChangedHandler = (countdown: Countdown) => void;
     type CountdownsChangedHandler = (countdowns: Countdown[]) => void;
+
+    function sortClosestFirst(first: Countdown, second: Countdown): number {
+        const firstAsMs = first.getTime();
+        const secondAsMs = second.getTime();
+
+        return firstAsMs - secondAsMs;
+    }
+
+    function sortFurthestFirst(first: Countdown, second: Countdown): number {
+        const firstAsMs = first.getTime();
+        const secondAsMs = second.getTime();
+
+        return secondAsMs - firstAsMs;
+    }
 
     export class Countdown {
         private targetDateAsMs: number;
         private eventSource = new EventManager<Countdown>();
         private _title: string;
 
-        constructor(private targetDate: Date, title: NullableString) {
+        constructor(public readonly targetDate: Date, title: NullableString) {
             this.targetDateAsMs = targetDate.getTime();
             this._title = title || "";
         }
@@ -63,8 +83,10 @@ namespace Codevoid.Momentvoid {
         private countdowns: Countdown[] = [];
         private boundCountdownChangeHandler: CountdownChangedHandler = this.handleCountdownChanged.bind(this);
         private eventSource = new EventManager<Countdown[]>();
+        private sort: SortMode = SortMode.NoSorting;
 
         constructor(defaultTargetDate: Date) {
+            this.loadSortFromStorage();
             this.loadCountdownsFromStorage();
 
             if (!this.countdowns.length) {
@@ -113,6 +135,19 @@ namespace Codevoid.Momentvoid {
             });
         }
 
+        private loadSortFromStorage(): void {
+            const storageValue = window.localStorage.getItem("sort");
+            if (!storageValue) {
+                return;
+            }
+
+            this.sort = <SortMode>storageValue;
+        }
+
+        private saveSortToStorage(): void {
+            window.localStorage.setItem("sort", this.sort);
+        }
+
         private handleCountdownChanged(countdown: Countdown): void {
             this.saveCountdownsToStorage();
         }
@@ -142,8 +177,46 @@ namespace Codevoid.Momentvoid {
             this.callChangeHandlers();
         }
 
+        cycleSortOrder(): void {
+            switch (this.sort) {
+                case SortMode.ClosestFirst:
+                    this.sort = SortMode.FurthestFirst;
+                    break;
+                
+                case SortMode.FurthestFirst:
+                    this.sort = SortMode.NoSorting;
+                    break;
+                
+                case SortMode.NoSorting:
+                default:
+                    this.sort = SortMode.ClosestFirst;
+                    break;
+            }
+
+            this.saveSortToStorage();
+            
+            this.callChangeHandlers();
+        }
+
         getCountdownsSnapshot(): Countdown[] {
-            return this.countdowns.slice();
+            let countdowns = this.countdowns.slice();
+
+            switch (this.sort) {
+                case SortMode.ClosestFirst:
+                    countdowns.sort(sortClosestFirst);
+                    break;
+                
+                case SortMode.FurthestFirst:
+                    countdowns.sort(sortFurthestFirst);
+                    break;
+
+                
+                case SortMode.NoSorting:
+                default:
+                    break;
+            }
+
+            return countdowns;
         }
 
         registerChangeHandler(handler: CountdownsChangedHandler): number {
