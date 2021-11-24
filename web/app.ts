@@ -1,5 +1,6 @@
 namespace Codevoid.Momentvoid {
-    const DEFAULT_TARGET = new Date("2021-11-30T00:00:00");
+    const FIRST_TARGET = new Date("2021-11-30T00:00:00");
+    const SECOND_TARGET = new Date("2021-12-17T00:00:00");
 
     const DARK_THEME_KEY = "dark";
     const LIGHT_THEME_KEY = "light";
@@ -309,18 +310,38 @@ ${countdownText}`;
         Menu: Menu;
     };
 
+    function calculateDefaultDate(): Date {
+        const now = Date.now();
+        const firstAsMs = FIRST_TARGET.getTime();
+        const secondAsMs = SECOND_TARGET.getTime();
+
+        if (now < firstAsMs) {
+            return FIRST_TARGET;
+        }
+
+        if (now < secondAsMs) {
+            return SECOND_TARGET;
+        }
+
+        // Work out the current year, and then pick a year after that
+        const nextYear = ((new Date()).getFullYear()) + 1;
+
+        return new Date(nextYear, 1, 1, 0, 0, 0, 0);
+
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         // Start the single clock ticker
         const clock = new Clock();
 
-        let firstTargetDate = DEFAULT_TARGET;
+        let firstTargetDate = calculateDefaultDate();
         const params = new URLSearchParams(window.location.search);
         let targetParam = params.get("target");
         if (targetParam) {
             const targetAsDate = new Date(targetParam);
             firstTargetDate = targetAsDate;
             if (firstTargetDate.toString() == "Invalid Date") {
-                firstTargetDate = new Date(DEFAULT_TARGET);
+                firstTargetDate = new Date(calculateDefaultDate());
             }
         }
 
