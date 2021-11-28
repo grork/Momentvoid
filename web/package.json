@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf ./output",
     "build": "tsc",
-    "postbuild": "cp index.html output/ && cp countdown.css output/"
+    "postbuild": "cp index.html output/ && cp countdown.css output/ && cp external/js-confetti.browser.js output/"
   },
   "repository": {
     "type": "git",
