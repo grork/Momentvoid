@@ -144,11 +144,23 @@ namespace Codevoid.Momentvoid {
                     this.clock.resumeNormalSpeed();
                     break;
                 
+                case "c":
+                    this.playCelebrationForFirstCountdown();
+                
                 case "escape":
                     this.dismissMenu();
                     keyEvent.preventDefault();
                     break;
             }
+        }
+
+        playCelebrationForFirstCountdown() {
+            const firstCountdownControl = this.countdownControls[0];
+            if (!firstCountdownControl) {
+                return;
+            }
+
+            firstCountdownControl.playCelebrationAnimation();
         }
 
         private handleAddButtonClick(): void {
@@ -306,6 +318,8 @@ ${countdownText}`;
         CountdownControls: CountdownControl[];
         CountdownManager: CountdownManager;
         Menu: Menu;
+        LoadingConfetti?: Promise<void>;
+        Confetti?: JSConfetti;
     };
 
     function calculateDefaultDate(): Date {
@@ -329,6 +343,31 @@ ${countdownText}`;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        async function getConfetti(): Promise<JSConfetti> {
+            // If we don't have the confetti cached...
+            if (!State.Confetti) {
+                // ... and we aren't alreay loading it ...
+                if (!State.LoadingConfetti) {
+                    State.LoadingConfetti = new Promise<void>((r) => {
+                        // ... load the script file by inserting it into `head`
+                        const scriptElement = document.createElement("script");
+                        scriptElement.addEventListener("load", () => r());
+                        scriptElement.src = "js-confetti.browser.js";
+
+                        document.head.appendChild(scriptElement);
+                    });
+                }
+
+                // ... wait for the script to load ...
+                await State.LoadingConfetti;
+
+                // ... create & initialize it ...
+                State.Confetti = new JSConfetti();
+            }
+
+            return State.Confetti;
+        }
+
         // Start the single clock ticker
         const clock = new Clock();
 
@@ -351,7 +390,8 @@ ${countdownText}`;
             return new CountdownControl(
                 countdownContainer,
                 clock,
-                countdown
+                countdown,
+                getConfetti,
             );
         });
 
@@ -370,7 +410,8 @@ ${countdownText}`;
                 const newControl = new CountdownControl(
                     countdownContainer,
                     clock,
-                    c
+                    c,
+                    getConfetti
                 );
 
                 countdownControls.push(newControl);

@@ -5,7 +5,8 @@
       "allowJs": true,
       "sourceMap": true,
       "target": "ES2021",
-      "strict": true
+      "strict": true,
+      "removeComments": true,
     },
     "include": ["./*.js", "./*.ts", "./typings/*.d.ts"],
     "exclude": ["./node_modules", "./output"]

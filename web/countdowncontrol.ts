@@ -33,7 +33,11 @@ namespace Codevoid.Momentvoid {
             return this._currentMessage;
         }
 
-        constructor(container: HTMLElement, private clock: Clock, public readonly countdown: Countdown) {
+        constructor(
+            container: HTMLElement,
+            private clock: Clock,
+            public readonly countdown: Countdown,
+            private getConfetti: () => Promise<JSConfetti>) {
             this.loadSegmentConfigurationFromStorage();
 
             const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-template']");
@@ -171,6 +175,14 @@ namespace Codevoid.Momentvoid {
 
             this.visibleSegments = AllSegments.slice();
             this.saveSegmentConfigurationToStorage();
+        }
+
+        async playCelebrationAnimation(): Promise<void> {
+            const confetti = await this.getConfetti();
+            return confetti.addConfetti({
+                confettiRadius: 12,
+                confettiNumber: 100
+            });
         }
 
         private loadSegmentConfigurationFromStorage(): void {
