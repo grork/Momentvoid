@@ -1,6 +1,7 @@
 namespace Codevoid.Momentvoid {
     const FIRST_TARGET = new Date("2021-11-30T00:00:00");
     const SECOND_TARGET = new Date("2021-12-17T00:00:00");
+    const FIVE_DAYS_MS = ((((1000 * 60) * 60) * 24) * 5);
 
     const DARK_THEME_KEY = "dark";
     const LIGHT_THEME_KEY = "light";
@@ -322,24 +323,36 @@ ${countdownText}`;
         Confetti?: JSConfetti;
     };
 
-    function calculateDefaultDate(): Date {
+    function calculateDefaultDate(): Date[] {
         const now = Date.now();
         const firstAsMs = FIRST_TARGET.getTime();
         const secondAsMs = SECOND_TARGET.getTime();
+        const dates: Date[] = [];
 
-        if (now < firstAsMs) {
-            return FIRST_TARGET;
+        const firstDateInTheFuture = (now < firstAsMs);
+        const firstDateWithinFiveDays = ((now - firstAsMs) < FIVE_DAYS_MS);
+        const secondDateInFuture = (now < secondAsMs);
+        const secondDateWithinFiveDays = ((now - secondAsMs) < FIVE_DAYS_MS);
+
+        // If the first date is in the future (hasn't passed), or has passed
+        // but less than five days ago, add it
+        if (firstDateInTheFuture || firstDateWithinFiveDays) {
+            dates.push(FIRST_TARGET);
         }
 
-        if (now < secondAsMs) {
-            return SECOND_TARGET;
+        // If first date is passed, second date is in the future
+        if (!firstDateInTheFuture && (secondDateInFuture || secondDateWithinFiveDays)) {
+            dates.push(SECOND_TARGET);
         }
 
         // Work out the current year, and then pick a year after that
         const nextYear = ((new Date()).getFullYear()) + 1;
 
-        return new Date(nextYear, 1, 1, 0, 0, 0, 0);
+        if (!dates.length) {
+            dates.push(new Date(nextYear, 1, 1, 0, 0, 0, 0));
+        }
 
+        return dates;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -371,18 +384,17 @@ ${countdownText}`;
         // Start the single clock ticker
         const clock = new Clock();
 
-        let firstTargetDate = calculateDefaultDate();
+        let defaultTargetDates = calculateDefaultDate();
         const params = new URLSearchParams(window.location.search);
         let targetParam = params.get("target");
         if (targetParam) {
             const targetAsDate = new Date(targetParam);
-            firstTargetDate = targetAsDate;
-            if (firstTargetDate.toString() == "Invalid Date") {
-                firstTargetDate = new Date(calculateDefaultDate());
+            if (defaultTargetDates.toString() !== "Invalid Date") {
+                defaultTargetDates = [targetAsDate];
             }
         }
 
-        const countdownManager = new CountdownManager(firstTargetDate);
+        const countdownManager = new CountdownManager(defaultTargetDates);
         const countdownContainer = document.getElementById("countdown-container")!;
 
         // Create the count downs from any saved state

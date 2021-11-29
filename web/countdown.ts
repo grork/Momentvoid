@@ -31,6 +31,7 @@ namespace Codevoid.Momentvoid {
         private targetDateAsMs: number;
         private eventSource = new EventManager<Countdown>();
         private _title: string;
+        private _isDefault: boolean = false;
 
         constructor(public readonly targetDate: Date, title: NullableString) {
             this.targetDateAsMs = targetDate.getTime();
@@ -43,7 +44,20 @@ namespace Codevoid.Momentvoid {
 
         set title(value: string) {
             this._title = value;
+            this._isDefault = false;
             this.eventSource.raise(this);
+        }
+
+        get isDefault(): boolean {
+            return this._isDefault;
+        }
+
+        get inThePast(): boolean {
+            return (Date.now() > this.targetDateAsMs);
+        }
+
+        setIsDefault(): void {
+            this._isDefault = true;
         }
 
         getTime() {
@@ -85,13 +99,18 @@ namespace Codevoid.Momentvoid {
         private eventSource = new EventManager<Countdown[]>();
         private sort: SortMode = SortMode.NoSorting;
 
-        constructor(defaultTargetDate: Date) {
+        constructor(defaultTargetDate: Date[]) {
             this.loadSortFromStorage();
             this.loadCountdownsFromStorage();
 
             if (!this.countdowns.length) {
-                // If we didn't find any persisted countdowns, create a default one
-                this.countdowns = [new Countdown(defaultTargetDate, null)];
+                this.countdowns = defaultTargetDate.map((date) => {
+                    // If we didn't find any persisted countdowns, create a default one
+                    const defaultCountdown = new Countdown(date, null);
+                    defaultCountdown.setIsDefault();
+
+                    return defaultCountdown;
+                })
             }
 
             this.countdowns.forEach((c) => c.registerChangeHandler(this.boundCountdownChangeHandler));
@@ -100,11 +119,22 @@ namespace Codevoid.Momentvoid {
         private saveCountdownsToStorage(): void {
             const targetTimes: IPersistedCountdown[] = [];
 
+            // Don't save anything if all the countdowns are default, since this
+            // implies that the customer hasn't changed anything.
+            if (this.countdowns.every((c) => c.isDefault)) {
+                return;
+            }
+
             this.countdowns.forEach((countdown) => {
                 const timeAsString = countdown.toISOString();
     
                 if (!timeAsString) {
                     // Don't capture invalid countdowns
+                    return;
+                }
+
+                if (countdown.inThePast) {
+                    // Don't capture times that are in the past
                     return;
                 }
                 
