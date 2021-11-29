@@ -29,11 +29,11 @@ namespace Codevoid.Momentvoid {
     }
 
     function setCustomConfettiIfSpecialDate(control: CountdownControl): void {
-        if (control.countdown.targetDate === FIRST_TARGET) {
+        if (control.countdown.targetDate.getTime() === FIRST_TARGET.getTime()) {
             control.customConfettiEmoji = ["💵", "💸", "💰", "🤑"];
         }
 
-        if (control.countdown.targetDate === SECOND_TARGET) {
+        if (control.countdown.targetDate.getTime() === SECOND_TARGET.getTime()) {
             control.customConfettiEmoji = ["📉", "📈", "🏛"];
         }
     }
