@@ -90,6 +90,12 @@ namespace Codevoid.Momentvoid {
                 return;
             }
 
+            if (keyEvent.ctrlKey || keyEvent.metaKey) {
+                // Nothing with these keys yet, but want to avoid handling
+                // combinations that would trigger anyway
+                return;
+            }
+
             this.handleNoModifierKeyDown(keyEvent);
         }
 
