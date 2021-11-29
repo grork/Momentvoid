@@ -5,6 +5,7 @@
     --page-background: white;
     --shortcut-background: rgba(209, 209, 209, 0.5);
     --date-add-text-background-colour: #a7a7a7;
+    --hyperlink-colour: blue;
 }
 
 @media (prefers-color-scheme: light) {
@@ -14,6 +15,7 @@
         --page-background: rgb(48, 48, 48);
         --shortcut-background: rgba(19, 19, 19, 0.5);
         --date-add-text-background-colour: #363636;
+        --hyperlink-colour: rgb(166, 166, 255);
     }
 }
 
@@ -24,6 +26,7 @@
         --page-background: rgb(48, 48, 48);
         --shortcut-background: rgba(19, 19, 19, 0.5);
         --date-add-text-background-colour: #363636;
+        --hyperlink-colour: rgb(166, 166, 255);
     }
 
     .force-light {
@@ -32,6 +35,7 @@
         --page-background: white;
         --shortcut-background: rgba(209, 209, 209, 0.5);
         --date-add-text-background-colour: #a7a7a7;
+        --hyperlink-colour: blue;
     }
 }
 
@@ -44,6 +48,11 @@ html {
     background-color: var(--page-background);
     color: var(--text-colour);
     -webkit-app-region: drag;
+}
+
+a,
+a:visited {
+    color: var(--hyperlink-colour);
 }
 
 /* To help with multiple timers having different heights we need to wrap the
