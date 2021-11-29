@@ -28,6 +28,7 @@ namespace Codevoid.Momentvoid {
         private tickToken: number = -1;
         private _currentMessage: string = "";
         private parts: IImmutableHtmlParts;
+        customConfettiEmoji: string[] = [];
 
         public get currentMessage(): string {
             return this._currentMessage;
@@ -201,9 +202,15 @@ namespace Codevoid.Momentvoid {
             let confettiParameters: IAddConfettiConfig = { confettiNumber: 60 };
 
             const regexpEmojiPresentation = /\p{Emoji_Presentation}/gu;
-            const matchingEmoji = this.countdown.title.match(regexpEmojiPresentation);
+            let matchingEmoji = <string[]>this.countdown.title.match(regexpEmojiPresentation);
+
+            // If there were no matching emojis, check for a custom set
+            if (!matchingEmoji?.length && this.customConfettiEmoji) {
+                matchingEmoji = this.customConfettiEmoji;
+            }
+
             if (matchingEmoji?.length) {
-                confettiParameters.emojis = matchingEmoji?.map((e) => e);
+                confettiParameters.emojis = matchingEmoji;
                 confettiParameters.emojiSize = 100;
             } else {
                 confettiParameters.confettiRadius = 12;

@@ -28,6 +28,16 @@ namespace Codevoid.Momentvoid {
         }
     }
 
+    function setCustomConfettiIfSpecialDate(control: CountdownControl): void {
+        if (control.countdown.targetDate === FIRST_TARGET) {
+            control.customConfettiEmoji = ["💵", "💸", "💰", "🤑"];
+        }
+
+        if (control.countdown.targetDate === SECOND_TARGET) {
+            control.customConfettiEmoji = ["📉", "📈", "🏛"];
+        }
+    }
+
     class Menu {
         private parts: IImmutableHtmlParts = {};
 
@@ -399,13 +409,17 @@ ${countdownText}`;
 
         // Create the count downs from any saved state
         const countdownControls = countdownManager.getCountdownsSnapshot().map((countdown) => {
-            return new CountdownControl(
+            const control =  new CountdownControl(
                 countdownContainer,
                 clock,
                 countdown,
                 countdownManager,
                 getConfetti,
             );
+
+            setCustomConfettiIfSpecialDate(control);
+
+            return control;
         });
 
         // Listen for any changes in the list of countdowns. Note, the intent
@@ -427,6 +441,8 @@ ${countdownText}`;
                     countdownManager,
                     getConfetti,
                 );
+                
+                setCustomConfettiIfSpecialDate(newControl);
 
                 newControl.start();
 
