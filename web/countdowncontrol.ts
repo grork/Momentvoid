@@ -198,10 +198,24 @@ namespace Codevoid.Momentvoid {
 
         async playCelebrationAnimation(): Promise<void> {
             const confetti = await this.getConfetti();
-            return confetti.addConfetti({
-                confettiRadius: 12,
-                confettiNumber: 100
-            });
+            let confettiParameters: IAddConfettiConfig = { confettiNumber: 60 };
+
+            const regexpEmojiPresentation = /\p{Emoji_Presentation}/gu;
+            const matchingEmoji = this.countdown.title.match(regexpEmojiPresentation);
+            if (matchingEmoji?.length) {
+                confettiParameters.emojis = matchingEmoji?.map((e) => e);
+                confettiParameters.emojiSize = 100;
+            } else {
+                confettiParameters.confettiRadius = 12;
+            }
+
+            confetti.addConfetti(confettiParameters);
+
+            // Kick off some animations, separated by a delay so as to keep
+            // animations smooth. Ish.
+            for (let i = 1; i <= 5; i++) {
+                setTimeout(() => confetti.addConfetti(confettiParameters), 650 * i);
+            }
         }
 
         private loadSegmentConfigurationFromStorage(): void {
