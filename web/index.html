@@ -26,7 +26,7 @@
             <div class="countdown-container" data-part="container">
                 <!-- Title -->
                 <div class="countdown-element-container countdown-title-container">
-                    <div class="countdown-title" data-part="title" contenteditable="true" spellcheck="false">default</div>
+                    <div class="countdown-title" data-part="title" contenteditable="true" spellcheck="false" tabindex="1">default</div>
                 </div>
                 <!-- Weeks-->
                 <div class="countdown-element-container">
@@ -66,6 +66,12 @@
                         -
                     </div>
                     <div class="countdown-description">seconds</div>
+                </div>
+
+                <div class="countdown-reached-container countdown-element-hide" data-part="targetReached">
+                    <div class="countdown-reached-message">You've made it! 🎉</div>
+                    <button tabindex="2" data-part="play">Play again</button>
+                    <button tabindex="2" data-part="remove">Remove</button>
                 </div>
             </div>
         </template>

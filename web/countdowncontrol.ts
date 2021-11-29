@@ -37,6 +37,7 @@ namespace Codevoid.Momentvoid {
             container: HTMLElement,
             private clock: Clock,
             public readonly countdown: Countdown,
+            private countdownManager: CountdownManager,
             private getConfetti: () => Promise<JSConfetti>) {
             this.loadSegmentConfigurationFromStorage();
 
@@ -48,7 +49,10 @@ namespace Codevoid.Momentvoid {
                 "minutes",
                 "seconds",
                 "container",
-                "title"
+                "title",
+                "targetReached",
+                "play",
+                "remove"
             ]);
 
             this.parts.title.textContent = this.countdown.title;
@@ -60,13 +64,19 @@ namespace Codevoid.Momentvoid {
 
             this.updateSegmentDOMState();
 
-            this.start();
-
             this.parts.container.addEventListener("input", (e: Event) => {
                 const realEvent = <InputEvent>e;
                 const newTitle = (<Element>realEvent.target).textContent;
 
                 this.countdown.title = newTitle!;
+            });
+
+            this.parts.remove.addEventListener("click", () => {
+                this.countdownManager.removeCountdown(this.countdown);
+            });
+
+            this.parts.play.addEventListener("click", () => {
+                this.playCelebrationAnimation();
             });
         }
 
@@ -82,11 +92,7 @@ namespace Codevoid.Momentvoid {
             var seconds = Math.floor((remaining % MS_IN_MINUTE) / MS_IN_SECOND);
 
             // Check if we've reached the target time, and stop ourselves:
-            if ((weeks < 1)
-                && (days < 1)
-                && (hours < 1)
-                && (minutes < 1)
-                && (seconds < 1)) {
+            if (this.countdown.inThePast) {
                 this.stop();
                 this.displayTargetTimeReachedMessage();
                 return;
@@ -109,18 +115,26 @@ namespace Codevoid.Momentvoid {
         }
 
         stop(): void {
-            if (this.tickToken) {
-                this.clock.unregisterTick(this.tickToken);
-                this.tickToken = -1;
+            if (!this.tickToken) {
+                return;
             }
-        }
 
-        removeFromDom(): void {
-            this.parts.container.parentElement?.removeChild(this.parts.container);
+            this.clock.unregisterTick(this.tickToken);
+            this.tickToken = -1;
         }
 
         private displayTargetTimeReachedMessage(): void {
-            this.parts.container.textContent = this._currentMessage = "You are living in the future";
+            this.visibleSegments = [];
+            this.updateSegmentDOMState();
+
+            this.playCelebrationAnimation();
+
+            this.parts.targetReached.classList.remove(HIDE_SEGMENT_CLASS);
+            this.parts.container.classList.toggle("countdown-reached", true);
+            (<HTMLDivElement>this.parts.title).removeAttribute("contenteditable");
+
+            this._currentMessage = "Target date reached!"
+            
         }
 
         private displayInvalidDateError(): void {
@@ -170,6 +184,11 @@ namespace Codevoid.Momentvoid {
 
             if (!daysHidden) {
                 removeFromArray(this.visibleSegments, Segments.DAYS);
+                return;
+            }
+
+            if (this.countdown.inThePast) {
+                this.visibleSegments = [];
                 return;
             }
 

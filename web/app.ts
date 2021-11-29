@@ -403,6 +403,7 @@ ${countdownText}`;
                 countdownContainer,
                 clock,
                 countdown,
+                countdownManager,
                 getConfetti,
             );
         });
@@ -423,8 +424,11 @@ ${countdownText}`;
                     countdownContainer,
                     clock,
                     c,
-                    getConfetti
+                    countdownManager,
+                    getConfetti,
                 );
+
+                newControl.start();
 
                 countdownControls.push(newControl);
             });
@@ -445,6 +449,9 @@ ${countdownText}`;
             Menu: menu
         };
 
+        // Wait to start the countdown controls, so that any state etc is
+        // properly constructed.
+        countdownControls.forEach((cd) => cd.start());
         clock.start();
     });
 }

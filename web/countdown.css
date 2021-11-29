@@ -83,7 +83,7 @@ a:visited {
 }
 
 .countdown-element-hide {
-    display: none;
+    display: none !important;
 }
 
 .countdown-number {
@@ -111,9 +111,14 @@ a:visited {
     font-size: 14pt;
     white-space: nowrap;
     height: 24px;
+    width: 100%;
+    text-align: center;
 }
 
 .countdown-title-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
     max-width: calc(85vh / 4);
     overflow-x: hidden;
     height: 24px;
@@ -121,11 +126,60 @@ a:visited {
     border-style: solid;
     border-color: transparent;
     border-radius: 4px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+:not(.countdown-reached) > .countdown-title-container {
     cursor: text;
 }
 
-.countdown-title-container:focus-within,
-.countdown-title-container:hover {
+.countdown-reached-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.countdown-reached {
+    align-self: center;
+    width: calc(85vh / 4);
+}
+
+.countdown-reached-message {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.countdown-reached button {
+    color: var(--text-colour);
+    font-size: 12px;
+    background-color: transparent;
+    border-style: solid;
+    border-color: var(--alt-text-colour);
+    border-radius: 4px;
+    border-width: 1px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 12px;
+    padding-left: 12px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.countdown-reached button:hover,
+.countdown-reached button:focus {
+    background-color: var(--alt-text-colour);
+}
+
+.countdown-reached button:active {
+    background-color: var(--text-colour) !important;
+    color: var(--alt-text-colour);
+}
+
+:not(.countdown-reached) > .countdown-title-container:focus-within,
+:not(.countdown-reached) > .countdown-title-container:hover {
     border-color: var(--alt-text-colour);
 }
 
