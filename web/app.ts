@@ -1,5 +1,5 @@
 namespace Codevoid.Momentvoid {
-    const FIRST_TARGET = new Date("2021-11-30T00:00:00");
+    const FIRST_TARGET = new Date("2021-12-13T21:00:00");
     const SECOND_TARGET = new Date("2021-12-17T00:00:00");
     const FIVE_DAYS_MS = ((((1000 * 60) * 60) * 24) * 5);
 
