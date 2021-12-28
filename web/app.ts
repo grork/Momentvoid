@@ -1,8 +1,4 @@
 namespace Codevoid.Momentvoid {
-    const FIRST_TARGET = new Date("2021-12-13T21:00:00");
-    const SECOND_TARGET = new Date("2021-12-17T00:00:00");
-    const FIVE_DAYS_MS = ((((1000 * 60) * 60) * 24) * 5);
-
     const DARK_THEME_KEY = "dark";
     const LIGHT_THEME_KEY = "light";
     const THEME_DEFAULT = "default";
@@ -28,14 +24,29 @@ namespace Codevoid.Momentvoid {
         }
     }
 
-    function setCustomConfettiIfSpecialDate(control: CountdownControl): void {
-        if (control.countdown.targetDate.getTime() === FIRST_TARGET.getTime()) {
-            control.customConfettiEmoji = ["💵", "💸", "💰", "🤑"];
+    function calculateDefaultDate(): Date[] {
+        const dates: Date[] = [];
+
+        // Work out the current year, and then pick a year after that
+        const nextYear = ((new Date()).getFullYear()) + 1;
+
+        if (!dates.length) {
+            dates.push(new Date(nextYear, 0, 1, 0, 0, 0, 0));
         }
 
-        if (control.countdown.targetDate.getTime() === SECOND_TARGET.getTime()) {
-            control.customConfettiEmoji = ["📉", "📈", "🏛"];
-        }
+        return dates;
+    }
+
+    function thirtyDaysFromNow(): string {
+        let thirtyDays = new Date();
+        thirtyDays.setUTCHours(0);
+        thirtyDays.setUTCMinutes(0);
+        thirtyDays.setUTCSeconds(0);
+        thirtyDays.setUTCMilliseconds(0);
+        thirtyDays.setUTCDate(thirtyDays.getUTCDate() + 30);
+
+        const result = `${thirtyDays.getUTCFullYear()}-${('0' + (thirtyDays.getUTCMonth() + 1)).slice(-2)}-${thirtyDays.getUTCDate()}T00:00`;
+        return result;
     }
 
     class Menu {
@@ -119,6 +130,11 @@ namespace Codevoid.Momentvoid {
         private toggleMenuVisibility(): void {
             if (this.container.style.display === "none") {
                 this.renderCountdownManagementList(this.countdownManager.getCountdownsSnapshot());
+                
+                // Update the default date in the date field to be 30 days in the
+                // future
+                (<HTMLInputElement>this.parts.targetDate).value = thirtyDaysFromNow();
+
                 this.container.style.display = "";
             } else {
                 this.dismissMenu();
@@ -339,38 +355,6 @@ ${countdownText}`;
         Confetti?: JSConfetti;
     };
 
-    function calculateDefaultDate(): Date[] {
-        const now = Date.now();
-        const firstAsMs = FIRST_TARGET.getTime();
-        const secondAsMs = SECOND_TARGET.getTime();
-        const dates: Date[] = [];
-
-        const firstDateInTheFuture = (now < firstAsMs);
-        const firstDateWithinFiveDays = ((now - firstAsMs) < FIVE_DAYS_MS);
-        const secondDateInFuture = (now < secondAsMs);
-        const secondDateWithinFiveDays = ((now - secondAsMs) < FIVE_DAYS_MS);
-
-        // If the first date is in the future (hasn't passed), or has passed
-        // but less than five days ago, add it
-        if (firstDateInTheFuture || firstDateWithinFiveDays) {
-            dates.push(FIRST_TARGET);
-        }
-
-        // If first date is passed, second date is in the future
-        if (!firstDateInTheFuture && (secondDateInFuture || secondDateWithinFiveDays)) {
-            dates.push(SECOND_TARGET);
-        }
-
-        // Work out the current year, and then pick a year after that
-        const nextYear = ((new Date()).getFullYear()) + 1;
-
-        if (!dates.length) {
-            dates.push(new Date(nextYear, 1, 1, 0, 0, 0, 0));
-        }
-
-        return dates;
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
         async function getConfetti(): Promise<JSConfetti> {
             // If we don't have the confetti cached...
@@ -423,8 +407,6 @@ ${countdownText}`;
                 getConfetti,
             );
 
-            setCustomConfettiIfSpecialDate(control);
-
             return control;
         });
 
@@ -447,8 +429,6 @@ ${countdownText}`;
                     countdownManager,
                     getConfetti,
                 );
-                
-                setCustomConfettiIfSpecialDate(newControl);
 
                 newControl.start();
 
