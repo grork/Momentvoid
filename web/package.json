@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf ./output",
     "build": "tsc",
-    "postbuild": "cp index.html output/ && cp countdown.css output/ && cp external/js-confetti.browser.js output/"
+    "postbuild": "cp index.html output/ && cp countdown.css output/ && cp node_modules/js-confetti/dist/js-confetti.browser.js output/"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/grork/momentvoid#readme",
   "devDependencies": {
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "js-confetti": "^0.10.2"
   }
 }
