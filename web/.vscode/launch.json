@@ -7,9 +7,10 @@
         {
             "type": "pwa-msedge",
             "request": "launch",
-            "name": "Launch Edge against local file",
-            "file": "${workspaceFolder}/output/index.html",
-            "webRoot": "${workspaceFolder}/output"
+            "name": "Launch Edge against Browser Sync",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/output",
+            "preLaunchTask": "Serve files with automatic browser loading"
         }
     ]
 }
