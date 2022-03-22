@@ -8,6 +8,7 @@
             "type": "pwa-msedge",
             "request": "launch",
             "name": "Launch Edge against Browser Sync",
+            "cleanUp": "onlyTab",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/output",
             "preLaunchTask": "Serve files with automatic browser loading"
