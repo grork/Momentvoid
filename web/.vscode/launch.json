@@ -12,6 +12,15 @@
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/output",
             "preLaunchTask": "Serve files with automatic browser loading"
+        },
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "Launch Chrome against Browser Sync",
+            "cleanUp": "onlyTab",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/output",
+            "preLaunchTask": "Serve files with automatic browser loading"
         }
     ]
 }
