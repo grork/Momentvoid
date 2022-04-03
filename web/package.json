@@ -12,7 +12,7 @@
     "watch-dependencies": "npm-watch copy-dependencies",
     "watch-compile": "tsc --watch",
     "watch-all": "npm-watch",
-    "serve-reload": "browser-sync start --server output --watch --no-ui --listen localhost --no-online --no-open --reload-debounce 250"
+    "serve": "browser-sync start --server output --watch --no-ui --listen localhost --no-online --no-open --reload-debounce 250"
   },
   "watch": {
     "copy-dependencies": {

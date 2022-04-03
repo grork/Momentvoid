@@ -60,7 +60,7 @@
         {
             "type": "npm",
             "label": "Serve files with automatic browser loading",
-            "script": "serve-reload",
+            "script": "serve",
             "isBackground": true,
             "presentation": {
                 "echo": false,
