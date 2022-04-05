@@ -76,8 +76,8 @@
             </div>
         </template>
         <template data-template="countdown-list-template">
-            <div class="menu-item-list-title" data-part="label"></div>
-            <button class="menu-item-list-detail menu-button menu-remove-countdown" data-part="remove">del</button>
+            <div data-part="label"></div>
+            <button class="menu-item-list-detail menu-button" data-part="remove">remove</button>
         </template>
         <div class="countdown-centering-container">
             <div class="countdown-wrapper" id="countdown-container">
@@ -87,40 +87,36 @@
             <div class="menu-content">
                 <div class="menu-title">Shortcuts</div>
                 <div class="menu-item-list">
-                    <div class="menu-item-list-title">Pause / Play</div><div class="menu-item-list-detail">p</div>
-                    <div class="menu-item-list-title">Go faster</div><div class="menu-item-list-detail">f</div>
-                    <div class="menu-item-list-title">Normal speed</div><div class="menu-item-list-detail">0</div>
-                    <div class="menu-item-list-title">Go to now</div><div class="menu-item-list-detail">n</div>
-                    <div class="menu-item-list-title">Cycle sorting</div><div class="menu-item-list-detail">o</div>
-                    <div class="menu-item-list-title">Toggle Theme</div><div class="menu-item-list-detail">t</div>
-                    <div class="menu-item-list-title">Copy (mac)</div><div class="menu-item-list-detail">Cmd + c</div>
-                    <div class="menu-item-list-title">Copy (other)</div><div class="menu-item-list-detail">Control + c</div>
-                    <div class="menu-item-list-title">Toggle fullscreen</div><div class="menu-item-list-detail">Shift + f</div>
-                    <div class="menu-item-list-title">Clear setting &amp reload</div><div class="menu-item-list-detail">Shift + r</div>
-                    <div class="menu-item-list-title">Cycle visible segments</div><div class="menu-item-list-detail">s</div>
-                    <div class="menu-item-list-title">Play celebration</div><div class="menu-item-list-detail">c</div>
-                    <div class="menu-item-list-title">Hide menu</div><div class="menu-item-list-detail">m</div>
+                    <div>Pause / Play</div><div class="menu-item-list-detail">p</div>
+                    <div>Go faster</div><div class="menu-item-list-detail">f</div>
+                    <div>Normal speed</div><div class="menu-item-list-detail">0</div>
+                    <div>Go to now</div><div class="menu-item-list-detail">n</div>
+                    <div>Cycle sorting</div><div class="menu-item-list-detail">o</div>
+                    <div>Toggle Theme</div><div class="menu-item-list-detail">t</div>
+                    <div>Copy (mac)</div><div class="menu-item-list-detail">⌘+c</div>
+                    <div>Copy (other)</div><div class="menu-item-list-detail">^+c</div>
+                    <div>Toggle fullscreen</div><div class="menu-item-list-detail">⇧+f</div>
+                    <div>Clear setting &amp reload</div><div class="menu-item-list-detail">⇧+r</div>
+                    <div>Cycle visible segments</div><div class="menu-item-list-detail">s</div>
+                    <div>Play celebration</div><div class="menu-item-list-detail">c</div>
+                    <div>Hide menu</div><div class="menu-item-list-detail">m</div>
                 </div>
 
-                <div class="menu-subtitle">Countdowns</div>
+                <div class="menu-title">Countdowns</div>
                 <!-- Showing existing countdowns that can be deleted -->
                 <div class="menu-item-list" data-part="countdownList"></div>
                 <!-- Adding an additional countdown -->
                 <div class="menu-add-countdown-container">
-                    <div class="menu-item-list">
-                        <div class="menu-item-list-title">
-                            <label>Date<br/>
-                                <input class="menu-date-to-add" type="datetime-local" value="2021-12-17T00:00" data-part="targetDate">
-                            </label>
-                            <label>Title<br/>
-                                <input class="menu-date-title" placeholder="countdown title" data-part="titleTextbox">
-                            </label>
-                        </div>
+                    <label>Date<br/>
+                        <input class="menu-date-target" type="datetime-local" data-part="targetDate">
+                    </label>
+                    <label>Title<br/>
+                        <input class="menu-date-title" placeholder="countdown title" data-part="titleTextbox">
+                    </label>
 
-                        <button class="menu-item-list-detail menu-button" data-part="addButton">Add</button>
-                    </div>
+                    <button class="menu-button" data-part="addButton">add</button>
                 </div>
-                <div class="menu-subtitle">Attribution</div>
+                <div class="menu-title">Attribution</div>
                 <div>Celebration animation sourced from <a href="https://github.com/loonywizard/js-confetti">loonywizard/js-confetti</a></div>
             </div>
         </div>
