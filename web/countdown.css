@@ -78,9 +78,10 @@ a:visited {
 .menu-content {
     box-sizing: border-box;
     min-width: 240px;
-    max-height: 100vh;
+    max-width: 99vw;
+    max-height: 80vh;
     padding: 18px 24px;
-    overflow-y: auto;
+    overflow-y: scroll;
 
     border: 1px solid var(--shortcut-background);
     border-radius: 4px;
