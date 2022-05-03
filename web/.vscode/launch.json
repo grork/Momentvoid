@@ -11,7 +11,7 @@
             "cleanUp": "onlyTab",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/output",
-            "preLaunchTask": "Serve files with automatic browser loading"
+            "preLaunchTask": "Serve Static"
         },
         {
             "type": "pwa-chrome",
@@ -20,7 +20,7 @@
             "cleanUp": "onlyTab",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/output",
-            "preLaunchTask": "Serve files with automatic browser loading"
+            "preLaunchTask": "Serve Static"
         }
     ]
 }

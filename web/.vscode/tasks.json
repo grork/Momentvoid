@@ -24,6 +24,13 @@
         },
         {
             "type": "npm",
+            "script": "clean",
+            "label": "Clean outputs",
+            "detail": "Removed all files in the ./outputs folder",
+            "problemMatcher": []
+        },
+        {
+            "type": "npm",
             "label": "Watch for Typescript changes",
             "script": "watch-compile",
             "problemMatcher": [
@@ -36,9 +43,6 @@
                 "panel": "dedicated",
                 "showReuseMessage": false,
                 "group": "watching"
-            },
-            "runOptions": {
-                "runOn": "folderOpen"
             }
         },
         {
@@ -52,14 +56,12 @@
                 "panel": "dedicated",
                 "showReuseMessage": false,
                 "group": "watching"
-            },
-            "runOptions": {
-                "runOn": "folderOpen"
             }
         },
         {
             "type": "npm",
-            "label": "Serve files with automatic browser loading",
+            "label": "Serve Static",
+            "detail": "Serve files with automatic browser loading",
             "script": "serve",
             "isBackground": true,
             "presentation": {
@@ -70,16 +72,19 @@
                 "group": "watching"
             },
             "problemMatcher": [],
-            "runOptions": {
-                "runOn": "folderOpen"
-            },
         },
         {
-            "type": "npm",
-            "script": "clean",
-            "label": "Clean outputs",
-            "detail": "Removed all files in the ./outputs folder",
-            "problemMatcher": []
+            "label": "Serve",
+            "dependsOn": [
+                "Watch for dependency changes",
+                "Watch for Typescript changes",
+                "Serve Static"
+            ],
+            "dependsOrder": "parallel",
+            "problemMatcher": [],
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
         }
     ]
 }
