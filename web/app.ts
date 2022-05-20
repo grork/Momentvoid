@@ -454,6 +454,8 @@ ${countdownText}`;
         // Wait to start the countdown controls, so that any state etc is
         // properly constructed.
         countdownControls.forEach((cd) => cd.start());
-        clock.start();
+        if (params.get("startpaused") !== "true") {
+            clock.start();
+        }
     });
 }

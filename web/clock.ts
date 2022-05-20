@@ -10,7 +10,7 @@ namespace Codevoid.Momentvoid {
         private accelerationFactor: number = 0;
         private eventSource = new EventManager<ITickData>();
         private tickInterval: number = DEFAULT_TICK_INTERVAL;
-        private intervalToken: number = 0;
+        private intervalToken: number = -1;
         private lastTick: ITickData;
 
         constructor() {
