@@ -45,7 +45,7 @@ namespace Codevoid.Momentvoid {
         thirtyDays.setUTCMilliseconds(0);
         thirtyDays.setUTCDate(thirtyDays.getUTCDate() + 30);
 
-        const result = `${thirtyDays.getUTCFullYear()}-${('0' + (thirtyDays.getUTCMonth() + 1)).slice(-2)}-${thirtyDays.getUTCDate()}T00:00`;
+        const result = `${thirtyDays.getUTCFullYear()}-${('0' + (thirtyDays.getUTCMonth() + 1)).slice(-2)}-${('0' + thirtyDays.getUTCDate()).slice(-2)}T00:00`;
         return result;
     }
 
