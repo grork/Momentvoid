@@ -1,14 +1,6 @@
 namespace Codevoid.Momentvoid {
     export type NullableString = string | null;
     
-    export interface IHtmlParts {
-        [partName: string]: Element;
-    }
-
-    export interface IImmutableHtmlParts extends IHtmlParts {
-        readonly [partName: string]: Element
-    }
-
     export function collapseIfLessThan1(value: number, element: Element): void {
         const parent = element.parentElement!;
 
@@ -111,60 +103,33 @@ namespace Codevoid.Momentvoid {
         source.splice(itemIndex, 1);
     }
 
-    export function cloneIntoWithParts(template: HTMLTemplateElement, target: Element, partNames: string[]): IImmutableHtmlParts {
-        let parts: IHtmlParts = {};
-        let content = template.content;
+    export function cloneIntoWithPartsFromName<T>(templateName: string, target: Element): T {
+        const template = document.querySelector<HTMLTemplateElement>(`[data-template='${templateName}']`)!;
     
-        for (var index = 0; index < content.children.length; index += 1) {
-            // Clone the node, and append it directly to the supplied container
-            const templateChild = content.children[index];
-            const clonedChild = <HTMLElement>templateChild.cloneNode(true);
-            target.appendChild(clonedChild);
+        return cloneIntoWithParts(template, target);
+    }
     
-            // If we were asked to match parts, we'll do so.
-            if (partNames?.length) {
-                locatePartsFromDOM(clonedChild, partNames, parts);
-            }
-        }
+    export function cloneIntoWithParts<T>(template: HTMLTemplateElement, target: Element): T {
+        const content = document.importNode(template.content, true);
+    
+        const parts: T = locatePartsFromDOM(content);
+    
+        target.appendChild(content);
     
         return parts;
     }
 
-    export function locatePartsFromDOM(element: Element, partNames: string[], parts: IHtmlParts): void {
-        // No elements or part names, give up.
-        if (!partNames?.length || !element || !parts) {
-            return;
-        }
-
-        let locatedPartNames: string[] = []; // Track which ones we've located, so
-        // we can remove them after. We only
-        // support finding the first part with
-        // a specific name.
-        partNames.forEach((item) => {
-            const selector = `[data-part='${item}']`;
-            let foundPart = element.querySelector(selector);
-
-            // querySelector only finds *decendents*, so if we didn't find
-            // the item, maybe the element itself is the part.
-            if (!foundPart && element.matches(selector)) {
-                // Note; matches only gives you 'does selector match'
-                // and doesn't return the element.
-                foundPart = element;
-            }
-
-            if (!foundPart) {
-                return;
-            }
-
-            // Since we found a part, we'll want to remove it later, but
-            // since we're enumerating the item, we can't remove it yet
-            locatedPartNames.push(item);
-            parts[item] = foundPart;
-        });
-
-        // Now we can remove the part names we'd found so we don't
-        // search for them again.
-        locatedPartNames.forEach((itemToRemove) => removeFromArray(partNames, itemToRemove));
+    export function locatePartsFromDOM<T>(element: HTMLElement | DocumentFragment): T {
+        const parts = Array.from(element.querySelectorAll("[data-part]")).reduce<any>(
+            (localParts: any, el: Element) => {
+                const partName = el.getAttribute("data-part")!;
+                el.removeAttribute("data-part");
+                localParts[partName] = el;
+                return localParts;
+            },
+            {});
+        
+        return parts;
     }
 
     // Helps manage "Event" like callback pattern. Supports mutiple listeners,

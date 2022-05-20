@@ -50,7 +50,12 @@ namespace Codevoid.Momentvoid {
     }
 
     class Menu {
-        private parts: IImmutableHtmlParts = {};
+        private parts: {
+            countdownList: HTMLElement;
+            targetDate: HTMLInputElement;
+            titleTextbox: HTMLInputElement;
+            addButton: HTMLButtonElement;
+        };
 
         constructor(
             private countdownControls: CountdownControl[],
@@ -59,12 +64,7 @@ namespace Codevoid.Momentvoid {
             private themeManager: ThemeManager,
             private container: HTMLElement) {
 
-            locatePartsFromDOM(this.container, [
-                "countdownList",
-                "targetDate",
-                "titleTextbox",
-                "addButton"
-            ], this.parts);
+            this.parts = locatePartsFromDOM(this.container);
 
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
             window.addEventListener("click", this.handleClick.bind(this));
@@ -217,7 +217,11 @@ namespace Codevoid.Momentvoid {
             const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-list-template'");
 
             currentCountdowns.forEach(countdown => {
-                const parts = cloneIntoWithParts(template, this.parts.countdownList, ["label", "remove"]);
+                const parts: {
+                    label: HTMLElement;
+                    remove: HTMLButtonElement;
+                } = cloneIntoWithParts(template, this.parts.countdownList);
+
                 const title = countdown.title || "";
                 parts.label.textContent = `${title} (${countdown.toLocaleDateString()})`;
 

@@ -27,7 +27,19 @@ namespace Codevoid.Momentvoid {
         private visibleSegments: Segments[] = AllSegments.slice();
         private tickToken: number = -1;
         private _currentMessage: string = "";
-        private parts: IImmutableHtmlParts;
+        private parts: {
+            weeks: HTMLElement;
+            days: HTMLElement;
+            hours: HTMLElement;
+            minutes: HTMLElement;
+            seconds: HTMLElement;
+            container: HTMLElement;
+            title: HTMLElement;
+            targetReached: HTMLElement;
+            play: HTMLButtonElement;
+            remove: HTMLButtonElement;
+        };
+        
         customConfettiEmoji: string[] = [];
 
         public get currentMessage(): string {
@@ -42,19 +54,7 @@ namespace Codevoid.Momentvoid {
             private getConfetti: () => Promise<JSConfetti>) {
             this.loadSegmentConfigurationFromStorage();
 
-            const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-template']");
-            this.parts = cloneIntoWithParts(template, container, [
-                "weeks",
-                "days",
-                "hours",
-                "minutes",
-                "seconds",
-                "container",
-                "title",
-                "targetReached",
-                "play",
-                "remove"
-            ]);
+            this.parts = cloneIntoWithPartsFromName("countdown-template", container);
 
             this.parts.title.textContent = this.countdown.title;
 
