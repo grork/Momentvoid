@@ -6,6 +6,7 @@
     --shortcut-background: rgba(209, 209, 209, 0.5);
     --date-add-text-background-colour: #c1c1c1;
     --hyperlink-colour: blue;
+    --base-height: 80vh;
 }
 
 @media (prefers-color-scheme: light) {
@@ -45,7 +46,9 @@ html {
         "Helvetica Neue", sans-serif;
     background-color: var(--page-background);
     color: var(--text-colour);
-    -webkit-app-region: drag;
+
+    margin: 0;
+    padding: 0;
 }
 
 a,
@@ -55,6 +58,63 @@ a:visited {
 
 .countdown-element-hide {
     display: none !important;
+}
+
+/* Container that fills the window, but vertically centers the (single) child
+   item along the vertical axis */
+.countdown-centering-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    height: 100%;
+    width: 100%;
+
+    /* If we've got enough children, let them scroll */
+    overflow-x: auto;
+}
+
+/* Region that contains countdowns, and stacks them along the row. */
+.countdown-wrapper {
+    display: flex;
+    flex-direction: row;
+    
+    /* Center the content *horizontally*. Note that if you use "align-items:
+       center" here then you'll have a hard time scrolling because in that case
+       the items are *always* centered on their axis, not *relative* to the
+       container */
+    margin-left: auto;
+    margin-right: auto;
+    gap: 24px;
+}
+
+/* Manage the width of the whole column so that it isn't too small, but can also
+   grow for e.g. 3-digit weeks */
+.countdown-wrapper > .countdown-container {
+    box-sizing: border-box;
+    min-width: calc(85vh / 5.5);
+}
+
+/* Size each number+description to a fixed height to help with centering */
+.countdown-element-container:not(.countdown-title-container) {
+    box-sizing: border-box;
+    height: calc((80vh / 7) + (80vh / 30));
+    cursor: default; /* Don't show an I-beam) */
+}
+
+.countdown-number {
+    font-weight: 800;
+    font-size: calc(var(--base-height) / 7);
+
+    /* Pull things in so they're a little tighter */
+    margin-bottom: -16px;
+    margin-top: -4px;
+}
+
+.countdown-title,
+.countdown-description {
+    font-weight: 100;
+    font-size: calc(var(--base-height) / 30);
 }
 
 /* Menu Styles */
