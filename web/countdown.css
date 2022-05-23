@@ -200,9 +200,15 @@ a:visited {
 /* Container of items that are in a 2-col, N-row grid. e.g. list of shortcuts */
 .menu-item-list {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(10ch, 50ch) auto;
     row-gap: 6px;
     margin-bottom: 12px;
+}
+
+.menu-item-list-label {
+    overflow-x: hidden;
+    white-space: nowrap;
+    align-self: center;
 }
 
 .menu-item-list-detail {
