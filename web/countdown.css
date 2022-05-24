@@ -143,6 +143,10 @@ a:visited {
 
     /* Make sure we've got a width at all times */
     width: 100%;
+
+    border-radius: 4px;
+
+    transition: box-shadow 0.3s ease;
 }
 
 /* Focus rect when focus is within the container */
@@ -150,7 +154,6 @@ a:visited {
 .countdown-title-container:hover {
     outline: none;
     box-shadow: 0 0 0 2px var(--alt-text-colour);
-    border-radius: 4px;
 }
 
 .countdown-title {
