@@ -72,6 +72,16 @@ namespace Codevoid.Momentvoid {
                 this.countdown.title = newTitle!;
             });
 
+            this.parts.title.addEventListener("blur", () => {
+                // Only scroll to beginning if the focus is still inside the
+                // document it self
+                if (!document.hasFocus()) {
+                    return;
+                }
+
+                this.parts.title.parentElement!.scrollLeft = 0;
+            });
+
             this.parts.remove.addEventListener("click", () => {
                 this.countdownManager.removeCountdown(this.countdown);
             });
