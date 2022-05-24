@@ -119,6 +119,16 @@ a:visited {
     font-size: calc(var(--base-height) / 30);
 }
 
+.countdown-reached-container {
+    font-weight: 600;
+    font-size: calc(var(--base-height) / 40);
+    text-align: center;
+}
+
+.countdown-reached-emoji {
+    font-size: calc(var(--base-height) / 10); /* Make party zomg-huge */
+}
+
 .countdown-title-container {
     overflow-x: auto; /* Scroll when contents are too big */
     position: relative; /* Don't drive the width */
@@ -130,6 +140,9 @@ a:visited {
     padding-left: 8px;
     margin-right: -8px;
     transform: translateX(-8px);
+
+    /* Make sure we've got a width at all times */
+    width: 100%;
 }
 
 /* Focus rect when focus is within the container */
@@ -153,6 +166,18 @@ a:visited {
        on. If not, single-char titles are only editable by clicking the single
        char, not the whole area */
     min-width: 9ch;
+}
+
+/* When it's reached, turn the layout of the column into a grid so we can put
+   the date at the top, and the celebration else where */
+.countdown-container.countdown-reached {
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+/* Celebration should be in the center of it's container */
+.countdown-reached-container {
+    align-self: center;
 }
 
 /* Menu Styles */
