@@ -55,6 +55,7 @@ namespace Codevoid.Momentvoid {
             targetDate: HTMLInputElement;
             titleTextbox: HTMLInputElement;
             addButton: HTMLButtonElement;
+            contentContainer: HTMLElement;
         };
 
         constructor(
@@ -261,6 +262,9 @@ ${countdownText}`;
         }
 
         private dismissMenu(): void {
+            // Since this area *can* scroll, restore the scroll to the top when
+            // it's dismissed.
+            this.parts.contentContainer.scrollTop = 0;
             this.container.style.display = "none";
             (<HTMLInputElement>this.parts.titleTextbox).value = "";
         }
