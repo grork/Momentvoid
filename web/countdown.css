@@ -181,6 +181,30 @@ a:visited {
 /* Celebration should be in the center of it's container */
 .countdown-reached-container {
     align-self: center;
+    cursor: default;
+}
+
+.countdown-reached button {
+    color: var(--text-colour);
+    font-size: calc(var(--base-height) / 60);
+    background-color: transparent;
+    border-style: solid;
+    border-color: var(--alt-text-colour);
+    border-radius: 4px;
+    border-width: 1px;
+    padding: 8px 12px;
+    margin: 0px 4px;
+
+    transition: background-color 0.3s ease;
+}
+
+.countdown-reached button:hover {
+    background-color: var(--alt-text-colour);
+}
+
+.countdown-reached button:active {
+    background-color: var(--text-colour) !important;
+    color: var(--alt-text-colour);
 }
 
 /* Menu Styles */
