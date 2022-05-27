@@ -104,14 +104,14 @@ a:visited {
 /* Size each number+description to a fixed height to help with centering */
 .countdown-element-container:not(.countdown-title-container) {
     box-sizing: border-box;
-    height: calc((80vh / 7) + (80vh / 30));
+    
     cursor: default; /* Don't show an I-beam */
 }
 
 .countdown-number {
     /* Pull things in so they're a little tighter */
-    margin-bottom: -16px;
-    margin-top: -4px;
+    margin-bottom: calc((var(--base-height) / 35) * -1);
+    margin-top: calc((var(--base-height) / 120) * -1);
 }
 
 .countdown-title-container,
