@@ -24,14 +24,14 @@ namespace Codevoid.Momentvoid {
         }
     }
 
-    function calculateDefaultDate(): Date[] {
-        const dates: Date[] = [];
+    function calculateDefaultDate(): [Date, NullableString][] {
+        const dates: [Date, NullableString][] = [];
 
         // Work out the current year, and then pick a year after that
         const nextYear = ((new Date()).getFullYear()) + 1;
 
         if (!dates.length) {
-            dates.push(new Date(nextYear, 0, 1, 0, 0, 0, 0));
+            dates.push([new Date(nextYear, 0, 1, 0, 0, 0, 0), "Next Year"]);
         }
 
         return dates;
@@ -400,7 +400,7 @@ ${countdownText}`;
         if (targetParam) {
             const targetAsDate = new Date(targetParam);
             if (defaultTargetDates.toString() !== "Invalid Date") {
-                defaultTargetDates = [targetAsDate];
+                defaultTargetDates = [[targetAsDate, null]];
             }
         }
 

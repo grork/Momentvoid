@@ -89,14 +89,14 @@ namespace Codevoid.Momentvoid {
         private eventSource = new EventManager<Countdown[]>();
         private sort: SortMode = SortMode.NoSorting;
 
-        constructor(defaultTargetDate: Date[]) {
+        constructor(defaultTargetDate: [Date, NullableString][]) {
             this.loadSortFromStorage();
             this.loadCountdownsFromStorage();
 
             if (!this.countdowns.length) {
                 this.countdowns = defaultTargetDate.map((date) => {
                     // If we didn't find any persisted countdowns, create a default one
-                    const defaultCountdown = new Countdown(date, null);
+                    const defaultCountdown = new Countdown(...date);
 
                     return defaultCountdown;
                 })
