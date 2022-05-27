@@ -83,8 +83,23 @@
             <div class="countdown-wrapper" id="countdown-container">
             </div>
         </div>
-        <div class="menu-container" style="display: none">
+        <dialog data-id="menu-container">
             <div class="menu-content" data-part="contentContainer">
+                <div class="menu-title">Countdowns</div>
+                <!-- Showing existing countdowns that can be deleted -->
+                <div class="menu-item-list" data-part="countdownList"></div>
+                <!-- Adding an additional countdown -->
+                <div class="menu-add-countdown-container">
+                    <label>Date<br/>
+                        <input class="menu-date-target" type="datetime-local" data-part="targetDate">
+                    </label>
+                    <label>Title<br/>
+                        <input class="menu-date-title" placeholder="countdown title" data-part="titleTextbox">
+                    </label>
+
+                    <button class="menu-button" data-part="addButton">add</button>
+                </div>
+
                 <div class="menu-title">Shortcuts</div>
                 <div class="menu-item-list">
                     <div>Pause / Play</div><div class="menu-item-list-detail">p</div>
@@ -102,23 +117,9 @@
                     <div>Hide menu</div><div class="menu-item-list-detail">m</div>
                 </div>
 
-                <div class="menu-title">Countdowns</div>
-                <!-- Showing existing countdowns that can be deleted -->
-                <div class="menu-item-list" data-part="countdownList"></div>
-                <!-- Adding an additional countdown -->
-                <div class="menu-add-countdown-container">
-                    <label>Date<br/>
-                        <input class="menu-date-target" type="datetime-local" data-part="targetDate">
-                    </label>
-                    <label>Title<br/>
-                        <input class="menu-date-title" placeholder="countdown title" data-part="titleTextbox">
-                    </label>
-
-                    <button class="menu-button" data-part="addButton">add</button>
-                </div>
                 <div class="menu-title">Attribution</div>
                 <div>Celebration animation sourced from <a href="https://github.com/loonywizard/js-confetti">loonywizard/js-confetti</a></div>
             </div>
-        </div>
+        </dialog>
     </body>
 </html>

@@ -63,14 +63,15 @@ namespace Codevoid.Momentvoid {
             private countdownManager: CountdownManager,
             private clock: Clock,
             private themeManager: ThemeManager,
-            private container: HTMLElement) {
+            private container: HTMLDialogElement) {
 
             this.parts = locatePartsFromDOM(this.container);
 
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
-            window.addEventListener("click", this.handleClick.bind(this));
+            this.container.addEventListener("click", this.handleClick.bind(this));
             this.parts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
             document.body.addEventListener("copy", this.putCountdownTimesOnClipboard.bind(this));
+            this.container.addEventListener("close", this.handleDialogClose.bind(this));
 
             countdownManager.registerChangeHandler(this.renderCountdownManagementList.bind(this));
         }
@@ -129,14 +130,19 @@ namespace Codevoid.Momentvoid {
         }
 
         private toggleMenuVisibility(): void {
-            if (this.container.style.display === "none") {
+            //if (this.container.style.display === "none") {
+            if(!this.container.open) {
                 this.renderCountdownManagementList(this.countdownManager.getCountdownsSnapshot());
                 
                 // Update the default date in the date field to be 30 days in the
                 // future
-                (<HTMLInputElement>this.parts.targetDate).value = thirtyDaysFromNow();
+                this.parts.targetDate.value = thirtyDaysFromNow();
 
-                this.container.style.display = "";
+                this.container.showModal();
+
+                // Since this area *can* scroll, restore the scroll to the top when
+                // it's dismissed.
+                this.parts.contentContainer.scrollTop = 0;
             } else {
                 this.dismissMenu();
             }
@@ -180,10 +186,6 @@ namespace Codevoid.Momentvoid {
                 
                 case "c":
                     this.playCelebrationForFirstCountdown();
-                
-                case "escape":
-                    this.dismissMenu();
-                    keyEvent.preventDefault();
                     break;
             }
         }
@@ -206,6 +208,10 @@ namespace Codevoid.Momentvoid {
             this.countdownManager.addCountdown(targetDate, title);
 
             this.dismissMenu();
+        }
+
+        private handleDialogClose(): void {
+            this.parts.titleTextbox.value = "";
         }
 
         private renderCountdownManagementList(currentCountdowns: Countdown[]): void {
@@ -262,11 +268,7 @@ ${countdownText}`;
         }
 
         private dismissMenu(): void {
-            // Since this area *can* scroll, restore the scroll to the top when
-            // it's dismissed.
-            this.parts.contentContainer.scrollTop = 0;
-            this.container.style.display = "none";
-            (<HTMLInputElement>this.parts.titleTextbox).value = "";
+            this.container.close();
         }
     }
 
@@ -449,7 +451,7 @@ ${countdownText}`;
             countdownManager,
             clock,
             themeHelper,
-            document.querySelector(".menu-container")!
+            document.querySelector("[data-id='menu-container']")!
         );
 
         State = {

@@ -211,18 +211,15 @@ a:visited {
 /* Menu Styles */
 
 /* Wrapper container to postition content centrally */
-.menu-container {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    height: auto;
-    width: auto;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
-    place-items: center;
+dialog::backdrop,
+dialog {
+    border-width: 0px;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+dialog[data-id="menu-container"] {
+    padding: 100px 50px;
 }
 
 /* Menu itself, that hosts the content itself, and contains the background */
