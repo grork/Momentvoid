@@ -50,7 +50,7 @@ namespace Codevoid.Momentvoid {
     }
 
     class Menu {
-        private parts: {
+        private menuParts: {
             countdownList: HTMLElement;
             targetDate: HTMLInputElement;
             titleTextbox: HTMLInputElement;
@@ -58,20 +58,30 @@ namespace Codevoid.Momentvoid {
             contentContainer: HTMLElement;
         };
 
+        private toolbarParts: {
+            add: HTMLButtonElement,
+            info: HTMLButtonElement
+        };
+
         constructor(
             private countdownControls: CountdownControl[],
             private countdownManager: CountdownManager,
             private clock: Clock,
             private themeManager: ThemeManager,
-            private container: HTMLDialogElement) {
+            private container: HTMLDialogElement,
+            private toolbar: HTMLElement) {
 
-            this.parts = locatePartsFromDOM(this.container);
+            this.menuParts = locatePartsFromDOM(this.container);
+            this.toolbarParts = locatePartsFromDOM(this.toolbar);
 
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
             this.container.addEventListener("click", this.handleClick.bind(this));
-            this.parts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
+            this.menuParts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
             document.body.addEventListener("copy", this.putCountdownTimesOnClipboard.bind(this));
             this.container.addEventListener("close", this.handleDialogClose.bind(this));
+
+            this.toolbarParts.info.addEventListener("click", this.toggleMenuVisibility.bind(this));
+            this.toolbarParts.add.addEventListener("click", this.toggleMenuVisibility.bind(this));
 
             countdownManager.registerChangeHandler(this.renderCountdownManagementList.bind(this));
         }
@@ -136,13 +146,13 @@ namespace Codevoid.Momentvoid {
                 
                 // Update the default date in the date field to be 30 days in the
                 // future
-                this.parts.targetDate.value = thirtyDaysFromNow();
+                this.menuParts.targetDate.value = thirtyDaysFromNow();
 
                 this.container.showModal();
 
                 // Since this area *can* scroll, restore the scroll to the top when
                 // it's dismissed.
-                this.parts.contentContainer.scrollTop = 0;
+                this.menuParts.contentContainer.scrollTop = 0;
             } else {
                 this.dismissMenu();
             }
@@ -202,8 +212,8 @@ namespace Codevoid.Momentvoid {
         private handleAddButtonClick(): void {
             // Note that the value from the date picker is actually a *string*
             // so does need to be parsed.
-            const targetDate = new Date((<HTMLInputElement>this.parts.targetDate).value);
-            const title = (<HTMLInputElement>this.parts.titleTextbox).value;
+            const targetDate = new Date((<HTMLInputElement>this.menuParts.targetDate).value);
+            const title = (<HTMLInputElement>this.menuParts.titleTextbox).value;
 
             this.countdownManager.addCountdown(targetDate, title);
 
@@ -211,11 +221,11 @@ namespace Codevoid.Momentvoid {
         }
 
         private handleDialogClose(): void {
-            this.parts.titleTextbox.value = "";
+            this.menuParts.titleTextbox.value = "";
         }
 
         private renderCountdownManagementList(currentCountdowns: Countdown[]): void {
-            this.parts.countdownList.innerHTML = "";
+            this.menuParts.countdownList.innerHTML = "";
 
             if (currentCountdowns.length === 1) {
                 return;
@@ -227,7 +237,7 @@ namespace Codevoid.Momentvoid {
                 const parts: {
                     label: HTMLElement;
                     remove: HTMLButtonElement;
-                } = cloneIntoWithParts(template, this.parts.countdownList);
+                } = cloneIntoWithParts(template, this.menuParts.countdownList);
 
                 const title = countdown.title || "";
                 parts.label.textContent = `${title} (${countdown.toLocaleDateString()})`;
@@ -451,7 +461,8 @@ ${countdownText}`;
             countdownManager,
             clock,
             themeHelper,
-            document.querySelector("[data-id='menu-container']")!
+            document.querySelector("[data-id='menu-container']")!,
+            document.querySelector("[data-id='toolbar-container']")!
         );
 
         State = {

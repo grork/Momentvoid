@@ -4,7 +4,7 @@
   "description": "Simple countdown tracker in an SPA",
   "main": "countdown.js",
   "scripts": {
-    "copy-dependencies": "copyfiles --exclude \"node_modules/**\" --exclude \"output/**\" \"**/*.html\" output && copyfiles --exclude \"node_modules/**\" --exclude \"output/**\" \"**/*.css\" output && copyfiles -f node_modules/js-confetti/dist/js-confetti.browser.js output",
+    "copy-dependencies": "copyfiles --exclude \"node_modules/**\" --exclude \"output/**\" \"**/*.html\" output && copyfiles --exclude \"node_modules/**\" --exclude \"output/**\" \"**/*.css\" output && copyfiles --exclude \"node_modules/**\" --exclude \"output/**\" \"**/*.woff2\" output && copyfiles -f node_modules/js-confetti/dist/js-confetti.browser.js output",
     "clean": "rimraf output",
     "compile": "tsc",
     "build": "tsc",
@@ -26,7 +26,7 @@
         "output",
         "*.ts"
       ],
-      "extensions": "js,css,html"
+      "extensions": "js,css,html,woff2"
     },
     "compile": {
       "patterns": [
