@@ -59,7 +59,6 @@ namespace Codevoid.Momentvoid {
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
             this.container.addEventListener("click", this.handleBackdropClick.bind(this));
             this.menuParts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
-            document.body.addEventListener("copy", this.putCountdownTimesOnClipboard.bind(this));
             this.container.addEventListener("close", this.handleDialogClose.bind(this));
 
             this.toolbarParts.info.addEventListener("click", this.toggleMenuVisibility.bind(this));
@@ -234,31 +233,6 @@ namespace Codevoid.Momentvoid {
                     this.playCelebrationForFirstCountdown();
                     break;
             }
-        }
-
-        private putCountdownTimesOnClipboard(): void {
-            let message: string = "";
-
-            if (this.countdownControls.length === 1) {
-                message = this.countdownControls[0].currentMessage;
-            } else {
-                this.countdownControls.forEach((c, index): void => {
-                    const countdownTitle = c.countdown.title || `Countdown ${index + 1}`;
-                    const countdownText = `${countdownTitle}: ${c.currentMessage}`;
-
-                    if (!message) {
-                        message = countdownText;
-                        return;
-                    }
-
-                    // Yeah, this is weird. But this allows to get the correct
-                    // platforms specific newline without detecting the user agent.
-                    message = `${message}
-${countdownText}`;
-                })
-            }
-
-            navigator.clipboard.writeText(message);
         }
 
         private hideNextSegmentOnCountdowns(): void {

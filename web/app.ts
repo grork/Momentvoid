@@ -12,6 +12,31 @@ namespace Codevoid.Momentvoid {
         return dates;
     }
 
+    function writeCountdownTimesToClipboard(countdowns: CountdownControl[]): void {
+        let message: string = "";
+
+        if (countdowns.length === 1) {
+            message = countdowns[0].currentMessage;
+        } else {
+            countdowns.forEach((c, index): void => {
+                const countdownTitle = c.countdown.title || `Countdown ${index + 1}`;
+                const countdownText = `${countdownTitle}: ${c.currentMessage}`;
+
+                if (!message) {
+                    message = countdownText;
+                    return;
+                }
+
+                // Yeah, this is weird. But this allows to get the correct
+                // platforms specific newline without detecting the user agent.
+                message = `${message}
+${countdownText}`;
+            })
+        }
+
+        navigator.clipboard.writeText(message);
+    }
+
     let State: {
         Clock: Clock;
         CountdownControls: CountdownControl[];
@@ -113,6 +138,8 @@ namespace Codevoid.Momentvoid {
             document.querySelector("[data-id='menu-container']")!,
             document.querySelector("[data-id='toolbar-container']")!
         );
+
+        document.body.addEventListener("copy", () => writeCountdownTimesToClipboard(countdownControls));
 
         State = {
             Clock: clock,
