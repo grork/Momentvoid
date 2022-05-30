@@ -37,6 +37,26 @@ ${countdownText}`;
         navigator.clipboard.writeText(message);
     }
 
+    function toggleFullscreen(): void {
+        if (document.body.webkitRequestFullscreen) {
+            // Assuming webkit
+            if (!document.webkitFullscreenElement) {
+                document.body.webkitRequestFullscreen();
+            } else {
+                document.webkitExitFullscreen();
+            }
+
+            return;
+        }
+
+        // Assume not-webkit
+        if (!document.fullscreenElement) {
+            document.body.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
     let State: {
         Clock: Clock;
         CountdownControls: CountdownControl[];
@@ -138,6 +158,31 @@ ${countdownText}`;
             document.querySelector("[data-id='menu-container']")!,
             document.querySelector("[data-id='toolbar-container']")!
         );
+
+        const shortcuts = new ShortcutMananger();
+        const toggleMenuVisibility = menu.toggleMenuVisibility.bind(menu);
+
+        shortcuts.registerNoModifierHandlers({
+            "p": () => clock.togglePlayPause(),
+            "t": () => themeManager.toggleTheme(),
+            "n": () => clock.resetToCurrentTime(),
+            "f": () => clock.goFaster(),
+            "o": () => countdownManager.cycleSortOrder(),
+            "0": () => clock.resumeNormalSpeed(),
+            "s": () => countdownControls.forEach((c) => c.hideNextSegment()),
+            "c": () => countdownControls[0]?.playCelebrationAnimation(),
+            "m": toggleMenuVisibility,
+            "/": toggleMenuVisibility
+        });
+
+        shortcuts.registerShiftModifierHandlers({
+            "r": () => {
+                window.localStorage.clear();
+                window.location.reload();
+            },
+            "f": toggleFullscreen,
+            "?": toggleMenuVisibility
+        });
 
         document.body.addEventListener("copy", () => writeCountdownTimesToClipboard(countdownControls));
 

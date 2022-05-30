@@ -1,23 +1,5 @@
 namespace Codevoid.Momentvoid {
-    function toggleFullscreen(): void {
-        if (document.body.webkitRequestFullscreen) {
-            // Assuming webkit
-            if (!document.webkitFullscreenElement) {
-                document.body.webkitRequestFullscreen();
-            } else {
-                document.webkitExitFullscreen();
-            }
 
-            return;
-        }
-
-        // Assume not-webkit
-        if (!document.fullscreenElement) {
-            document.body.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    }
 
     function thirtyDaysFromNow(): string {
         let thirtyDays = new Date();
@@ -56,7 +38,6 @@ namespace Codevoid.Momentvoid {
             this.menuParts = locatePartsFromDOM(this.container);
             this.toolbarParts = locatePartsFromDOM(this.toolbar);
 
-            window.addEventListener("keydown", this.handleKeyDown.bind(this));
             this.container.addEventListener("click", this.handleBackdropClick.bind(this));
             this.menuParts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
             this.container.addEventListener("close", this.handleDialogClose.bind(this));
@@ -77,7 +58,7 @@ namespace Codevoid.Momentvoid {
             this.dismissMenu();
         }
 
-        private toggleMenuVisibility(): void {
+        public toggleMenuVisibility(): void {
             if (this.container.open) {
                 
                 this.dismissMenu();
@@ -108,35 +89,6 @@ namespace Codevoid.Momentvoid {
             this.menuParts.titleTextbox.value = "";
         }
         //#endregion Dialog Infra
-
-        //#region Shortcut Infra
-        private handleKeyDown(keyEvent: KeyboardEvent): void {
-            const source = (<HTMLElement>keyEvent.target);
-
-            // When typing into a text box, don't process shortcuts.
-            if ((source.tagName === "INPUT") || (source.isContentEditable)) {
-                return;
-            }
-            
-            // Don't handle the event again if they key is being held down
-            if (keyEvent.repeat) {
-                return;
-            }
-
-            if (keyEvent.shiftKey) {
-                this.handleShiftKeyDown(keyEvent);
-                return;
-            }
-
-            if (keyEvent.ctrlKey || keyEvent.metaKey) {
-                // Nothing with these keys yet, but want to avoid handling
-                // combinations that would trigger anyway
-                return;
-            }
-
-            this.handleNoModifierKeyDown(keyEvent);
-        }
-        //#endregion Shortcut Infra
 
         //#region Countdown Management
         private handleAddButtonClick(): void {
@@ -174,79 +126,5 @@ namespace Codevoid.Momentvoid {
             });
         }
         //#endregion Countdown Management
-
-        //#region Shortcut Handling
-        private handleShiftKeyDown(keyEvent: KeyboardEvent): void {
-            switch (keyEvent.key.toLowerCase()) {
-                case "r":
-                    window.localStorage.clear();
-                    window.location.reload();
-                    break;
-                
-                case "f":
-                    toggleFullscreen();
-                    break;
-                
-                case "?":
-                    this.toggleMenuVisibility();
-                    break;
-            }
-        }
-
-        private handleNoModifierKeyDown(keyEvent: KeyboardEvent): void {
-            const keyToMatch = keyEvent.key.toLowerCase();
-            switch (keyToMatch) {
-                case "m":
-                case "/":
-                    this.toggleMenuVisibility();
-                    break;
-                
-                case "p":
-                    this.clock.togglePlayPause();
-                    break;
-                
-                case "t":
-                    this.themeManager.toggleTheme();
-                    break;
-                
-                case "n":
-                    this.clock.resetToCurrentTime();
-                    break;
-                
-                case "f":
-                    this.clock.goFaster();
-                    break;
-                
-                case "s":
-                    this.hideNextSegmentOnCountdowns();
-                    break;
-                
-                case "o":
-                    this.countdownManager.cycleSortOrder();
-                    break;
-                
-                case "0":
-                    this.clock.resumeNormalSpeed();
-                    break;
-                
-                case "c":
-                    this.playCelebrationForFirstCountdown();
-                    break;
-            }
-        }
-
-        private hideNextSegmentOnCountdowns(): void {
-            this.countdownControls.forEach((c) => c.hideNextSegment());
-        }
-
-        private playCelebrationForFirstCountdown() {
-            const firstCountdownControl = this.countdownControls[0];
-            if (!firstCountdownControl) {
-                return;
-            }
-
-            firstCountdownControl.playCelebrationAnimation();
-        }
-        //#endregion Shortcut Handling
     }
 }
