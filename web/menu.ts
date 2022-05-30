@@ -28,10 +28,7 @@ namespace Codevoid.Momentvoid {
         };
 
         constructor(
-            private countdownControls: CountdownControl[],
             private countdownManager: CountdownManager,
-            private clock: Clock,
-            private themeManager: ThemeManager,
             private container: HTMLDialogElement,
             private toolbar: HTMLElement) {
 

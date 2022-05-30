@@ -151,10 +151,7 @@ ${countdownText}`;
         themeManager.applyThemeBasedOnConfig();
 
         const menu = new Menu(
-            countdownControls,
             countdownManager,
-            clock,
-            themeManager,
             document.querySelector("[data-id='menu-container']")!,
             document.querySelector("[data-id='toolbar-container']")!
         );
