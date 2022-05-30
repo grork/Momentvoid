@@ -122,7 +122,6 @@ namespace Codevoid.Momentvoid {
         }
 
         private toggleMenuVisibility(): void {
-            //if (this.container.style.display === "none") {
             if(!this.container.open) {
                 this.renderCountdownManagementList(this.countdownManager.getCountdownsSnapshot());
                 
