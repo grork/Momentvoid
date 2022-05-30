@@ -57,7 +57,7 @@ namespace Codevoid.Momentvoid {
             this.toolbarParts = locatePartsFromDOM(this.toolbar);
 
             window.addEventListener("keydown", this.handleKeyDown.bind(this));
-            this.container.addEventListener("click", this.handleClick.bind(this));
+            this.container.addEventListener("click", this.handleBackdropClick.bind(this));
             this.menuParts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
             document.body.addEventListener("copy", this.putCountdownTimesOnClipboard.bind(this));
             this.container.addEventListener("close", this.handleDialogClose.bind(this));
@@ -68,7 +68,8 @@ namespace Codevoid.Momentvoid {
             countdownManager.registerChangeHandler(this.renderCountdownManagementList.bind(this));
         }
 
-        private handleClick(event: MouseEvent): void {
+        //#region Dialog Infra   
+        private handleBackdropClick(event: MouseEvent): void {
             // We only want clicks directly on the container element
             if (event.target !== this.container) {
                 return;
@@ -77,6 +78,39 @@ namespace Codevoid.Momentvoid {
             this.dismissMenu();
         }
 
+        private toggleMenuVisibility(): void {
+            if (this.container.open) {
+                
+                this.dismissMenu();
+                return;
+            }
+
+            this.menuOpening();
+            this.container.showModal();
+
+            // Since this area *can* scroll, restore the scroll to the top when
+            // it's dismissed.
+            this.menuParts.contentContainer.scrollTop = 0;
+        }
+
+        private menuOpening(): void {
+            this.renderCountdownManagementList(this.countdownManager.getCountdownsSnapshot());
+                
+            // Update the default date in the date field to be 30 days in the
+            // future
+            this.menuParts.targetDate.value = thirtyDaysFromNow();
+        }
+
+        private dismissMenu(): void {
+            this.container.close();
+        }
+
+        private handleDialogClose(): void {
+            this.menuParts.titleTextbox.value = "";
+        }
+        //#endregion Dialog Infra
+
+        //#region Shortcut Infra
         private handleKeyDown(keyEvent: KeyboardEvent): void {
             const source = (<HTMLElement>keyEvent.target);
 
@@ -103,7 +137,46 @@ namespace Codevoid.Momentvoid {
 
             this.handleNoModifierKeyDown(keyEvent);
         }
+        //#endregion Shortcut Infra
 
+        //#region Countdown Management
+        private handleAddButtonClick(): void {
+            // Note that the value from the date picker is actually a *string*
+            // so does need to be parsed.
+            const targetDate = new Date((<HTMLInputElement>this.menuParts.targetDate).value);
+            const title = (<HTMLInputElement>this.menuParts.titleTextbox).value;
+
+            this.countdownManager.addCountdown(targetDate, title);
+
+            this.dismissMenu();
+        }
+
+        private renderCountdownManagementList(currentCountdowns: Countdown[]): void {
+            this.menuParts.countdownList.innerHTML = "";
+
+            if (currentCountdowns.length === 1) {
+                return;
+            }
+
+            const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-list-template'");
+
+            currentCountdowns.forEach(countdown => {
+                const parts: {
+                    label: HTMLElement;
+                    remove: HTMLButtonElement;
+                } = cloneIntoWithParts(template, this.menuParts.countdownList);
+
+                const title = countdown.title || "";
+                parts.label.textContent = `${title} (${countdown.toLocaleDateString()})`;
+
+                parts.remove.addEventListener("click", () => {
+                    this.countdownManager.removeCountdown(countdown);
+                });
+            });
+        }
+        //#endregion Countdown Management
+
+        //#region Shortcut Handling
         private handleShiftKeyDown(keyEvent: KeyboardEvent): void {
             switch (keyEvent.key.toLowerCase()) {
                 case "r":
@@ -118,24 +191,6 @@ namespace Codevoid.Momentvoid {
                 case "?":
                     this.toggleMenuVisibility();
                     break;
-            }
-        }
-
-        private toggleMenuVisibility(): void {
-            if(!this.container.open) {
-                this.renderCountdownManagementList(this.countdownManager.getCountdownsSnapshot());
-                
-                // Update the default date in the date field to be 30 days in the
-                // future
-                this.menuParts.targetDate.value = thirtyDaysFromNow();
-
-                this.container.showModal();
-
-                // Since this area *can* scroll, restore the scroll to the top when
-                // it's dismissed.
-                this.menuParts.contentContainer.scrollTop = 0;
-            } else {
-                this.dismissMenu();
             }
         }
 
@@ -181,54 +236,6 @@ namespace Codevoid.Momentvoid {
             }
         }
 
-        playCelebrationForFirstCountdown() {
-            const firstCountdownControl = this.countdownControls[0];
-            if (!firstCountdownControl) {
-                return;
-            }
-
-            firstCountdownControl.playCelebrationAnimation();
-        }
-
-        private handleAddButtonClick(): void {
-            // Note that the value from the date picker is actually a *string*
-            // so does need to be parsed.
-            const targetDate = new Date((<HTMLInputElement>this.menuParts.targetDate).value);
-            const title = (<HTMLInputElement>this.menuParts.titleTextbox).value;
-
-            this.countdownManager.addCountdown(targetDate, title);
-
-            this.dismissMenu();
-        }
-
-        private handleDialogClose(): void {
-            this.menuParts.titleTextbox.value = "";
-        }
-
-        private renderCountdownManagementList(currentCountdowns: Countdown[]): void {
-            this.menuParts.countdownList.innerHTML = "";
-
-            if (currentCountdowns.length === 1) {
-                return;
-            }
-
-            const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-list-template'");
-
-            currentCountdowns.forEach(countdown => {
-                const parts: {
-                    label: HTMLElement;
-                    remove: HTMLButtonElement;
-                } = cloneIntoWithParts(template, this.menuParts.countdownList);
-
-                const title = countdown.title || "";
-                parts.label.textContent = `${title} (${countdown.toLocaleDateString()})`;
-
-                parts.remove.addEventListener("click", () => {
-                    this.countdownManager.removeCountdown(countdown);
-                });
-            });
-        }
-
         private putCountdownTimesOnClipboard(): void {
             let message: string = "";
 
@@ -258,8 +265,14 @@ ${countdownText}`;
             this.countdownControls.forEach((c) => c.hideNextSegment());
         }
 
-        private dismissMenu(): void {
-            this.container.close();
+        private playCelebrationForFirstCountdown() {
+            const firstCountdownControl = this.countdownControls[0];
+            if (!firstCountdownControl) {
+                return;
+            }
+
+            firstCountdownControl.playCelebrationAnimation();
         }
+        //#endregion Shortcut Handling
     }
 }
