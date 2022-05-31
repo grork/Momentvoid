@@ -392,7 +392,7 @@ dialog > :first-child {
 }
 
 .toolbar-container:hover > .toolbar-button,
-.toolbar-container.toolbar-force-visible > .toolbar-button {
+.ui-force-visible .toolbar-container > .toolbar-button {
     opacity: 1;
 }
 

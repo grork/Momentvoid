@@ -192,7 +192,7 @@ ${countdownText}`;
                 return;
             }
 
-            toolbar.toggleForceShow();
+            document.body.classList.toggle("ui-force-visible");
         });
 
         State = {

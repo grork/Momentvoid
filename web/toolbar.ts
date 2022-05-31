@@ -10,16 +10,15 @@ namespace Codevoid.Momentvoid {
             showAdd: NakedFunction) {
             this.parts = locatePartsFromDOM(container);
 
-            this.parts.info.addEventListener("click", showInfo);
-            this.parts.add.addEventListener("click", showAdd);
-        }
+            this.parts.info.addEventListener("click", (e) => {
+                e.stopPropagation();
+                showInfo();
+            });
 
-        public toggleForceShow(): void {
-            if (this.container.contains(document.activeElement)) {
-                return;
-            }
-            
-            this.container.classList.toggle("toolbar-force-visible");
+            this.parts.add.addEventListener("click", (e) => {
+                e.stopPropagation();
+                showAdd();
+            });
         }
     }
 }
