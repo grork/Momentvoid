@@ -371,6 +371,7 @@ dialog > :first-child {
     border-radius: 4px;
 
     transition: color 0.5s ease;
+    margin-left: -12px; /* pull the buttons closer together */
 }
 
 .toolbar-container > .toolbar-button:hover,
