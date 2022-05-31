@@ -61,7 +61,7 @@ namespace Codevoid.Momentvoid {
 
             this.countdownManager.addCountdown(targetDate, title);
 
-            this.hide();
+            this.close();
         }
 
         private dialogOpening(): void {
@@ -77,7 +77,7 @@ namespace Codevoid.Momentvoid {
             this.dialog.show();
         }
 
-        public hide(): void {
+        public close(): void {
             this.dialog.close();
         }
 
