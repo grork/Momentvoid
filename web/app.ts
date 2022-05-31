@@ -64,7 +64,8 @@ ${countdownText}`;
         Menu: Menu;
         LoadingConfetti?: Promise<void>;
         Confetti?: JSConfetti;
-        Toolbar: Toolbar
+        Toolbar: Toolbar,
+        ManageCountdowns: ManageCountdowns;
     };
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -151,17 +152,19 @@ ${countdownText}`;
         const themeManager = new ThemeManager();
         themeManager.applyThemeBasedOnConfig();
 
-        const menu = new Menu(document.querySelector("[data-id='menu-container']")!,
-            countdownManager);
+        const menu = new Menu(document.querySelector("[data-id='menu-container']")!);
         const toggleMenuVisibility = menu.toggleMenuVisibility.bind(menu);
 
+        const manageCountdowns = new ManageCountdowns(document.querySelector("[data-id='manage-container']")!, countdownManager);
+        const toggleManageCountdowns = manageCountdowns.toggleVisibility.bind(manageCountdowns);
         const toolbar = new Toolbar(document.querySelector("[data-id='toolbar-container']")!,
             toggleMenuVisibility,
-            toggleMenuVisibility);
+            toggleManageCountdowns);
 
         const shortcuts = new ShortcutMananger();
 
         shortcuts.registerNoModifierHandlers({
+            "a": toggleManageCountdowns,
             "p": () => clock.togglePlayPause(),
             "t": () => themeManager.toggleTheme(),
             "n": () => clock.resetToCurrentTime(),
@@ -190,7 +193,8 @@ ${countdownText}`;
             CountdownControls: countdownControls,
             CountdownManager: countdownManager,
             Menu: menu,
-            Toolbar: toolbar
+            Toolbar: toolbar,
+            ManageCountdowns: manageCountdowns
         };
 
         // Wait to start the countdown controls, so that any state etc is

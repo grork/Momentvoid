@@ -228,14 +228,11 @@ dialog {
     border-width: 0px;
     background-color: transparent;
     box-shadow: none;
-}
-
-dialog[data-id="menu-container"] {
     padding: 100px 50px;
 }
 
 /* Menu itself, that hosts the content itself, and contains the background */
-.menu-content {
+dialog > :first-child {
     box-sizing: border-box;
     min-width: 240px;
     max-width: 99vw;
