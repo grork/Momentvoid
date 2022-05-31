@@ -84,13 +84,8 @@ namespace Codevoid.Momentvoid {
                 this.parts.title.parentElement!.scrollLeft = 0;
             });
 
-            this.parts.remove.addEventListener("click", () => {
-                this.countdownManager.removeCountdown(this.countdown);
-            });
-
-            this.parts.play.addEventListener("click", () => {
-                this.playCelebrationAnimation();
-            });
+            this.parts.remove.addEventListener("click", () => this.countdownManager.removeCountdown(this.countdown));
+            this.parts.play.addEventListener("click", () => this.playCelebrationAnimation());
         }
 
         private tick(tickData: ITickData): void {
