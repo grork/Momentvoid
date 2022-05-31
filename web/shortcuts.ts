@@ -45,8 +45,14 @@ namespace Codevoid.Momentvoid {
                 // combinations that would trigger anyway
                 return;
             }
+            
+            const handler = this.noModifierShortcuts[lowerCaseKey];
+            if (!handler) {
+                return;
+            }
 
-            this.noModifierShortcuts[lowerCaseKey]?.();
+            keyEvent.preventDefault();
+            handler();
         }
 
         public registerNoModifierHandlers(handlers: HandlerMap): void {
