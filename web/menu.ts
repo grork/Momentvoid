@@ -1,6 +1,4 @@
 namespace Codevoid.Momentvoid {
-
-
     function thirtyDaysFromNow(): string {
         let thirtyDays = new Date();
         thirtyDays.setUTCHours(0);
@@ -22,41 +20,28 @@ namespace Codevoid.Momentvoid {
             contentContainer: HTMLElement;
         };
 
-        constructor(private container: HTMLDialogElement,
+        private dialog: Dialog;
+
+        constructor(container: HTMLDialogElement,
             private countdownManager: CountdownManager) {
 
-            this.menuParts = locatePartsFromDOM(this.container);
+            this.menuParts = locatePartsFromDOM(container);
+            this.dialog = new Dialog(container);
+            this.dialog.registerClosedCallback(this.handleDialogClose.bind(this));
+            this.dialog.registerOpeningCallback(this.menuOpening.bind(this));
+            this.dialog.registerOpenedCallback(() => {
+                // Since this area *can* scroll, restore the scroll to the top when
+                // it's dismissed.
+                this.menuParts.contentContainer.scrollTop = 0;
+            });
 
-            this.container.addEventListener("click", this.handleBackdropClick.bind(this));
             this.menuParts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
-            this.container.addEventListener("close", this.handleDialogClose.bind(this));
-
             countdownManager.registerChangeHandler(this.renderCountdownManagementList.bind(this));
         }
 
         //#region Dialog Infra   
-        private handleBackdropClick(event: MouseEvent): void {
-            // We only want clicks directly on the container element
-            if (event.target !== this.container) {
-                return;
-            }
-
-            this.dismissMenu();
-        }
-
         public toggleMenuVisibility(): void {
-            if (this.container.open) {
-                
-                this.dismissMenu();
-                return;
-            }
-
-            this.menuOpening();
-            this.container.showModal();
-
-            // Since this area *can* scroll, restore the scroll to the top when
-            // it's dismissed.
-            this.menuParts.contentContainer.scrollTop = 0;
+            this.dialog.toggleVisibility();
         }
 
         private menuOpening(): void {
@@ -68,7 +53,7 @@ namespace Codevoid.Momentvoid {
         }
 
         private dismissMenu(): void {
-            this.container.close();
+            this.dialog.close();
         }
 
         private handleDialogClose(): void {
