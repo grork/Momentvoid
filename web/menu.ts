@@ -22,9 +22,8 @@ namespace Codevoid.Momentvoid {
             contentContainer: HTMLElement;
         };
 
-        constructor(
-            private countdownManager: CountdownManager,
-            private container: HTMLDialogElement) {
+        constructor(private container: HTMLDialogElement,
+            private countdownManager: CountdownManager) {
 
             this.menuParts = locatePartsFromDOM(this.container);
 

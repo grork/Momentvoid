@@ -111,7 +111,7 @@ ${countdownText}`;
 
         // Create the count downs from any saved state
         const countdownControls = countdownManager.getCountdownsSnapshot().map((countdown) => {
-            const control =  new CountdownControl(
+            const control = new CountdownControl(
                 countdownContainer,
                 clock,
                 countdown,
@@ -151,10 +151,8 @@ ${countdownText}`;
         const themeManager = new ThemeManager();
         themeManager.applyThemeBasedOnConfig();
 
-        const menu = new Menu(
-            countdownManager,
-            document.querySelector("[data-id='menu-container']")!
-        );
+        const menu = new Menu(document.querySelector("[data-id='menu-container']")!,
+            countdownManager);
         const toggleMenuVisibility = menu.toggleMenuVisibility.bind(menu);
 
         const toolbar = new Toolbar(document.querySelector("[data-id='toolbar-container']")!,
