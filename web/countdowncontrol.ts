@@ -38,6 +38,7 @@ namespace Codevoid.Momentvoid {
             targetReached: HTMLElement;
             play: HTMLButtonElement;
             remove: HTMLButtonElement;
+            targetDate: HTMLDivElement;
         };
         
         customConfettiEmoji: string[] = [];
@@ -57,6 +58,7 @@ namespace Codevoid.Momentvoid {
             this.parts = cloneIntoWithPartsFromName("countdown-template", container);
 
             this.parts.title.textContent = this.countdown.title;
+            this.parts.targetDate.textContent = this.countdown.toLocaleDateString();
 
             if (!countdown) {
                 this.displayInvalidDateError();
