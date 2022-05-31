@@ -9,7 +9,8 @@
     --hyperlink-colour: blue;
     --base-height: 80vh;
     --shadow-colour: 0deg 0% 0%;
-
+    --transition-duration: 0.3s;
+    --transition-function: ease-in-out;
 }
 
 @media (prefers-color-scheme: light) {
@@ -144,7 +145,7 @@ a:visited {
     bottom: calc((var(--base-height) / 60) * -1);
     color: var(--toolbar-text-colour);
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity var(--transition-duration) var(--transition-function);
 }
 
 .countdown-container:hover .countdown-targetdate,
@@ -180,7 +181,7 @@ a:visited {
 
     border-radius: 4px;
 
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow var(--transition-duration) var(--transition-function);
 }
 
 /* Focus rect when focus is within the container */
@@ -229,7 +230,7 @@ a:visited {
     padding: 8px 12px;
     margin: 0px 4px;
 
-    transition: background-color 0.3s ease;
+    transition: background-color var(--transition-duration) var(--transition-function);
 }
 
 .countdown-reached button:hover {
@@ -408,7 +409,7 @@ dialog > :first-child {
     border-radius: 4px;
     opacity: 0;
 
-    transition: color 0.5s ease, opacity 0.5s ease;
+    transition: color var(--transition-duration) var(--transition-function), var(--transition-duration) var(--transition-function);
     margin-left: -12px; /* pull the buttons closer together */
 }
 
