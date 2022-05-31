@@ -4,17 +4,38 @@ namespace Codevoid.Momentvoid {
         private openingCallback?: NakedFunction;
         private openedCallback?: NakedFunction;
 
+        private mouseWasDownOnDialogElement = false;
+
         constructor(private container: HTMLDialogElement) {
-            this.container.addEventListener("click", this.handleBackdropClick.bind(this));
+            this.container.addEventListener("mousedown", this.handleBackdropMouseDown.bind(this));
+            this.container.addEventListener("mouseup", this.handleBackdropMouseUp.bind(this));
             this.container.addEventListener("close", this.handleDialogClose.bind(this));
         }
 
-        private handleBackdropClick(event: MouseEvent): void {
+        private handleBackdropMouseDown(event: MouseEvent): void {
             // We only want clicks directly on the container element
-            if (event.target !== this.container) {
+            if ((event.target !== this.container)) {
                 return;
             }
 
+            // So we know when we see 'mouseup' that the mouse sent down on the
+            // actual dialog element
+            this.mouseWasDownOnDialogElement = true;
+        }
+
+        private handleBackdropMouseUp(event: MouseEvent): void {
+            // We only want clicks directly on the container element
+            if ((event.target !== this.container)) {
+                return;
+            }
+
+            // If the mouse didn't go down on the dialog element, we don't care
+            // about this mouse up
+            if (!this.mouseWasDownOnDialogElement) {
+                return;
+            }
+
+            this.mouseWasDownOnDialogElement = false;
             this.close();
         }
 
