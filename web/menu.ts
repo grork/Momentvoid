@@ -22,25 +22,15 @@ namespace Codevoid.Momentvoid {
             contentContainer: HTMLElement;
         };
 
-        private toolbarParts: {
-            add: HTMLButtonElement,
-            info: HTMLButtonElement
-        };
-
         constructor(
             private countdownManager: CountdownManager,
-            private container: HTMLDialogElement,
-            private toolbar: HTMLElement) {
+            private container: HTMLDialogElement) {
 
             this.menuParts = locatePartsFromDOM(this.container);
-            this.toolbarParts = locatePartsFromDOM(this.toolbar);
 
             this.container.addEventListener("click", this.handleBackdropClick.bind(this));
             this.menuParts.addButton.addEventListener("click", this.handleAddButtonClick.bind(this));
             this.container.addEventListener("close", this.handleDialogClose.bind(this));
-
-            this.toolbarParts.info.addEventListener("click", this.toggleMenuVisibility.bind(this));
-            this.toolbarParts.add.addEventListener("click", this.toggleMenuVisibility.bind(this));
 
             countdownManager.registerChangeHandler(this.renderCountdownManagementList.bind(this));
         }

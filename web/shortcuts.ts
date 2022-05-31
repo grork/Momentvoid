@@ -1,5 +1,5 @@
 namespace Codevoid.Momentvoid {
-    type HandlerMap = { [partName: string]: () => void };
+    type HandlerMap = { [partName: string]: NakedFunction };
 
     function addHandlersTo(existing: HandlerMap, toAdd: HandlerMap): void {
         for (const [key, handler] of Object.entries(toAdd)) {

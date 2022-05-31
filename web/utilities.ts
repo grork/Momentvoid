@@ -1,5 +1,6 @@
 namespace Codevoid.Momentvoid {
     export type NullableString = string | null;
+    export type NakedFunction = () => void;
     
     export function collapseIfLessThan1(value: number, element: Element): void {
         const parent = element.parentElement!;

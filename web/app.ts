@@ -64,6 +64,7 @@ ${countdownText}`;
         Menu: Menu;
         LoadingConfetti?: Promise<void>;
         Confetti?: JSConfetti;
+        Toolbar: Toolbar
     };
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -152,12 +153,15 @@ ${countdownText}`;
 
         const menu = new Menu(
             countdownManager,
-            document.querySelector("[data-id='menu-container']")!,
-            document.querySelector("[data-id='toolbar-container']")!
+            document.querySelector("[data-id='menu-container']")!
         );
+        const toggleMenuVisibility = menu.toggleMenuVisibility.bind(menu);
+
+        const toolbar = new Toolbar(document.querySelector("[data-id='toolbar-container']")!,
+            toggleMenuVisibility,
+            toggleMenuVisibility);
 
         const shortcuts = new ShortcutMananger();
-        const toggleMenuVisibility = menu.toggleMenuVisibility.bind(menu);
 
         shortcuts.registerNoModifierHandlers({
             "p": () => clock.togglePlayPause(),
@@ -187,7 +191,8 @@ ${countdownText}`;
             Clock: clock,
             CountdownControls: countdownControls,
             CountdownManager: countdownManager,
-            Menu: menu
+            Menu: menu,
+            Toolbar: toolbar
         };
 
         // Wait to start the countdown controls, so that any state etc is
