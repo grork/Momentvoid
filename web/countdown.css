@@ -352,12 +352,18 @@ dialog > :first-child {
 }
 
 .toolbar-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
     cursor: default;
     justify-self: end;
     align-self: start;
 
     grid-column: 1;
     grid-row: 1;
+    width: 40vw;
+    height: 25vh;
 }
 
 .toolbar-container > .toolbar-button {
@@ -369,9 +375,15 @@ dialog > :first-child {
     border-style: none;
     background-color: transparent;
     border-radius: 4px;
+    opacity: 0;
 
-    transition: color 0.5s ease;
+    transition: color 0.5s ease, opacity 0.5s ease;
     margin-left: -12px; /* pull the buttons closer together */
+}
+
+.toolbar-container:hover > .toolbar-button,
+.toolbar-container.toolbar-force-visible > .toolbar-button {
+    opacity: 1;
 }
 
 .toolbar-container > .toolbar-button:hover,

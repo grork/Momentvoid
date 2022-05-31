@@ -187,6 +187,13 @@ ${countdownText}`;
         });
 
         document.body.addEventListener("copy", () => writeCountdownTimesToClipboard(countdownControls));
+        document.body.addEventListener("pointerup", (e) => {
+            if (!countdownContainer.parentElement?.contains(<HTMLElement>e.target) && countdownContainer.parentElement !== e.target) {
+                return;
+            }
+
+            toolbar.toggleForceShow();
+        });
 
         State = {
             Clock: clock,

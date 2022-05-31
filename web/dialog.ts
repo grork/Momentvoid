@@ -10,6 +10,7 @@ namespace Codevoid.Momentvoid {
             this.container.addEventListener("mousedown", this.handleBackdropMouseDown.bind(this));
             this.container.addEventListener("mouseup", this.handleBackdropMouseUp.bind(this));
             this.container.addEventListener("close", this.handleDialogClose.bind(this));
+            this.container.addEventListener("pointerup", (e) => e.stopPropagation());
         }
 
         private handleBackdropMouseDown(event: MouseEvent): void {
