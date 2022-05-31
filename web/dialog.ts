@@ -11,6 +11,15 @@ namespace Codevoid.Momentvoid {
             this.container.addEventListener("mouseup", this.handleBackdropMouseUp.bind(this));
             this.container.addEventListener("close", this.handleDialogClose.bind(this));
             this.container.addEventListener("pointerup", (e) => e.stopPropagation());
+
+            const closeButton = document.createElement("button");
+            closeButton.addEventListener("click", this.close.bind(this));
+            closeButton.classList.add("dialog-close");
+            closeButton.classList.add("material-symbols-outlined");
+            closeButton.textContent = "close";
+            this.container.firstElementChild?.insertBefore(
+                closeButton,
+                this.container.firstElementChild?.firstElementChild);
         }
 
         private handleBackdropMouseDown(event: MouseEvent): void {
