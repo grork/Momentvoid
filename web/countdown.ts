@@ -232,6 +232,14 @@ namespace Codevoid.Momentvoid {
             return countdowns;
         }
 
+        countdownExistsForTargetDate(targetDate: Date): boolean {
+            const has = this.countdowns.some((v) => {
+                return v.targetDate.getTime() === targetDate.getTime();
+            });
+
+            return has;
+        }
+
         registerChangeHandler(handler: CountdownsChangedHandler): number {
             return this.eventSource.registerHandler(handler);
         }

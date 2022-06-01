@@ -119,21 +119,28 @@
 
         <dialog data-id="manage-container">
             <div data-part="contentContainer">
-                <div class="menu-title">Add Countdown</div>
-                <!-- Adding an additional countdown -->
-                <div class="menu-add-countdown-container">
-                    <label>Date<br/>
-                        <input class="menu-date-target" type="datetime-local" data-part="targetDate">
-                    </label>
-                    <label>Title<br/>
-                        <input class="menu-date-title" placeholder="countdown title" data-part="titleTextbox">
-                    </label>
+                <div>
+                    <div class="menu-title">Add Countdown</div>
+                    <!-- Adding an additional countdown -->
+                    <div class="menu-add-countdown-container">
+                        <label>Date<br/>
+                            <input class="menu-date-target" type="datetime-local" data-part="targetDate">
+                        </label>
+                        <label>Title<br/>
+                            <input class="menu-date-title" placeholder="countdown title" data-part="titleTextbox">
+                        </label>
 
-                    <button class="menu-button" data-part="addButton" autofocus="true">add</button>
+                        <button class="menu-button" data-part="addButton" autofocus="true">add</button>
+                    </div>
+
+                    <!-- Showing existing countdowns that can be managed -->
+                    <div class="managecountdown-countdown-list" data-part="countdownList"></div>
                 </div>
-
-                <!-- Showing existing countdowns that can be managed -->
-                <div class="managecountdown-countdown-list" data-part="countdownList"></div>
+                
+                <div>
+                    <div class="menu-title" data-part="suggestionsTitle">Suggestions</div>
+                    <div class="managecountdown-countdown-list" data-part="suggestionsList"></div>
+                </div>
             </div>
         </dialog>
     </body>

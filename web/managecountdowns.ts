@@ -14,6 +14,8 @@ namespace Codevoid.Momentvoid {
     export class ManageCountdowns {
         private parts: {
             countdownList: HTMLDivElement,
+            suggestionsList: HTMLDivElement,
+            suggestionsTitle: HTMLDivElement,
             targetDate: HTMLInputElement,
             titleTextbox: HTMLInputElement,
             addButton: HTMLButtonElement
@@ -33,6 +35,7 @@ namespace Codevoid.Momentvoid {
         }
 
         private renderCountdownManagementList(currentCountdowns: Countdown[]): void {
+            this.renderSuggestionsList();
             this.parts.countdownList.innerHTML = "";
 
             if (currentCountdowns.length === 1) {
@@ -52,6 +55,41 @@ namespace Codevoid.Momentvoid {
                 parts.label.textContent = title;
                 parts.targetDate.textContent = (title === countdown.toLocaleDateString() ? "" : countdown.toLocaleDateString());
                 parts.remove.addEventListener("click", () => this.countdownManager.removeCountdown(countdown));
+            });
+        }
+
+        private renderSuggestionsList(): void {
+            this.parts.suggestionsList.innerHTML = "";
+
+            const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-list-template'");
+
+            let suggestions = [
+                {
+                    title: "🎉 New Year",
+                    targetDate: new Date(((new Date()).getFullYear()) + 1, 0, 1, 0, 0, 0, 0),
+                }
+            ];
+
+            suggestions = suggestions.filter((v) => !this.countdownManager.countdownExistsForTargetDate(v.targetDate));
+
+            this.parts.suggestionsTitle.classList.toggle("countdown-element-hide", !(suggestions.length));
+
+            suggestions.forEach(suggestion => {
+                const parts: {
+                    label: HTMLElement;
+                    targetDate: HTMLElement;
+                    remove: HTMLButtonElement;
+                } = cloneIntoWithParts(template, this.parts.suggestionsList);
+
+                const title = suggestion.title || "";
+                parts.label.textContent = title;
+                parts.targetDate.textContent = suggestion.targetDate.toLocaleDateString();
+                parts.remove.addEventListener("click", () => {
+                    this.countdownManager.addCountdown(suggestion.targetDate, suggestion.title);
+                    this.close();
+                });
+                
+                parts.remove.textContent = "add";
             });
         }
 
