@@ -1,13 +1,15 @@
 :root {
     color-scheme: light dark;
-    --text-colour: rgb(19, 19, 19);
+
     --alt-text-colour: rgb(223, 221, 221);
-    --manage-countdown-border-colour: rgb(239, 239, 239);
-    --toolbar-text-colour: rgb(188, 188, 188);
-    --page-background: white;
-    --shortcut-background: rgba(209, 209, 209, 0.9);
     --date-add-text-background-colour: #c1c1c1;
     --hyperlink-colour: blue;
+    --manage-countdown-border-colour: rgb(239, 239, 239);
+    --page-background: white;
+    --shortcut-background: rgba(209, 209, 209, 0.9);
+    --text-colour: rgb(19, 19, 19);
+    --toolbar-text-colour: rgb(188, 188, 188);
+
     --base-height: 80vh;
     --shadow-colour: 0deg 0% 0%;
     --transition-duration: 0.3s;
@@ -16,35 +18,38 @@
 
 @media (prefers-color-scheme: light) {
     .force-dark {
-        --text-colour: white;
         --alt-text-colour: rgb(121, 121, 121);
-        --toolbar-text-colour: rgb(188, 188, 188);
-        --page-background: rgb(48, 48, 48);
-        --shortcut-background: rgba(19, 19, 19, 0.9);
         --date-add-text-background-colour: #4e4e4e;
         --hyperlink-colour: rgb(166, 166, 255);
+        --manage-countdown-border-colour: rgb(59, 59, 59);
+        --page-background: rgb(48, 48, 48);
+        --shortcut-background: rgba(19, 19, 19, 0.9);
+        --text-colour: white;
+        --toolbar-text-colour: rgb(188, 188, 188);
     }
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --text-colour: white;
         --alt-text-colour: rgb(121, 121, 121);
-        --toolbar-text-colour: rgb(188, 188, 188);
-        --page-background: rgb(48, 48, 48);
-        --shortcut-background: rgba(19, 19, 19, 0.9);
         --date-add-text-background-colour: #4e4e4e;
         --hyperlink-colour: rgb(166, 166, 255);
+        --manage-countdown-border-colour: rgb(59, 59, 59);
+        --page-background: rgb(48, 48, 48);
+        --shortcut-background: rgba(19, 19, 19, 0.9);
+        --text-colour: white;
+        --toolbar-text-colour: rgb(188, 188, 188);
     }
 
     .force-light {
-        --text-colour: rgb(19, 19, 19);
         --alt-text-colour: rgb(223, 221, 221);
-        --toolbar-text-colour: rgb(188, 188, 188);
-        --page-background: white;
-        --shortcut-background: rgba(209, 209, 209, 0.9);
         --date-add-text-background-colour: #c1c1c1;
         --hyperlink-colour: blue;
+        --manage-countdown-border-colour: rgb(239, 239, 239);
+        --page-background: white;
+        --shortcut-background: rgba(209, 209, 209, 0.9);
+        --text-colour: rgb(19, 19, 19);
+        --toolbar-text-colour: rgb(188, 188, 188);
     }
 }
 
@@ -254,6 +259,7 @@ dialog {
     background-color: transparent;
     box-shadow: none;
     padding: 100px 50px;
+    color: var(--text-colour);
 }
 
 /* Menu itself, that hosts the content itself, and contains the background */
