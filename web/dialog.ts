@@ -17,6 +17,7 @@ namespace Codevoid.Momentvoid {
             closeButton.classList.add("dialog-close");
             closeButton.classList.add("material-symbols-outlined");
             closeButton.textContent = "close";
+            closeButton.autofocus = true;
             this.container.firstElementChild?.insertBefore(
                 closeButton,
                 this.container.firstElementChild?.firstElementChild);
