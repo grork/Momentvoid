@@ -18,11 +18,12 @@ namespace Codevoid.Momentvoid {
             suggestionsTitle: HTMLDivElement,
             targetDate: HTMLInputElement,
             titleTextbox: HTMLInputElement,
-            addButton: HTMLButtonElement
+            addButton: HTMLButtonElement,
+            welcomeContainer: HTMLDivElement
         };
         private dialog: Dialog;
 
-        constructor(container: HTMLDialogElement,
+        constructor(private container: HTMLDialogElement,
             private countdownManager: CountdownManager) {
             this.parts = locatePartsFromDOM(<HTMLElement>container.firstElementChild);
 
@@ -88,7 +89,7 @@ namespace Codevoid.Momentvoid {
                     this.countdownManager.addCountdown(suggestion.targetDate, suggestion.title);
                     this.close();
                 });
-                
+
                 parts.remove.textContent = "add";
             });
         }
@@ -111,10 +112,17 @@ namespace Codevoid.Momentvoid {
 
         private dialogClosed(): void {
             this.parts.titleTextbox.value = "";
+            this.container.firstElementChild!.classList.toggle("managecountdown-dialog-welcome", false);
+            this.parts.welcomeContainer.classList.toggle("countdown-element-hide", true);
         }
 
         public show(): void {
             this.dialog.show();
+        }
+
+        public configureAsWelcome(): void {
+            this.container.firstElementChild!.classList.toggle("managecountdown-dialog-welcome", true);
+            this.parts.welcomeContainer.classList.toggle("countdown-element-hide", false);
         }
 
         public close(): void {

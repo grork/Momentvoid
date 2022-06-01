@@ -175,7 +175,11 @@ ${countdownText}`;
             "c": () => countdownControls[0]?.playCelebrationAnimation(),
             "m": toggleManageCountdowns,
             "h": toggleMenuVisibility,
-            "/": toggleMenuVisibility
+            "/": toggleMenuVisibility,
+            "w": () => {
+                manageCountdowns.configureAsWelcome();
+                manageCountdowns.toggleVisibility();
+            }
         });
 
         shortcuts.registerShiftModifierHandlers({

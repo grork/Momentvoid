@@ -294,7 +294,11 @@ dialog > :first-child {
 .menu-title {
     font-weight: 800;
     font-size: 24px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.menu-title:not(:first-child) {
+    margin-top: 8px;
 }
 
 /* Container of items that are in a 2-col, N-row grid. e.g. list of shortcuts */
@@ -302,7 +306,6 @@ dialog > :first-child {
     display: grid;
     grid-template-columns: minmax(10ch, 50ch) auto;
     row-gap: 6px;
-    margin-bottom: 12px;
 }
 
 .menu-item-list-label {
@@ -436,6 +439,10 @@ dialog > :first-child {
     background-color: var(--alt-text-colour);
 }
 
+dialog > .managecountdown-dialog-welcome {
+    flex-direction: column-reverse;
+}
+
 .managecountdown-countdown-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -489,6 +496,16 @@ dialog > :first-child {
 .managecountdown-countdown:hover {
     border-color: var(--text-colour);
     background-color: var(--page-background);
+}
+
+.managecountdown-welcome-container {
+    box-sizing: border-box;
+    max-width: 424px;
+    margin-bottom: 8px;
+}
+
+.managecountdown-welcome-blurb {
+    font-size: 20px;
 }
 
 /* Google Material Icon Font Self Hosting */
