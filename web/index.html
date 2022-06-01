@@ -78,15 +78,18 @@
             </div>
         </template>
         <template data-template="countdown-list-template">
-            <div class="menu-item-list-label" data-part="label"></div>
-            <button class="menu-item-list-detail menu-button" data-part="remove">remove</button>
+            <div class="managecountdown-countdown">
+                <div class="managecountdown-countdown-title" data-part="label"></div>
+                <div class="managecountdown-countdown-targetdate" data-part="targetDate"></div>
+                <button class="managecountdown-countdown-remove menu-button" menu-button" data-part="remove">remove</button>
+            </div>
         </template>
         <div class="countdown-centering-container">
             <div class="countdown-wrapper" id="countdown-container">
             </div>
         </div>
         <div class="toolbar-container" data-id="toolbar-container">
-            <button class="material-symbols-outlined toolbar-button" data-part="add" title="Add &amp; Manage (a or m)>add</button>
+            <button class="material-symbols-outlined toolbar-button" data-part="add" title="Add &amp; Manage (a or m)">add</button>
             <button class="material-symbols-outlined toolbar-button" data-part="info" title="Help (h, /, or ?)">help</button>
         </div>
         <dialog data-id="menu-container">
@@ -130,7 +133,7 @@
                 </div>
 
                 <!-- Showing existing countdowns that can be managed -->
-                <div class="menu-item-list" data-part="countdownList"></div>
+                <div class="managecountdown-countdown-list" data-part="countdownList"></div>
             </div>
         </dialog>
     </body>

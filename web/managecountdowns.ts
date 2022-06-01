@@ -44,11 +44,13 @@ namespace Codevoid.Momentvoid {
             currentCountdowns.forEach(countdown => {
                 const parts: {
                     label: HTMLElement;
+                    targetDate: HTMLElement;
                     remove: HTMLButtonElement;
                 } = cloneIntoWithParts(template, this.parts.countdownList);
 
                 const title = countdown.title || "";
-                parts.label.textContent = `${title} (${countdown.toLocaleDateString()})`;
+                parts.label.textContent = title;
+                parts.targetDate.textContent = (title === countdown.toLocaleDateString() ? "" : countdown.toLocaleDateString());
                 parts.remove.addEventListener("click", () => this.countdownManager.removeCountdown(countdown));
             });
         }
