@@ -173,7 +173,8 @@ ${countdownText}`;
             "0": () => clock.resumeNormalSpeed(),
             "s": () => countdownControls.forEach((c) => c.hideNextSegment()),
             "c": () => countdownControls[0]?.playCelebrationAnimation(),
-            "m": toggleMenuVisibility,
+            "m": toggleManageCountdowns,
+            "h": toggleMenuVisibility,
             "/": toggleMenuVisibility
         });
 
