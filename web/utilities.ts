@@ -121,7 +121,19 @@ namespace Codevoid.Momentvoid {
     }
 
     export function locatePartsFromDOM<T>(element: HTMLElement | DocumentFragment): T {
-        const parts = Array.from(element.querySelectorAll("[data-part]")).reduce<any>(
+        const query = "[data-part]";
+        const elements = Array.from(element.querySelectorAll(query));
+
+        // Make sure that the node we're starting from is included.
+        // querySelector only finds descendants of the element, not the element
+        // itself.
+        if (element.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) {
+            if ((<Element>element).matches(query)) {
+                elements.push(<Element>element);
+            }
+        }
+
+        const parts = elements.reduce<any>(
             (localParts: any, el: Element) => {
                 const partName = el.getAttribute("data-part")!;
                 el.removeAttribute("data-part");
