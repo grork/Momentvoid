@@ -93,13 +93,22 @@ namespace Codevoid.Momentvoid {
             this.loadSortFromStorage();
             this.loadCountdownsFromStorage();
 
-            if (!this.countdowns.length) {
-                this.countdowns = defaultTargetDate.map((date) => {
-                    // If we didn't find any persisted countdowns, create a default one
-                    const defaultCountdown = new Countdown(...date);
+            // Append any additional default dates that have been supplied.
+            if (defaultTargetDate.length) {
+                let added = false;
+                defaultTargetDate.forEach((date) => {
+                    const [targetDate, title] = date;
+                    if (this.countdownExistsForTargetDate(targetDate)) {
+                        return;
+                    }
 
-                    return defaultCountdown;
-                })
+                    added = true;
+                    this.countdowns.push(new Countdown(targetDate, title));
+                });
+                
+                if (added) {
+                    this.saveCountdownsToStorage();
+                }
             }
 
             this.countdowns.forEach((c) => c.registerChangeHandler(this.boundCountdownChangeHandler));

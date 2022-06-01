@@ -39,7 +39,7 @@ namespace Codevoid.Momentvoid {
             this.renderSuggestionsList();
             this.parts.countdownList.innerHTML = "";
 
-            if (currentCountdowns.length === 1) {
+            if (currentCountdowns.length === 0) {
                 return;
             }
 

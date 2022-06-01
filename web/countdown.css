@@ -416,6 +416,17 @@ dialog > :first-child {
     height: 25vh;
 }
 
+.ui-empty-state .toolbar-container {
+    justify-self: center;
+    align-self: center;
+    width: auto;
+    height: auto;
+}
+
+.ui-empty-state .toolbar-container > .toolbar-button.material-symbols-outlined {
+    font-size: calc(var(--base-height) / 7);
+}
+
 .toolbar-container > .toolbar-button {
     color: var(--toolbar-text-colour);
     padding: 12px;
@@ -432,7 +443,8 @@ dialog > :first-child {
 }
 
 .toolbar-container:hover > .toolbar-button,
-.ui-force-visible .toolbar-container > .toolbar-button {
+.ui-force-visible .toolbar-container > .toolbar-button,
+.ui-empty-state .toolbar-container > .toolbar-button {
     opacity: 1;
 }
 

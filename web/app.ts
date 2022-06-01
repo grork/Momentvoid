@@ -1,15 +1,6 @@
 namespace Codevoid.Momentvoid {
-    function calculateDefaultDate(): [Date, NullableString][] {
-        const dates: [Date, NullableString][] = [];
-
-        // Work out the current year, and then pick a year after that
-        const nextYear = ((new Date()).getFullYear()) + 1;
-
-        if (!dates.length) {
-            dates.push([new Date(nextYear, 0, 1, 0, 0, 0, 0), "Next Year"]);
-        }
-
-        return dates;
+    function toggleEmptyState(isEmpty: boolean): void {
+        document.body.classList.toggle("ui-empty-state", isEmpty);
     }
 
     function writeCountdownTimesToClipboard(countdowns: CountdownControl[]): void {
@@ -97,7 +88,7 @@ ${countdownText}`;
         // Start the single clock ticker
         const clock = new Clock();
 
-        let defaultTargetDates = calculateDefaultDate();
+        let defaultTargetDates: [Date, NullableString][] = [];
         const params = new URLSearchParams(window.location.search);
         let targetParam = params.get("target");
         if (targetParam) {
@@ -147,6 +138,8 @@ ${countdownText}`;
 
                 countdownControls.push(newControl);
             });
+
+            toggleEmptyState(!countdowns.length);
         });
 
         const themeManager = new ThemeManager();
@@ -214,6 +207,12 @@ ${countdownText}`;
         countdownControls.forEach((cd) => cd.start());
         if (params.get("startpaused") !== "true") {
             clock.start();
+        }
+
+        if (countdownManager.getCountdownsSnapshot().length === 0) {
+            toggleEmptyState(true);
+            manageCountdowns.configureAsWelcome();
+            manageCountdowns.show();
         }
     });
 }
