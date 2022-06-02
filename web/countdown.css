@@ -512,22 +512,10 @@ dialog > :first-child {
     background-color: var(--page-background);
 }
 
-/* Set order on these elements to ensure they can be *visually* shown in the
-   reverse order. Why not flex-direct: column-reverse? 'cause it messes with the
-   back button position, which is absolutely laid out */
-.managecountdown-dialog-welcome > .managecountdown-welcome-container {
+.managecountdown-dialog-welcome .managecountdown-welcome-container {
     box-sizing: border-box;
     max-width: 424px;
     margin-bottom: 8px;
-    order: 1;
-}
-
-.managecountdown-dialog-welcome > .managecountdown-suggestions {
-    order: 2;
-}
-
-.managecountdown-dialog-welcome > div {
-    order: 3;
 }
 
 .managecountdown-welcome-blurb {

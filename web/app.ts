@@ -149,6 +149,8 @@ ${countdownText}`;
         const toggleMenuVisibility = menu.toggleMenuVisibility.bind(menu);
 
         const manageCountdowns = new ManageCountdowns(document.querySelector("[data-id='manage-container']")!, countdownManager);
+        const welcomeCountdowns = new ManageCountdowns(document.querySelector("[data-id='welcome-container']")!, countdownManager);
+
         const toggleManageCountdowns = manageCountdowns.toggleVisibility.bind(manageCountdowns);
         const toolbar = new Toolbar(document.querySelector("[data-id='toolbar-container']")!,
             toggleMenuVisibility,
@@ -169,10 +171,7 @@ ${countdownText}`;
             "m": toggleManageCountdowns,
             "h": toggleMenuVisibility,
             "/": toggleMenuVisibility,
-            "w": () => {
-                manageCountdowns.configureAsWelcome();
-                manageCountdowns.toggleVisibility();
-            }
+            "w": () => welcomeCountdowns.toggleVisibility()
         });
 
         shortcuts.registerShiftModifierHandlers({
@@ -211,8 +210,7 @@ ${countdownText}`;
 
         if (countdownManager.getCountdownsSnapshot().length === 0) {
             toggleEmptyState(true);
-            manageCountdowns.configureAsWelcome();
-            manageCountdowns.show();
+            welcomeCountdowns.show();
         }
     });
 }

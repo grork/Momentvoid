@@ -154,18 +154,48 @@
                     <div class="menu-title" data-part="suggestionsTitle">Suggestions</div>
                     <div class="managecountdown-countdown-list" data-part="suggestionsList"></div>
                 </div>
+            </div>
+        </dialog>
 
-                <div class="countdown-element-hide managecountdown-welcome-container" data-part="welcomeContainer">
-                    <div class="menu-title">Welcome!</div>
-                    <div class="managecountdown-welcome-blurb">
-                        <p>
-                            Ever wanted to know how long until that fun trip? Or that exciting day out? Or maybe how long until your project is due?
-                        </p>
-                        <p>
-                            Now you can with Momentvoid! Pick your dates as far in the future as you want, or one of the suggestions to get you started!
-                        </p>
+        <dialog data-id="welcome-container">
+            <div data-part="contentContainer" class="managecountdown-dialog managecountdown-dialog-welcome">
+                <div>
+                    <div class="managecountdown-welcome-container" data-part="welcomeContainer">
+                        <div>
+                            <div class="menu-title">Welcome!</div>
+                            <button data-part="closeButton"></button>
+                        </div>
+                        <div class="managecountdown-welcome-blurb">
+                            <p>
+                                Ever wanted to know how long until that fun trip? Or that exciting day out? Or maybe how long until your project is due?
+                            </p>
+                            <p>
+                                Now you can with Momentvoid! Pick your dates as far in the future as you want, or one of the suggestions to get you started!
+                            </p>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="managecountdown-suggestions">
+                        <div class="menu-title" data-part="suggestionsTitle">Suggestions</div>
+                        <div class="managecountdown-countdown-list" data-part="suggestionsList"></div>
+                    </div>    
+
+                    <div class="menu-title">Add Countdown</div>
+                    <!-- Adding an additional countdown -->
+                    <div class="menu-add-countdown-container">
+                        <label>Date<br/>
+                            <input class="menu-date-target" type="datetime-local" data-part="targetDate">
+                        </label>
+                        <label>Title<br/>
+                            <input class="menu-date-title" placeholder="countdown title" data-part="titleTextbox">
+                        </label>
+
+                        <button class="menu-button" data-part="addButton">add</button>
+                    </div>
+
+                    <!-- Showing existing countdowns that can be managed -->
+                    <div class="managecountdown-countdown-list" data-part="countdownList"></div>
+                </div>                
             </div>
         </dialog>
     </body>
