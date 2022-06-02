@@ -1,8 +1,8 @@
 namespace Codevoid.Momentvoid {
     export class Toolbar {
         private parts: {
-            add: HTMLButtonElement,
-            info: HTMLButtonElement
+            add: HTMLButtonElement;
+            info: HTMLButtonElement;
         };
 
         constructor(private container: HTMLDivElement,

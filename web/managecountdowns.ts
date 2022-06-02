@@ -13,13 +13,13 @@ namespace Codevoid.Momentvoid {
 
     export class ManageCountdowns {
         private parts: {
-            countdownList: HTMLDivElement,
-            suggestionsList: HTMLDivElement,
-            suggestionsTitle: HTMLDivElement,
-            targetDate: HTMLInputElement,
-            titleTextbox: HTMLInputElement,
-            addButton: HTMLButtonElement,
-            welcomeContainer: HTMLDivElement
+            countdownList: HTMLDivElement;
+            suggestionsList: HTMLDivElement;
+            suggestionsTitle: HTMLDivElement;
+            targetDate: HTMLInputElement;
+            titleTextbox: HTMLInputElement;
+            addButton: HTMLButtonElement;
+            welcomeContainer: HTMLDivElement;
         };
         private dialog: Dialog;
 
