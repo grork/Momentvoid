@@ -3,7 +3,7 @@
     "typescript.tsdk": "./node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "npm.autoDetect": "off",
-    "codevoid.inner-loop-buddy.defaultUrl": "http://localhost:3000",
+    "codevoid.inner-loop-buddy.defaultUrl": "http://localhost:3000/?startpaused=true",
     "codevoid.inner-loop-buddy.autoOpenDelay": 500,
     "codevoid.inner-loop-buddy.monitoredTasks": [
         {
