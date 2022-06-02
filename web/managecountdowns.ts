@@ -64,12 +64,7 @@ namespace Codevoid.Momentvoid {
 
             const template = <HTMLTemplateElement>document.querySelector("[data-template='countdown-list-template'");
 
-            let suggestions = [
-                {
-                    title: "🎉 New Year",
-                    targetDate: new Date(((new Date()).getFullYear()) + 1, 0, 1, 0, 0, 0, 0),
-                }
-            ];
+            let suggestions = countdownSuggestions();
 
             suggestions = suggestions.filter((v) => !this.countdownManager.countdownExistsForTargetDate(v.targetDate));
 
