@@ -6,21 +6,17 @@ namespace Codevoid.Momentvoid {
 
         private mouseWasDownOnDialogElement = false;
 
-        constructor(private container: HTMLDialogElement) {
+        constructor(private container: HTMLDialogElement, closeButton: HTMLButtonElement) {
             this.container.addEventListener("mousedown", this.handleBackdropMouseDown.bind(this));
             this.container.addEventListener("mouseup", this.handleBackdropMouseUp.bind(this));
             this.container.addEventListener("close", this.handleDialogClose.bind(this));
             this.container.addEventListener("pointerup", (e) => e.stopPropagation());
 
-            const closeButton = document.createElement("button");
             closeButton.addEventListener("click", this.close.bind(this));
             closeButton.classList.add("dialog-close");
             closeButton.classList.add("material-symbols-outlined");
             closeButton.textContent = "close";
             closeButton.autofocus = true;
-            this.container.firstElementChild?.insertBefore(
-                closeButton,
-                this.container.firstElementChild?.firstElementChild);
         }
 
         private handleBackdropMouseDown(event: MouseEvent): void {

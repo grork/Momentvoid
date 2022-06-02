@@ -20,6 +20,7 @@ namespace Codevoid.Momentvoid {
             titleTextbox: HTMLInputElement;
             addButton: HTMLButtonElement;
             welcomeContainer: HTMLDivElement;
+            closeButton: HTMLButtonElement;
         };
         private dialog: Dialog;
 
@@ -27,7 +28,7 @@ namespace Codevoid.Momentvoid {
             private countdownManager: CountdownManager) {
             this.parts = locatePartsFromDOM(<HTMLElement>container.firstElementChild);
 
-            this.dialog = new Dialog(container);
+            this.dialog = new Dialog(container, this.parts.closeButton);
             this.dialog.registerOpeningCallback(this.dialogOpening.bind(this));
             this.dialog.registerClosedCallback(this.dialogClosed.bind(this));
             countdownManager.registerChangeHandler(this.renderCountdownManagementList.bind(this));
