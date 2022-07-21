@@ -32,11 +32,11 @@ namespace Codevoid.Momentvoid {
                 title: "Authors Birthday",
             }],
             "6": [{
-                targetDate: new Date("2022-06-21T14:58:00Z"),
+                targetDate: new Date("2023-06-21T14:58:00Z"),
                 title: "☀️ Solstice"
             }],
             "9": [{
-                targetDate: new Date("2022-12-22T03:28:00Z"),
+                targetDate: new Date("2023-12-22T03:28:00Z"),
                 title: "🥶 Solstice",
             }]
         },
@@ -46,18 +46,18 @@ namespace Codevoid.Momentvoid {
                 title: "🎿 Olympics"
             }],
             "6": [{
-                targetDate: new Date("2022-06-20T20:51:00Z"),
+                targetDate: new Date("2024-06-20T20:51:00Z"),
                 title: "☀️ Solstice"
             }],
             "9": [{
-                targetDate: new Date("2022-12-21T09:20:00Z"),
+                targetDate: new Date("2024-12-21T09:20:00Z"),
                 title: "🥶 Solstice",
             }]
         },
     };
 
     const THIS_YEAR = (new Date()).getFullYear();
-    const THIS_MONTH = (new Date()).getMonth();
+    const THIS_MONTH = (new Date()).getMonth() + 1;
     const NEXT_YEAR = THIS_YEAR + 1;
 
     export function countdownSuggestions(): CandiDay[] {
