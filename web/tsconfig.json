@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "outFile": "./output/countdown.js",
+    //"outFile": "./output/countdown.js",
+    "outDir": "./output",
     "allowJs": true,
     "sourceMap": true,
     "target": "ES2021",
@@ -11,6 +12,7 @@
     // as type imports, even when that folder is excluded from compilation
     "types": [],
     "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true
   },
   "include": [
     "./*.js",

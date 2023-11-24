@@ -1,66 +1,66 @@
-namespace Codevoid.Momentvoid {
-    type HandlerMap = { [partName: string]: NakedFunction };
+import { NakedFunction } from "./utilities.js";
 
-    function addHandlersTo(existing: HandlerMap, toAdd: HandlerMap): void {
-        for (const [key, handler] of Object.entries(toAdd)) {
-            if (existing[key]) {
-                throw new Error(`Handler with key '${key}' was already registered`);
-            }
+type HandlerMap = { [partName: string]: NakedFunction };
 
-            existing[key] = handler;
+function addHandlersTo(existing: HandlerMap, toAdd: HandlerMap): void {
+    for (const [key, handler] of Object.entries(toAdd)) {
+        if (existing[key]) {
+            throw new Error(`Handler with key '${key}' was already registered`);
         }
+
+        existing[key] = handler;
+    }
+}
+
+export class ShortcutMananger {
+    private noModifierShortcuts: HandlerMap = {};
+    private shiftModifierShortcuts: HandlerMap = {};
+
+    constructor() {
+        window.addEventListener("keydown", this.handleKeyDown.bind(this));
     }
 
-    export class ShortcutMananger {
-        private noModifierShortcuts: HandlerMap = {};
-        private shiftModifierShortcuts: HandlerMap = {};
+    private handleKeyDown(keyEvent: KeyboardEvent): void {
+        const source = (<HTMLElement>keyEvent.target);
 
-        constructor() {
-            window.addEventListener("keydown", this.handleKeyDown.bind(this));
+        // When typing into a text box, don't process shortcuts.
+        if ((source.tagName === "INPUT") || (source.isContentEditable)) {
+            return;
         }
 
-        private handleKeyDown(keyEvent: KeyboardEvent): void {
-            const source = (<HTMLElement>keyEvent.target);
-
-            // When typing into a text box, don't process shortcuts.
-            if ((source.tagName === "INPUT") || (source.isContentEditable)) {
-                return;
-            }
-            
-            // Don't handle the event again if they key is being held down
-            if (keyEvent.repeat) {
-                return;
-            }
-
-            const lowerCaseKey = keyEvent.key.toLowerCase();
-
-            if (keyEvent.shiftKey) {
-                //invokeHandlerForKey(this.shiftModifierShortcuts, lowerCaseKey);
-                this.shiftModifierShortcuts[lowerCaseKey]?.();
-                return;
-            }
-
-            if (keyEvent.ctrlKey || keyEvent.metaKey) {
-                // Nothing with these keys yet, but want to avoid handling
-                // combinations that would trigger anyway
-                return;
-            }
-            
-            const handler = this.noModifierShortcuts[lowerCaseKey];
-            if (!handler) {
-                return;
-            }
-
-            keyEvent.preventDefault();
-            handler();
+        // Don't handle the event again if they key is being held down
+        if (keyEvent.repeat) {
+            return;
         }
 
-        public registerNoModifierHandlers(handlers: HandlerMap): void {
-            addHandlersTo(this.noModifierShortcuts, handlers);
+        const lowerCaseKey = keyEvent.key.toLowerCase();
+
+        if (keyEvent.shiftKey) {
+            //invokeHandlerForKey(this.shiftModifierShortcuts, lowerCaseKey);
+            this.shiftModifierShortcuts[lowerCaseKey]?.();
+            return;
         }
 
-        public registerShiftModifierHandlers(handlers: HandlerMap): void {
-            addHandlersTo(this.shiftModifierShortcuts, handlers);
+        if (keyEvent.ctrlKey || keyEvent.metaKey) {
+            // Nothing with these keys yet, but want to avoid handling
+            // combinations that would trigger anyway
+            return;
         }
+
+        const handler = this.noModifierShortcuts[lowerCaseKey];
+        if (!handler) {
+            return;
+        }
+
+        keyEvent.preventDefault();
+        handler();
+    }
+
+    public registerNoModifierHandlers(handlers: HandlerMap): void {
+        addHandlersTo(this.noModifierShortcuts, handlers);
+    }
+
+    public registerShiftModifierHandlers(handlers: HandlerMap): void {
+        addHandlersTo(this.shiftModifierShortcuts, handlers);
     }
 }
