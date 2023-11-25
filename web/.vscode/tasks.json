@@ -73,18 +73,18 @@
             },
             "problemMatcher": [],
         },
-        {
-            "label": "Serve",
-            "dependsOn": [
-                "Watch for dependency changes",
-                "Watch for Typescript changes",
-                "Serve Static"
-            ],
-            "dependsOrder": "parallel",
-            "problemMatcher": [],
-            "runOptions": {
-                "runOn": "folderOpen"
-            }
-        }
+        // {
+        //     "label": "Serve",
+        //     "dependsOn": [
+        //         "Watch for dependency changes",
+        //         "Watch for Typescript changes",
+        //         "Serve Static"
+        //     ],
+        //     "dependsOrder": "parallel",
+        //     "problemMatcher": [],
+        //     "runOptions": {
+        //         "runOn": "folderOpen"
+        //     }
+        // }
     ]
 }
