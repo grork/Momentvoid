@@ -1,3 +1,4 @@
+import JSConfetti from "js-confetti";
 import { Clock } from "./clock.js";
 import { CountdownManager } from "./countdown.js";
 import { CountdownControl } from "./countdowncontrol.js";
@@ -7,7 +8,6 @@ import { ShortcutMananger } from "./shortcuts.js";
 import { ThemeManager } from "./thememanager.js";
 import { Toolbar } from "./toolbar.js";
 import { NullableString } from "./utilities.js";
-import JSConfetti from "js-confetti";
 
 function toggleEmptyState(isEmpty: boolean): void {
     document.body.classList.toggle("ui-empty-state", isEmpty);
