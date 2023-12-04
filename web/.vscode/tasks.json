@@ -47,19 +47,6 @@
         },
         {
             "type": "npm",
-            "label": "Watch for dependency changes",
-            "script": "watch-dependencies",
-            "isBackground": true,
-            "presentation": {
-                "echo": false,
-                "reveal": "never",
-                "panel": "dedicated",
-                "showReuseMessage": false,
-                "group": "watching"
-            }
-        },
-        {
-            "type": "npm",
             "label": "Serve Static",
             "detail": "Serve files with automatic browser loading",
             "script": "serve",
@@ -73,18 +60,17 @@
             },
             "problemMatcher": [],
         },
-        // {
-        //     "label": "Serve",
-        //     "dependsOn": [
-        //         "Watch for dependency changes",
-        //         "Watch for Typescript changes",
-        //         "Serve Static"
-        //     ],
-        //     "dependsOrder": "parallel",
-        //     "problemMatcher": [],
-        //     "runOptions": {
-        //         "runOn": "folderOpen"
-        //     }
-        // }
+        {
+            "label": "Serve",
+            "dependsOn": [
+                "Watch for Typescript changes",
+                "Serve Static"
+            ],
+            "dependsOrder": "parallel",
+            "problemMatcher": [],
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        }
     ]
 }

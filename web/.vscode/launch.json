@@ -5,21 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-msedge",
+            "type": "msedge",
             "request": "launch",
             "name": "Launch Edge against Browser Sync",
             "cleanUp": "onlyTab",
             "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}/output",
-            "preLaunchTask": "Serve Static"
+            "preLaunchTask": "Serve Static",
         },
         {
-            "type": "pwa-chrome",
+            "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against Browser Sync",
             "cleanUp": "onlyTab",
             "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}/output",
             "preLaunchTask": "Serve Static"
         }
     ]

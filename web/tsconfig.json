@@ -14,7 +14,6 @@
     
     "strict": true,
 
-    "sourceMap": true,
     "allowJs": true,
 
     // Disable automatic import of global types by setting to none. This is
