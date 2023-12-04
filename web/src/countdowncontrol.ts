@@ -1,6 +1,7 @@
 import { Clock, ITickData } from "./clock.js";
 import { Countdown, CountdownManager } from "./countdown.js";
 import { cloneIntoWithPartsFromName, collapseIfLessThan1, generateMessage, removeFromArray } from "./utilities.js";
+import JSConfetti from "js-confetti";
 
 const MS_IN_SECOND = 1000;
 const MS_IN_MINUTE = MS_IN_SECOND * 60;
@@ -55,7 +56,7 @@ export class CountdownControl {
         private clock: Clock,
         public readonly countdown: Countdown,
         private countdownManager: CountdownManager,
-        private getConfetti: () => Promise<JSConfetti>) {
+        private getConfetti: () => JSConfetti) {
         this.loadSegmentConfigurationFromStorage();
 
         this.parts = cloneIntoWithPartsFromName("countdown-template", container);

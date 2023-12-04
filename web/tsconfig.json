@@ -1,21 +1,27 @@
 {
   "compilerOptions": {
-    //"outFile": "./output/countdown.js",
-    "outDir": "./output",
-    "allowJs": true,
-    "sourceMap": true,
+    
     "target": "ES2021",
+    "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    
     "strict": true,
-    "removeComments": true,
-    "useDefineForClassFields": true,
+
+    "sourceMap": true,
+    "allowJs": true,
+
     // Disable automatic import of global types by setting to none. This is
     // due to npm dependencies including typescript files that are picked up
     // as type imports, even when that folder is excluded from compilation
     "types": [],
     "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true
   },
   "include": [
     "./src",

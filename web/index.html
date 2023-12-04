@@ -4,7 +4,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <meta name="theme-color" />
         <title>Countdown</title>
-        <link rel="stylesheet" type="text/css" href="countdown.css" />
+        <link rel="stylesheet" type="text/css" href="src/countdown.css" />
         <meta property="og:title" content="Countdown" />
         <meta property="og:locale" content="en_US" />
         <meta name="description" content="Countdown to the end" />
@@ -18,7 +18,7 @@
             content="https://www.codevoid.net/countdown/index.html"
         />
         <meta property="og:site_name" content="Countdown" />
-        <script type="module" src="app.js"></script>
+        <script type="module" src="src/app.ts"></script>
     </head>
     <body>
         <template data-template="countdown-template">
@@ -80,7 +80,7 @@
             <div class="managecountdown-countdown">
                 <div class="managecountdown-countdown-title" data-part="label"></div>
                 <div class="managecountdown-countdown-targetdate" data-part="targetDate"></div>
-                <button class="managecountdown-countdown-remove menu-button" menu-button" data-part="remove">remove</button>
+                <button class="managecountdown-countdown-remove menu-button" data-part="remove">remove</button>
             </div>
         </template>
         <div class="countdown-centering-container">
@@ -107,7 +107,7 @@
                     <div>Copy (mac)</div><div class="menu-item-list-detail">⌘+c</div>
                     <div>Copy (other)</div><div class="menu-item-list-detail">^+c</div>
                     <div>Toggle fullscreen</div><div class="menu-item-list-detail">⇧+f</div>
-                    <div>Clear setting &amp reload</div><div class="menu-item-list-detail">⇧+r</div>
+                    <div>Clear setting &amp; reload</div><div class="menu-item-list-detail">⇧+r</div>
                     <div>Cycle visible segments</div><div class="menu-item-list-detail">s</div>
                     <div>Play celebration</div><div class="menu-item-list-detail">c</div>
                     <div>Toggle Manage Countdowns</div><div class="menu-item-list-detail">a</div>

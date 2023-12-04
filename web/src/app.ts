@@ -7,6 +7,7 @@ import { ShortcutMananger } from "./shortcuts.js";
 import { ThemeManager } from "./thememanager.js";
 import { Toolbar } from "./toolbar.js";
 import { NullableString } from "./utilities.js";
+import JSConfetti from "js-confetti";
 
 function toggleEmptyState(isEmpty: boolean): void {
     document.body.classList.toggle("ui-empty-state", isEmpty);
@@ -69,24 +70,9 @@ let State: {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    async function getConfetti(): Promise<JSConfetti> {
+    function getConfetti(): JSConfetti {
         // If we don't have the confetti cached...
         if (!State.Confetti) {
-            // ... and we aren't alreay loading it ...
-            if (!State.LoadingConfetti) {
-                State.LoadingConfetti = new Promise<void>((r) => {
-                    // ... load the script file by inserting it into `head`
-                    const scriptElement = document.createElement("script");
-                    scriptElement.addEventListener("load", () => r());
-                    scriptElement.src = "js-confetti.browser.js";
-
-                    document.head.appendChild(scriptElement);
-                });
-            }
-
-            // ... wait for the script to load ...
-            await State.LoadingConfetti;
-
             // ... create & initialize it ...
             State.Confetti = new JSConfetti();
         }

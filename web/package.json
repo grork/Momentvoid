@@ -2,45 +2,14 @@
   "name": "momentvoid",
   "version": "0.1.0",
   "description": "Simple countdown tracker in an SPA",
-  "main": "countdown.js",
+  "type": "module",
+
   "scripts": {
-    "copy-dependencies": "copyfiles --exclude \"node_modules/**\" --exclude \"output/**\" \"**/*.html\" output && copyfiles -f --exclude \"node_modules/**\" --exclude \"output/**\" \"**/*.css\" output && copyfiles -f --exclude \"node_modules/**\" --exclude \"output/**\" \"**/*.woff2\" output && copyfiles -f node_modules/js-confetti/dist/js-confetti.browser.js output",
-    "clean": "rimraf output",
-    "compile": "tsc",
-    "build": "tsc",
-    "postbuild": "npm run copy-dependencies",
-    "watch-dependencies": "npm-watch copy-dependencies",
-    "watch-compile": "tsc --watch",
-    "watch-all": "npm-watch",
-    "serve": "browser-sync start --server output --watch --no-ui --listen localhost --no-online --no-open --reload-debounce 250 --no-ghost-mode"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
-  "watch": {
-    "copy-dependencies": {
-      "patterns": [
-        "."
-      ],
-      "ignore": [
-        ".nova",
-        ".vscode",
-        "node_modules",
-        "output",
-        "*.ts"
-      ],
-      "extensions": "js,css,html,woff2"
-    },
-    "compile": {
-      "patterns": [
-        "."
-      ],
-      "ignore": [
-        ".nova",
-        ".vscode",
-        "node_modules",
-        "output"
-      ],
-      "extensions": "ts"
-    }
-  },
+
   "repository": {
     "type": "git",
     "url": "https://github.com/grork/momentvoid.git",
@@ -57,12 +26,10 @@
     "url": "https://github.com/grork/momentvoid/issues"
   },
   "homepage": "https://github.com/grork/momentvoid#readme",
+
   "devDependencies": {
-    "browser-sync": "^2.29.3",
-    "copyfiles": "^2.4.1",
     "js-confetti": "^0.10.2",
-    "npm-watch": "^0.11.0",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "vite": "^5.0.0"
   }
 }

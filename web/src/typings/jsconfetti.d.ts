@@ -7,9 +7,3 @@ interface IAddConfettiConfig {
   emojis?: string[],
   emojiSize?: number,
 }
-
-declare class JSConfetti {
-  constructor();
-
-  addConfetti(confettiConfig?: IAddConfettiConfig): Promise<void>;
-}
