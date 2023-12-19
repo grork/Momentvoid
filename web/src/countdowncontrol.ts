@@ -101,7 +101,11 @@ export class CountdownControl {
         var days = Math.floor((remaining % MS_IN_WEEK) / MS_IN_DAY);
         var hours = Math.floor((remaining % MS_IN_DAY) / MS_IN_HOUR);
         var minutes = Math.floor((remaining % MS_IN_HOUR) / MS_IN_MINUTE);
-        var seconds = Math.floor((remaining % MS_IN_MINUTE) / MS_IN_SECOND);
+
+        // This rounds up, not down, to ensure that it ticks to the intuative
+        // time on the tick. Specifically, when it ticks to 10s, you want it to
+        // display "10" not, 9 (for 9.9) as floor would show you.
+        var seconds = Math.ceil((remaining % MS_IN_MINUTE) / MS_IN_SECOND);
 
         // Check if we've reached the target time, and stop ourselves:
         if (this.countdown.inThePast) {
