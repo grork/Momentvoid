@@ -94,7 +94,7 @@ export class CountdownControl {
 
     private tick(tickData: ITickData): void {
         const now = tickData.getTime();
-        const remaining = this.countdown.getTime() - now;
+        const remaining = Math.max(this.countdown.getTime() - now, 0);
 
         // Time calculations for days, hours, minutes and seconds
         var weeks = Math.floor(remaining / MS_IN_WEEK);
@@ -107,8 +107,14 @@ export class CountdownControl {
         // display "10" not, 9 (for 9.9) as floor would show you.
         var seconds = Math.ceil((remaining % MS_IN_MINUTE) / MS_IN_SECOND);
 
-        // Check if we've reached the target time, and stop ourselves:
-        if (this.countdown.inThePast) {
+        // Check if we've reached the target time, and stop ourselves. Note,
+        // this is intentionally not using `Countdown.isInPast` because that
+        // (intentionally) checks against the real clock. But we might be
+        // in fast mode -- where the real time is still Forever In The Future™.
+        // So if we check our remaing time we'll show the celebration, and stop
+        // listening to the clock. This *does not* remove the countdown from our
+        // saved storage 'cause we didn't *actually* reach it yet.
+        if (remaining === 0) {
             this.stop();
             this.displayTargetTimeReachedMessage();
             return;
