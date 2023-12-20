@@ -1,13 +1,13 @@
 import JSConfetti from "js-confetti";
 import { Clock } from "./clock.js";
 import { CountdownManager } from "./countdown.js";
-import { CountdownControl } from "./countdowncontrol.js";
+import { CountdownControl, AllSegments, Segments } from "./countdowncontrol.js";
 import { ManageCountdowns } from "./managecountdowns.js";
 import { Menu } from "./menu.js";
 import { ShortcutMananger } from "./shortcuts.js";
 import { ThemeManager } from "./thememanager.js";
 import { Toolbar } from "./toolbar.js";
-import { NullableString } from "./utilities.js";
+import { NullableString, removeFromArray } from "./utilities.js";
 
 function toggleEmptyState(isEmpty: boolean): void {
     document.body.classList.toggle("ui-empty-state", isEmpty);
@@ -58,6 +58,43 @@ function toggleFullscreen(): void {
     }
 }
 
+/**
+ * Cycles through which segments are visible, removing one segment type per
+ * invocation. If there are no more segments visible, will cycle back to showing
+ * all segments
+ * @param countdownControls Countdown Controls to refresh when segments change
+ * @param visibleSegments Currently visible segments array 
+ */
+function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegments: Segments[]): void {
+    {
+        const secondsHidden = !visibleSegments.includes(Segments.SECONDS);
+        const minutesHidden = !visibleSegments.includes(Segments.MINUTES);
+        const hoursHidden = !visibleSegments.includes(Segments.HOURS)
+        const daysHidden = !visibleSegments.includes(Segments.DAYS);
+    
+        if (!secondsHidden) {
+            removeFromArray(visibleSegments, Segments.SECONDS);
+        } else if (!minutesHidden) {
+            removeFromArray(visibleSegments, Segments.MINUTES);
+        } else if (!hoursHidden) {
+            removeFromArray(visibleSegments, Segments.HOURS);
+        } else if (!daysHidden) {
+            removeFromArray(visibleSegments, Segments.DAYS);
+        } else {
+            // We need to set to 0, and add them back because there is a shared
+            // instance of the visible segments across all countdowns. If we
+            // just reset the reference to a new array, it will only effect our
+            // local reference.
+            visibleSegments.length = 0;
+            visibleSegments.splice(0, 0, ...AllSegments);
+        }
+
+        window.localStorage.setItem("segmentConfig", JSON.stringify(visibleSegments));
+
+        countdownControls.forEach((c) => c.updateSegmentDOMState())
+    }
+}
+
 let State: {
     Clock: Clock;
     CountdownControls: CountdownControl[];
@@ -96,10 +133,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const countdownManager = new CountdownManager(defaultTargetDates);
     const countdownContainer = document.getElementById("countdown-container")!;
 
+    // Load the visible segments from storage, and apply them if available. We
+    // need to assume none, and use all segments, for the first run case.
+    let visibleSegments = AllSegments.slice();
+    const storageValue = window.localStorage.getItem("segmentConfig");
+    if (storageValue !== null) {
+        const storageConfig = JSON.parse(storageValue);
+        if (Array.isArray(storageConfig) && storageConfig.length > 0) {
+            visibleSegments = storageConfig;
+        }
+    }
+
     // Create the count downs from any saved state
     const countdownControls = countdownManager.getCountdownsSnapshot().map((countdown) => {
         const control = new CountdownControl(
             countdownContainer,
+            visibleSegments,
             clock,
             countdown,
             countdownManager,
@@ -123,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
         countdowns.forEach((c) => {
             const newControl = new CountdownControl(
                 countdownContainer,
+                visibleSegments,
                 clock,
                 c,
                 countdownManager,
@@ -161,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "f": () => clock.goFaster(),
         "o": () => countdownManager.cycleSortOrder(),
         "0": () => clock.resumeNormalSpeed(),
-        "s": () => countdownControls.forEach((c) => c.hideNextSegment()),
+        "s": () => cycleVisibleSegments(countdownControls, visibleSegments),
         "c": () => countdownControls[0]?.playCelebrationAnimation(),
         "m": toggleManageCountdowns,
         "h": toggleMenuVisibility,

@@ -19,7 +19,7 @@ export const enum Segments {
     SECONDS = "SECONDS"
 }
 
-const AllSegments = [
+export const AllSegments = [
     Segments.WEEKS,
     Segments.DAYS,
     Segments.HOURS,
@@ -28,7 +28,6 @@ const AllSegments = [
 ];
 
 export class CountdownControl {
-    private visibleSegments: Segments[] = AllSegments.slice();
     private tickToken: number = -1;
     private _currentMessage: string = "";
     private parts: {
@@ -53,11 +52,11 @@ export class CountdownControl {
 
     constructor(
         container: HTMLElement,
+        private visibleSegments: Segments[],
         private clock: Clock,
         public readonly countdown: Countdown,
         private countdownManager: CountdownManager,
         private getConfetti: () => JSConfetti) {
-        this.loadSegmentConfigurationFromStorage();
 
         this.parts = cloneIntoWithPartsFromName("countdown-template", container);
 
@@ -163,13 +162,7 @@ export class CountdownControl {
         this.parts.container.textContent = "Invalid date! You need to use an ISO formatted date";
     }
 
-    hideNextSegment(): void {
-        this.cycleSegmentVisibility();
-        this.updateSegmentDOMState();
-        this.saveSegmentConfigurationToStorage();
-    }
-
-    private updateSegmentDOMState(): void {
+    updateSegmentDOMState(): void {
         const secondsVisible = !this.visibleSegments.includes(Segments.SECONDS);
         const minuteVisible = !this.visibleSegments.includes(Segments.MINUTES);
         const hoursVisible = !this.visibleSegments.includes(Segments.HOURS)
@@ -181,41 +174,6 @@ export class CountdownControl {
         this.parts.hours.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, hoursVisible);
         this.parts.days.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, daysVisible);
         this.parts.weeks.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, weeksVisible);
-    }
-
-    cycleSegmentVisibility(): void {
-        const secondsHidden = !this.visibleSegments.includes(Segments.SECONDS);
-        const minutesHidden = !this.visibleSegments.includes(Segments.MINUTES);
-        const hoursHidden = !this.visibleSegments.includes(Segments.HOURS)
-        const daysHidden = !this.visibleSegments.includes(Segments.DAYS);
-
-        if (!secondsHidden) {
-            removeFromArray(this.visibleSegments, Segments.SECONDS);
-            return;
-        }
-
-        if (!minutesHidden) {
-            removeFromArray(this.visibleSegments, Segments.MINUTES);
-            return;
-        }
-
-        if (!hoursHidden) {
-            removeFromArray(this.visibleSegments, Segments.HOURS);
-            return;
-        }
-
-        if (!daysHidden) {
-            removeFromArray(this.visibleSegments, Segments.DAYS);
-            return;
-        }
-
-        if (this.countdown.inThePast) {
-            this.visibleSegments = [];
-            return;
-        }
-
-        this.visibleSegments = AllSegments.slice();
-        this.saveSegmentConfigurationToStorage();
     }
 
     async playCelebrationAnimation(): Promise<void> {
@@ -244,25 +202,5 @@ export class CountdownControl {
         for (let i = 1; i <= 5; i++) {
             setTimeout(() => confetti.addConfetti(confettiParameters), 650 * i);
         }
-    }
-
-    private loadSegmentConfigurationFromStorage(): void {
-        const storageValue = window.localStorage.getItem("segmentConfig");
-        if (storageValue === null) {
-            // Nothing persisted, give up
-            return;
-        }
-
-        const storageConfig = JSON.parse(storageValue);
-        if (!Array.isArray(storageConfig) || storageConfig.length < 1) {
-            // Not a valid object. we'll stomp it later.
-            return;
-        }
-
-        this.visibleSegments = storageConfig;
-    }
-
-    private saveSegmentConfigurationToStorage(): void {
-        window.localStorage.setItem("segmentConfig", JSON.stringify(this.visibleSegments));
     }
 }
