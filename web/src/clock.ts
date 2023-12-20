@@ -58,18 +58,28 @@ export class Clock {
     }
 
     start(tickInterval?: number): void {
-        this.tickInterval = tickInterval || this.tickInterval;
+        this.stop();
+
+        // Calculate the applied interval. This needs to account for the
+        // acceleration factor to make the time not just step more, but *change*
+        // more quickly.
+        let appliedTickInterval = this.tickInterval = tickInterval || this.tickInterval;
+        if (this.accelerationFactor) {
+            // Cap the interval at 16ms, so we don't go faster than 60fps.
+            appliedTickInterval = Math.max(appliedTickInterval / this.accelerationFactor, 16);
+        }
+
         this.tick();
 
         // Calculate approximate offset to the nearest whole second with.
         // Note, this means if we're 345ms past the whole second, we need to
         // subtract that value from 1000 to reach the next whole second tick
-        var currentSecondOffset = 1000 - (Date.now() % 1000);
+        var currentSecondOffset = appliedTickInterval - (Date.now() % appliedTickInterval);
 
         // Schedule a tick to that offset
         this.intervalToken = setTimeout(() => {
             // Actually start our 'on the second' tick
-            this.intervalToken = window.setInterval(this.tick.bind(this), this.tickInterval);
+            this.intervalToken = window.setInterval(this.tick.bind(this), appliedTickInterval);
             this.tick();
         }, currentSecondOffset);
     }
@@ -81,12 +91,12 @@ export class Clock {
         }
     }
 
-    setClockSpeed(accelerationFactor: number = 1, interval: number = DEFAULT_TICK_INTERVAL): void {
+    setClockSpeed(accelerationFactor: number = 1): void {
         this.stop();
 
         this.accelerationFactor = accelerationFactor;
 
-        this.start(interval);
+        this.start();
     }
 
     resumeNormalSpeed(): void {
@@ -104,17 +114,13 @@ export class Clock {
     }
 
     goFaster(): void {
-        let newAccelerationFactor = this.accelerationFactor * 10;
-        if (newAccelerationFactor === 0) {
-            newAccelerationFactor = 1;
+        let newAccelerationFactor = (this.accelerationFactor *= 3);
+        if (newAccelerationFactor < 2) {
+            newAccelerationFactor = 2;
         }
 
         newAccelerationFactor = Math.min(newAccelerationFactor, 10000);
-
-        let newTickInterval = this.tickInterval / 10;
-        newTickInterval = Math.max(newTickInterval, 16);
-
-        this.setClockSpeed(newAccelerationFactor, newTickInterval);
+        this.setClockSpeed(newAccelerationFactor);
     }
 
     togglePlayPause(): void {
