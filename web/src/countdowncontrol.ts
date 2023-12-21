@@ -1,13 +1,7 @@
 import JSConfetti from "js-confetti";
-import { Clock, ITickData } from "./clock.js";
+import { Clock, TickIntervalMs, ITickData } from "./clock.js";
 import { Countdown, CountdownManager } from "./countdown.js";
 import { cloneIntoWithPartsFromName, collapseIfLessThan1, generateMessage, removeFromArray } from "./utilities.js";
-
-const MS_IN_SECOND = 1000;
-const MS_IN_MINUTE = MS_IN_SECOND * 60;
-const MS_IN_HOUR = MS_IN_MINUTE * 60;
-const MS_IN_DAY = MS_IN_HOUR * 24;
-const MS_IN_WEEK = MS_IN_DAY * 7;
 
 const HIDE_SEGMENT_CLASS = "countdown-element-hide";
 
@@ -96,15 +90,15 @@ export class CountdownControl {
         const remaining = Math.max(this.countdown.getTime() - now, 0);
 
         // Time calculations for days, hours, minutes and seconds
-        var weeks = Math.floor(remaining / MS_IN_WEEK);
-        var days = Math.floor((remaining % MS_IN_WEEK) / MS_IN_DAY);
-        var hours = Math.floor((remaining % MS_IN_DAY) / MS_IN_HOUR);
-        var minutes = Math.floor((remaining % MS_IN_HOUR) / MS_IN_MINUTE);
+        var weeks = Math.floor(remaining / TickIntervalMs.Week);
+        var days = Math.floor((remaining % TickIntervalMs.Week) / TickIntervalMs.Day);
+        var hours = Math.floor((remaining % TickIntervalMs.Day) / TickIntervalMs.Hour);
+        var minutes = Math.floor((remaining % TickIntervalMs.Hour) / TickIntervalMs.Minute);
 
         // This rounds up, not down, to ensure that it ticks to the intuative
         // time on the tick. Specifically, when it ticks to 10s, you want it to
         // display "10" not, 9 (for 9.9) as floor would show you.
-        var seconds = Math.ceil((remaining % MS_IN_MINUTE) / MS_IN_SECOND);
+        var seconds = Math.ceil((remaining % TickIntervalMs.Minute) / TickIntervalMs.Second);
 
         // Check if we've reached the target time, and stop ourselves. Note,
         // this is intentionally not using `Countdown.isInPast` because that

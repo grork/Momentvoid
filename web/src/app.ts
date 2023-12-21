@@ -1,5 +1,5 @@
 import JSConfetti from "js-confetti";
-import { Clock } from "./clock.js";
+import { Clock, TickIntervalMs } from "./clock.js";
 import { CountdownManager } from "./countdown.js";
 import { CountdownControl, AllSegments, Segments } from "./countdowncontrol.js";
 import { ManageCountdowns } from "./managecountdowns.js";
@@ -61,12 +61,17 @@ function toggleFullscreen(): void {
 /**
  * Cycles through which segments are visible, removing one segment type per
  * invocation. If there are no more segments visible, will cycle back to showing
- * all segments
+ * all segments. Also returns a new ticker interval that reflects the smallest
+ * unit of the visible segments.
+ * 
  * @param countdownControls Countdown Controls to refresh when segments change
  * @param visibleSegments Currently visible segments array 
+ * @returns An interval reflecting the expected visible segments to minimize the
+ *          time spent updating needlessly
  */
-function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegments: Segments[]): void {
+function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegments: Segments[]): number {
     {
+        let newInterval = TickIntervalMs.Second;
         const secondsHidden = !visibleSegments.includes(Segments.SECONDS);
         const minutesHidden = !visibleSegments.includes(Segments.MINUTES);
         const hoursHidden = !visibleSegments.includes(Segments.HOURS)
@@ -74,12 +79,16 @@ function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegm
     
         if (!secondsHidden) {
             removeFromArray(visibleSegments, Segments.SECONDS);
+            newInterval = TickIntervalMs.Minute;
         } else if (!minutesHidden) {
             removeFromArray(visibleSegments, Segments.MINUTES);
+            newInterval = TickIntervalMs.Hour;
         } else if (!hoursHidden) {
             removeFromArray(visibleSegments, Segments.HOURS);
+            newInterval = TickIntervalMs.Day;
         } else if (!daysHidden) {
             removeFromArray(visibleSegments, Segments.DAYS);
+            newInterval = TickIntervalMs.Week;
         } else {
             // We need to set to 0, and add them back because there is a shared
             // instance of the visible segments across all countdowns. If we
@@ -87,11 +96,14 @@ function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegm
             // local reference.
             visibleSegments.length = 0;
             visibleSegments.splice(0, 0, ...AllSegments);
+            newInterval = TickIntervalMs.Second;
         }
 
         window.localStorage.setItem("segmentConfig", JSON.stringify(visibleSegments));
 
         countdownControls.forEach((c) => c.updateSegmentDOMState())
+
+        return newInterval;
     }
 }
 
@@ -211,7 +223,10 @@ document.addEventListener("DOMContentLoaded", () => {
         "f": () => clock.goFaster(),
         "o": () => countdownManager.cycleSortOrder(),
         "0": () => clock.resumeNormalSpeed(),
-        "s": () => cycleVisibleSegments(countdownControls, visibleSegments),
+        "s": () => {
+            const updatedInterval = cycleVisibleSegments(countdownControls, visibleSegments);
+            clock.start(updatedInterval);
+        },
         "c": () => countdownControls[0]?.playCelebrationAnimation(),
         "m": toggleManageCountdowns,
         "h": toggleMenuVisibility,

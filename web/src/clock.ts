@@ -1,6 +1,18 @@
 import { EventManager } from "./utilities.js";
 
-const DEFAULT_TICK_INTERVAL = 1000;
+const MS_IN_SECOND = 1000;
+const MS_IN_MINUTE = MS_IN_SECOND * 60;
+const MS_IN_HOUR = MS_IN_MINUTE * 60;
+const MS_IN_DAY = MS_IN_HOUR * 24;
+const MS_IN_WEEK = MS_IN_DAY * 7;
+
+export const enum TickIntervalMs {
+    Second = MS_IN_SECOND,
+    Minute = MS_IN_MINUTE,
+    Hour = MS_IN_HOUR,
+    Day = MS_IN_DAY,
+    Week = MS_IN_WEEK
+}
 
 export interface ITickData {
     getTime(): number;
@@ -10,7 +22,7 @@ export class Clock {
     private timeOffset: number = 0;
     private accelerationFactor: number = 0;
     private eventSource = new EventManager<ITickData>();
-    private tickInterval: number = DEFAULT_TICK_INTERVAL;
+    private tickInterval: number = TickIntervalMs.Second;
     private intervalToken: number = -1;
     private lastTick: ITickData;
 
@@ -102,7 +114,6 @@ export class Clock {
     resumeNormalSpeed(): void {
         this.stop();
         this.accelerationFactor = 0;
-        this.tickInterval = DEFAULT_TICK_INTERVAL;
 
         this.start();
     }
