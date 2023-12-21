@@ -90,15 +90,15 @@ export class CountdownControl {
         const remaining = Math.max(this.countdown.getTime() - now, 0);
 
         // Time calculations for days, hours, minutes and seconds
-        var weeks = Math.floor(remaining / TickIntervalMs.Week);
-        var days = Math.floor((remaining % TickIntervalMs.Week) / TickIntervalMs.Day);
-        var hours = Math.floor((remaining % TickIntervalMs.Day) / TickIntervalMs.Hour);
-        var minutes = Math.floor((remaining % TickIntervalMs.Hour) / TickIntervalMs.Minute);
+        const weeks = Math.floor(remaining / TickIntervalMs.Week);
+        const days = Math.floor((remaining % TickIntervalMs.Week) / TickIntervalMs.Day);
+        const hours = Math.floor((remaining % TickIntervalMs.Day) / TickIntervalMs.Hour);
+        const minutes = Math.floor((remaining % TickIntervalMs.Hour) / TickIntervalMs.Minute);
 
         // This rounds up, not down, to ensure that it ticks to the intuative
         // time on the tick. Specifically, when it ticks to 10s, you want it to
         // display "10" not, 9 (for 9.9) as floor would show you.
-        var seconds = Math.ceil((remaining % TickIntervalMs.Minute) / TickIntervalMs.Second);
+        const seconds = Math.ceil((remaining % TickIntervalMs.Minute) / TickIntervalMs.Second);
 
         // Check if we've reached the target time, and stop ourselves. Note,
         // this is intentionally not using `Countdown.isInPast` because that

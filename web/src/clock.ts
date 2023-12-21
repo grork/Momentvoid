@@ -86,7 +86,7 @@ export class Clock {
         // Calculate approximate offset to the nearest whole second with.
         // Note, this means if we're 345ms past the whole second, we need to
         // subtract that value from 1000 to reach the next whole second tick
-        var currentSecondOffset = appliedTickInterval - (Date.now() % appliedTickInterval);
+        const currentSecondOffset = appliedTickInterval - (Date.now() % appliedTickInterval);
 
         // Schedule a tick to that offset
         this.intervalToken = setTimeout(() => {
