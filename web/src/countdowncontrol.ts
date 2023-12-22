@@ -2,6 +2,7 @@ import JSConfetti from "js-confetti";
 import { Clock, TickIntervalMs, ITickData } from "./clock.js";
 import { Countdown, CountdownManager } from "./countdown.js";
 import { cloneIntoWithPartsFromName, collapseIfLessThan1, generateMessage, removeFromArray } from "./utilities.js";
+import { DateTime, Interval } from 'luxon';
 
 const HIDE_SEGMENT_CLASS = "countdown-element-hide";
 
@@ -86,19 +87,9 @@ export class CountdownControl {
     }
 
     private tick(tickData: ITickData): void {
-        const now = tickData.getTime();
-        const remaining = Math.max(this.countdown.getTime() - now, 0);
-
-        // Time calculations for days, hours, minutes and seconds
-        const weeks = Math.floor(remaining / TickIntervalMs.Week);
-        const days = Math.floor((remaining % TickIntervalMs.Week) / TickIntervalMs.Day);
-        const hours = Math.floor((remaining % TickIntervalMs.Day) / TickIntervalMs.Hour);
-        const minutes = Math.floor((remaining % TickIntervalMs.Hour) / TickIntervalMs.Minute);
-
-        // This rounds up, not down, to ensure that it ticks to the intuative
-        // time on the tick. Specifically, when it ticks to 10s, you want it to
-        // display "10" not, 9 (for 9.9) as floor would show you.
-        const seconds = Math.ceil((remaining % TickIntervalMs.Minute) / TickIntervalMs.Second);
+        const now = DateTime.fromMillis(tickData.getTime());
+        const interval = Interval.fromDateTimes(now, DateTime.fromMillis(this.countdown.getTime()));
+        const isInPast = isNaN(interval.length()) || (interval.length() < 1);
 
         // Check if we've reached the target time, and stop ourselves. Note,
         // this is intentionally not using `Countdown.isInPast` because that
@@ -107,11 +98,22 @@ export class CountdownControl {
         // So if we check our remaing time we'll show the celebration, and stop
         // listening to the clock. This *does not* remove the countdown from our
         // saved storage 'cause we didn't *actually* reach it yet.
-        if (remaining === 0) {
+        if (isInPast) {
             this.stop();
             this.displayTargetTimeReachedMessage();
             return;
         }
+
+        const duration = interval.toDuration(["weeks", "days", "hours", "minutes", "seconds"]);
+        const weeks = duration.get("weeks");
+        const days = duration.get("days");
+        const hours = duration.get("hours");
+        const minutes = duration.get("minutes");
+
+        // This rounds up, not down, to ensure that it ticks to the intuative
+        // time on the tick. Specifically, when it ticks to 10s, you want it to
+        // display "10" not, 9 (for 9.9) as floor would show you.
+        const seconds = Math.ceil(duration.get("seconds"));
 
         collapseIfLessThan1(weeks, this.parts.weeks);
         collapseIfLessThan1(days, this.parts.days);
