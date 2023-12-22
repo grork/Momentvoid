@@ -1,0 +1,4 @@
+{
+    "postCreateCommand": "npm install",
+    "workspaceFolder": "/workspaces/Momentvoid/web"
+}
