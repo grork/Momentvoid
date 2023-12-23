@@ -10,35 +10,10 @@ interface CandiDay {
 }
 
 const candidates: CandiDate = {
-    "2022": {
-        "3": [{
-            targetDate: new Date("2022-03-10T00:00:00"),
-            title: "Authors Birthday",
-        }],
-        "6": [{
-            targetDate: new Date("2022-06-06T10:00:00"),
-            title: "🍎 WWDC"
-        }, {
-            targetDate: new Date("2022-06-21T09:14:00Z"),
-            title: "☀️ Solstice"
-        }],
-        "9": [{
-            targetDate: new Date("2022-12-21T21:48:00Z"),
-            title: "🥶 Solstice",
-        }]
-    },
     "2023": {
-        "3": [{
-            targetDate: new Date("2023-03-10T00:00:00"),
-            title: "Authors Birthday",
-        }],
-        "6": [{
-            targetDate: new Date("2023-06-21T14:58:00Z"),
-            title: "☀️ Solstice"
-        }],
-        "9": [{
-            targetDate: new Date("2023-12-22T03:28:00Z"),
-            title: "🥶 Solstice",
+        "12": [{
+            targetDate: new Date("2023-12-31T23:59:00"),
+            title: "🎉 New Year",
         }]
     },
     "2024": {
@@ -46,12 +21,30 @@ const candidates: CandiDate = {
             targetDate: new Date("2024-01-19T00:00:00"),
             title: "🎿 Olympics"
         }],
+        "5": [{
+            targetDate: new Date("2024-05-07T00:00:00Z"),
+            title: "🇪🇺🎶 Eurovision"
+        }],
         "6": [{
             targetDate: new Date("2024-06-20T20:51:00Z"),
             title: "☀️ Solstice"
         }],
         "9": [{
             targetDate: new Date("2024-12-21T09:20:00Z"),
+            title: "🥶 Solstice",
+        }]
+    },
+    "2025": {
+        "1": [{
+            targetDate: new Date("2025-01-01T00:00:00"),
+            title: "🎉 New Year"
+        }],
+        "6": [{
+            targetDate: new Date("2025-06-22T02:42:00Z"),
+            title: "☀️ Solstice"
+        }],
+        "9": [{
+            targetDate: new Date("2025-12-21T15:03:00Z"),
             title: "🥶 Solstice",
         }]
     },
