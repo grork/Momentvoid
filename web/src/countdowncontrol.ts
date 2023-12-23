@@ -2,9 +2,10 @@ import JSConfetti from "js-confetti";
 import { Clock, TickIntervalMs, ITickData } from "./clock.js";
 import { Countdown, CountdownManager } from "./countdown.js";
 import { cloneIntoWithPartsFromName, collapseIfLessThan1, generateMessage, removeFromArray } from "./utilities.js";
-import { DateTime, Interval } from 'luxon';
+import { DateTime, DurationUnit, Interval } from 'luxon';
 
 const HIDE_SEGMENT_CLASS = "countdown-element-hide";
+const INTERVAL_COMPONENTS: DurationUnit[] = ["weeks", "days", "hours", "minutes", "seconds"];
 
 export const enum Segments {
     WEEKS = "WEEKS",
@@ -88,7 +89,7 @@ export class CountdownControl {
 
     private tick(tickData: ITickData): void {
         const now = DateTime.fromMillis(tickData.getTime());
-        const interval = Interval.fromDateTimes(now, DateTime.fromMillis(this.countdown.getTime()));
+        const interval = Interval.fromDateTimes(now, this.countdown.getDateTime());
         const isInPast = isNaN(interval.length()) || (interval.length() < 1);
 
         // Check if we've reached the target time, and stop ourselves. Note,
@@ -104,7 +105,7 @@ export class CountdownControl {
             return;
         }
 
-        const duration = interval.toDuration(["weeks", "days", "hours", "minutes", "seconds"]);
+        const duration = interval.toDuration(INTERVAL_COMPONENTS);
         const weeks = duration.get("weeks");
         const days = duration.get("days");
         const hours = duration.get("hours");

@@ -1,4 +1,5 @@
 import { EventManager, NullableString, removeFromArray } from "./utilities.js";
+import { DateTime } from "luxon";
 
 interface IPersistedCountdown {
     title: NullableString;
@@ -30,11 +31,13 @@ function sortFurthestFirst(first: Countdown, second: Countdown): number {
 
 export class Countdown {
     private targetDateAsMs: number;
+    private targetDateTime: DateTime;
     private eventSource = new EventManager<Countdown>();
     private _title: string;
 
     constructor(public readonly targetDate: Date, title: NullableString) {
         this.targetDateAsMs = targetDate.getTime();
+        this.targetDateTime = DateTime.fromJSDate(targetDate);
         this._title = title || targetDate.toLocaleDateString();
     }
 
@@ -51,11 +54,15 @@ export class Countdown {
         return (Date.now() > this.targetDateAsMs);
     }
 
-    getTime() {
+    public getTime(): number {
         return this.targetDateAsMs;
     }
 
-    toISOString() {
+    getDateTime(): DateTime {
+        return this.targetDateTime;
+    }
+
+    toISOString(): string {
         if (!this.targetDate) {
             return "";
         }
