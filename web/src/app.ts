@@ -76,6 +76,8 @@ function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegm
         const minutesHidden = !visibleSegments.includes(Segments.MINUTES);
         const hoursHidden = !visibleSegments.includes(Segments.HOURS)
         const daysHidden = !visibleSegments.includes(Segments.DAYS);
+        const weeksHidden = !visibleSegments.includes(Segments.WEEKS);
+        const monthsHidden = !visibleSegments.includes(Segments.MONTHS)
     
         if (!secondsHidden) {
             removeFromArray(visibleSegments, Segments.SECONDS);
@@ -88,6 +90,12 @@ function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegm
             newInterval = TickIntervalMs.Day;
         } else if (!daysHidden) {
             removeFromArray(visibleSegments, Segments.DAYS);
+            newInterval = TickIntervalMs.Week;
+        } else if (!weeksHidden) {
+            removeFromArray(visibleSegments, Segments.WEEKS);
+            newInterval = TickIntervalMs.Week;
+        } else if (!monthsHidden) {
+            removeFromArray(visibleSegments, Segments.MONTHS);
             newInterval = TickIntervalMs.Week;
         } else {
             // We need to set to 0, and add them back because there is a shared

@@ -5,9 +5,11 @@ import { cloneIntoWithPartsFromName, collapseIfLessThan1, generateMessage, remov
 import { DateTime, DurationUnit, Interval } from 'luxon';
 
 const HIDE_SEGMENT_CLASS = "countdown-element-hide";
-const INTERVAL_COMPONENTS: DurationUnit[] = ["weeks", "days", "hours", "minutes", "seconds"];
+const INTERVAL_COMPONENTS: DurationUnit[] = ["years", "months", "weeks", "days", "hours", "minutes", "seconds"];
 
 export const enum Segments {
+    YEARS = "YEARS",
+    MONTHS = "MONTHS",
     WEEKS = "WEEKS",
     DAYS = "DAYS",
     HOURS = "HOURS",
@@ -16,6 +18,8 @@ export const enum Segments {
 }
 
 export const AllSegments = [
+    Segments.YEARS,
+    Segments.MONTHS,
     Segments.WEEKS,
     Segments.DAYS,
     Segments.HOURS,
@@ -27,6 +31,8 @@ export class CountdownControl {
     private tickToken: number = -1;
     private _currentMessage: string = "";
     private parts: {
+        years: HTMLElement;
+        months: HTMLElement;
         weeks: HTMLElement;
         days: HTMLElement;
         hours: HTMLElement;
@@ -106,6 +112,8 @@ export class CountdownControl {
         }
 
         const duration = interval.toDuration(INTERVAL_COMPONENTS);
+        const years = duration.get("years");
+        const months = duration.get("months");
         const weeks = duration.get("weeks");
         const days = duration.get("days");
         const hours = duration.get("hours");
@@ -116,6 +124,8 @@ export class CountdownControl {
         // display "10" not, 9 (for 9.9) as floor would show you.
         const seconds = Math.ceil(duration.get("seconds"));
 
+        collapseIfLessThan1(years, this.parts.years);
+        collapseIfLessThan1(months, this.parts.months);
         collapseIfLessThan1(weeks, this.parts.weeks);
         collapseIfLessThan1(days, this.parts.days);
         collapseIfLessThan1(hours, this.parts.hours);
@@ -152,7 +162,6 @@ export class CountdownControl {
         (<HTMLDivElement>this.parts.title).removeAttribute("contenteditable");
 
         this._currentMessage = "Target date reached!"
-
     }
 
     private displayInvalidDateError(): void {
@@ -162,15 +171,19 @@ export class CountdownControl {
     updateSegmentDOMState(): void {
         const secondsVisible = !this.visibleSegments.includes(Segments.SECONDS);
         const minuteVisible = !this.visibleSegments.includes(Segments.MINUTES);
-        const hoursVisible = !this.visibleSegments.includes(Segments.HOURS)
+        const hoursVisible = !this.visibleSegments.includes(Segments.HOURS);
         const daysVisible = !this.visibleSegments.includes(Segments.DAYS);
         const weeksVisible = !this.visibleSegments.includes(Segments.WEEKS);
+        const monthsVisible = !this.visibleSegments.includes(Segments.MONTHS);
+        const yearsVisible = !this.visibleSegments.includes(Segments.YEARS);
 
         this.parts.seconds.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, secondsVisible);
         this.parts.minutes.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, minuteVisible);
         this.parts.hours.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, hoursVisible);
         this.parts.days.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, daysVisible);
         this.parts.weeks.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, weeksVisible);
+        this.parts.months.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, monthsVisible);
+        this.parts.years.parentElement?.classList.toggle(HIDE_SEGMENT_CLASS, yearsVisible);
     }
 
     async playCelebrationAnimation(): Promise<void> {
