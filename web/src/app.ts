@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
     shortcuts.registerNoModifierHandlers({
         "a": toggleManageCountdowns,
         "p": () => clock.togglePlayPause(),
-        "t": () => themeManager.toggleTheme(),
+        "t": () => themeManager.moveToNextTheme(),
         "n": () => clock.resetToCurrentTime(),
         "f": () => clock.goFaster(),
         "o": () => countdownManager.cycleSortOrder(),
