@@ -125,7 +125,6 @@ a:visited {
 .countdown-wrapper > .countdown-container {
     position: relative;
     box-sizing: border-box;
-    min-width: 2ch; /* stop it jiggling - width changing - on seconds changing */
 
     /* Place the font size here so that the min-width derived from the `ch` unit
        has something approximately right to work with */
@@ -136,11 +135,14 @@ a:visited {
 /* Size each number+description to a fixed height to help with centering */
 .countdown-element-container:not(.countdown-title-container) {
     box-sizing: border-box;
-    
     cursor: default; /* Don't show an I-beam */
 }
 
 .countdown-number {
+    /* Enable tabular numbers in the typeface. This helps ensure that when the
+    size of the digit changes, it doesn't wiggle / change width. Looks way nicer*/
+    font-feature-settings: "tnum";
+
     /* Pull things in so they're a little tighter */
     margin-bottom: calc((var(--base-height) / 35) * -1);
     margin-top: calc((var(--base-height) / 120) * -1);
@@ -170,7 +172,6 @@ a:visited {
 .ui-force-visible .countdown-targetdate {
     opacity: 1;
 }
-
 
 .countdown-reached-container {
     font-weight: 600;
