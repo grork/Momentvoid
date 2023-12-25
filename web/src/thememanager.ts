@@ -4,8 +4,21 @@ const enum SystemColourScheme {
 }
 
 const THEME_DEFAULT_FOR_COLOUR_SCHEME = "default";
-const DARK_SCHEME_LIGHT = "force-light";
-const LIGHT_SHEME_DARK = "force-dark";
+const THEME_DARK_SCHEME_LIGHT = "force-light";
+const THEME_LIGHT_SCHEME_DARK = "force-dark";
+const NIGHT_THEME = "theme-night";
+
+const DARK_SCHEME_THEMES = [
+    THEME_DEFAULT_FOR_COLOUR_SCHEME,
+    THEME_DARK_SCHEME_LIGHT,
+    NIGHT_THEME
+];
+
+const LIGHT_SCHEME_THEMES = [
+    THEME_DEFAULT_FOR_COLOUR_SCHEME,
+    THEME_LIGHT_SCHEME_DARK,
+    NIGHT_THEME
+];
 
 // We used to use 'toggled' to imply the opposite theme, this failed when we
 // add multiple themes, we need to migrate that state
@@ -20,10 +33,10 @@ function handleDeprecatedThemeNameMapping(theme: string, systemColourScheme: Sys
 
     switch (systemColourScheme) {
         case SystemColourScheme.Dark:
-            return DARK_SCHEME_LIGHT;
+            return THEME_DARK_SCHEME_LIGHT;
         
         case SystemColourScheme.Light:
-            return LIGHT_SHEME_DARK;
+            return THEME_LIGHT_SCHEME_DARK;
     }
 }
 
@@ -39,6 +52,7 @@ export class ThemeManager {
 
         this.loadFromStorage();
         this.isSystemColourSchemeDarkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        this.isSystemColourSchemeDarkMediaQuery.addEventListener("change", () => this.applyThemeBasedOnConfig());
     }
 
     private loadFromStorage(): void {
@@ -77,8 +91,16 @@ export class ThemeManager {
      */
     moveToNextTheme(): void {
         const themeState = this.getCurrentThemeState();
-        const isDefaultForTheme = (themeState.currentThemeName === THEME_DEFAULT_FOR_COLOUR_SCHEME);
-        const setting = (isDefaultForTheme) ? (themeState.isSystemDark ? DARK_SCHEME_LIGHT : LIGHT_SHEME_DARK) : THEME_DEFAULT_FOR_COLOUR_SCHEME;
+        const availableThemes = (themeState.isSystemDark) ? DARK_SCHEME_THEMES : LIGHT_SCHEME_THEMES;
+        const currentThemeIndex = availableThemes.indexOf(themeState.currentThemeName);
+        if (currentThemeIndex < 0) {
+            // Idk, it's not a known theme, so we're going to just give up
+            return;
+        }
+
+        // Pick the _next_ theme, clamping to the lenght of our theme list
+        const nextThemeIndex = (currentThemeIndex + 1) % availableThemes.length;
+        const setting = availableThemes[nextThemeIndex]
 
         this.settingBySystemColourScheme[themeState.currentSystemColourScheme] = setting;
 
@@ -88,11 +110,12 @@ export class ThemeManager {
 
     applyThemeBasedOnConfig(): void {
         const themeState = this.getCurrentThemeState();
-        const isOverriden = (themeState.currentThemeName !== THEME_DEFAULT_FOR_COLOUR_SCHEME);
-        const theme = (themeState.isSystemDark) ? "force-light" : "force-dark";
 
         const setTheme = () => {
-            document.body.classList.toggle(theme, isOverriden);
+            document.body.classList.remove(...(themeState.isSystemDark ? DARK_SCHEME_THEMES : LIGHT_SCHEME_THEMES));
+            if (themeState.currentThemeName !== THEME_DEFAULT_FOR_COLOUR_SCHEME) {
+                document.body.classList.add(themeState.currentThemeName);
+            }
 
             // Now we need to update the safari et al window chrome colour
             // so that it matches the background of the page.
