@@ -53,8 +53,20 @@
     }
 }
 
+.theme-night {
+    --alt-text-colour: rgb(255, 41, 41);
+    --date-add-text-background-colour: #242424;
+    --hyperlink-colour: rgb(166, 166, 255);
+    --manage-countdown-border-colour: rgb(59, 59, 59);
+    --page-background: black;
+    --shortcut-background: rgba(19, 19, 19, 0.9);
+    --text-colour: rgb(184, 0, 0);
+    --toolbar-text-colour: rgb(255, 41, 41);
+}
+
 body,
-html { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+html {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         "Helvetica Neue", sans-serif;
     background-color: var(--page-background);
     color: var(--text-colour);
