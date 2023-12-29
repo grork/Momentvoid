@@ -141,8 +141,8 @@ a:visited {
 .countdown-number {
     /* Enable tabular numbers in the typeface. This helps ensure that when the
     size of the digit changes, it doesn't wiggle / change width. Looks way nicer*/
-    font-feature-settings: "tnum";
-
+    font-variant-numeric: tabular-nums;
+    
     /* Pull things in so they're a little tighter */
     margin-bottom: calc((var(--base-height) / 35) * -1);
     margin-top: calc((var(--base-height) / 120) * -1);
