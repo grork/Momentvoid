@@ -44,6 +44,9 @@ struct ContentView_Previews: PreviewProvider {
     }
     
     static var previews: some View {
+        SegmentView(data: Segment(title: "Natural", value: 7777, id: "natural"))
+            .previewDisplayName("Natural")
+        
         ForEach(ContentSizeCategory.allCases, id: \.hashValue) { size in
             let label = String(reflecting: size)
             let segment = Segment(title: label, value: 7777, id: label)
