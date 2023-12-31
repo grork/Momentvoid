@@ -7,6 +7,7 @@ struct MyApp: App {
     var body: some Scene {
         WindowGroup {
             CountdownsView(countdowns: countdowns)
+                .ignoresSafeArea()
         }
     }
 }
