@@ -53,7 +53,7 @@ class Countdown: Identifiable {
             
             if let years = components.year, years > 0 {
                 segments.append(Segment(
-                    title: "yearses",
+                    title: "years",
                     value: years,
                     id: "years"
                 ))
