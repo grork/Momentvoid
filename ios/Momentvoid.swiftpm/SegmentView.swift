@@ -13,9 +13,9 @@ struct SegmentView: View {
                 .fontWeight(.heavy)
                 .kerning(digitKerning)
                 .lineLimit(1)
-                .padding(.bottom, -20)
+                .padding([.bottom, .top], -20)
                 .contentTransition(.numericText())
-                    
+            
             Text(data.title)
                 .truncationMode(.tail)
                 .font(.title)

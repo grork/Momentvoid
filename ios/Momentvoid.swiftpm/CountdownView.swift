@@ -9,6 +9,9 @@ struct CountdownView: View {
             Spacer(minLength: spacerLength)
             VStack(alignment: .leading, spacing: 0) {
                 Text(countdown.title)
+                    .fontWeight(.thin)
+                    .lineLimit(1)
+                    .padding(.bottom, 8)
                 ForEach(countdown.segments) { segment in
                     SegmentView(data: segment)
                 }
