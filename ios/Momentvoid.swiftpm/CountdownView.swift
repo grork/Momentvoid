@@ -26,10 +26,33 @@ struct CountdownView: View {
 }
 
 struct CountdownView_Previews: PreviewProvider {
+    private struct SpacerWrapperHelper: View {
+        let countdown: Countdown
+        @State private var maxHeight = 0.0
+        @State private var viewportHeight = 0.0
+        
+        var body: some View {
+            CountdownView(countdown: countdown)
+                .environment(\.topAlignmentSpacerLength, deduceSpacerHeight(viewHeight: viewportHeight, contentHeight: maxHeight))
+                .overlay {
+                    GeometryReader { proxy in
+                        Color.clear.onChange(of: proxy.size.height, initial: true) {
+                            viewportHeight = proxy.size.height
+                        }
+                    }
+                }
+                .onPreferenceChange(AlignerKey.self) { value in
+                    maxHeight = value
+                }
+        }
+    }
+    
     static var previews: some View {
         let countdowns = Countdown.getSomeRandomCountdowns()
         ForEach(countdowns) { countdown in
-            CountdownView(countdown: countdown)
+            SpacerWrapperHelper(countdown: countdown)
+                .padding([.leading, .trailing])
+                .border(.black)
                 .previewDisplayName(countdown.title)
         }
     }
