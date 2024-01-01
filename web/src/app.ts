@@ -13,12 +13,22 @@ function toggleEmptyState(isEmpty: boolean): void {
     document.body.classList.toggle("ui-empty-state", isEmpty);
 }
 
+/**
+ * Converts the supplied list of countdowns to the clipboard in a user-readable
+ * format. Multiple countdowns will be split by the platform specific new line
+ * character.
+ * @param countdowns Countdown items to write to the clipboard
+ */
 function writeCountdownTimesToClipboard(countdowns: CountdownControl[]): void {
     let message: string = "";
 
+    // If we only have one item, it's a simple copy of the message we already
+    // generate.
     if (countdowns.length === 1) {
         message = countdowns[0].currentMessage;
     } else {
+        // But > 1 requires us to differentiate with a title and a new line.
+        // But not all countdowns have explicitly set titles...
         countdowns.forEach((c, index): void => {
             const countdownTitle = c.countdown.title || `Countdown ${index + 1}`;
             const countdownText = `${countdownTitle}: ${c.currentMessage}`;
@@ -38,6 +48,12 @@ ${countdownText}`;
     navigator.clipboard.writeText(message);
 }
 
+/**
+ * Toggles the full screen state from the browser, accounting for API differences
+ * across versions and vendors.
+ * 
+ * If we are currently fullscreen, will exit. If we aren't, will enter.
+ */
 function toggleFullscreen(): void {
     if (document.body.webkitRequestFullscreen) {
         // Assuming webkit
@@ -115,6 +131,10 @@ function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegm
     }
 }
 
+/**
+ * Holds general app state, available for all the functions within this file
+ * access the appropriate state, and avoid them getting GCd.
+ */
 let State: {
     Clock: Clock;
     CountdownControls: CountdownControl[];
@@ -127,6 +147,10 @@ let State: {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+    /**
+     * Gets a JSConfetti instance, initializing it if needed
+     * @returns The instance of JSConfetti to use to play confetti
+     */
     function getConfetti(): JSConfetti {
         // If we don't have the confetti cached...
         if (!State.Confetti) {
@@ -140,6 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Start the single clock ticker
     const clock = new Clock();
 
+    // Process any URL parameters for adding countdowns to the list of tracked
+    // countdowns, accounting for bad formats that people type in
     let defaultTargetDates: [Date, NullableString][] = [];
     const params = new URLSearchParams(window.location.search);
     let targetParam = params.get("target");
@@ -150,6 +176,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Get the manager for our countdowns, passing in any ones obtained from
+    // the URL so they can be merged
     const countdownManager = new CountdownManager(defaultTargetDates);
     const countdownContainer = document.getElementById("countdown-container")!;
 
@@ -252,6 +280,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.body.addEventListener("copy", () => writeCountdownTimesToClipboard(countdownControls));
+    
+    // When someone releases a mouse button toggle the visibility of various
+    // transient elements (e.g., toolbar)
     document.body.addEventListener("pointerup", (e) => {
         if (!countdownContainer.parentElement?.contains(<HTMLElement>e.target) && countdownContainer.parentElement !== e.target) {
             return;
@@ -260,6 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.toggle("ui-force-visible");
     });
 
+    // Initialize the state now we've constructed our core app model
     State = {
         Clock: clock,
         CountdownControls: countdownControls,

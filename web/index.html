@@ -21,6 +21,7 @@
         <script type="module" src="src/app.ts"></script>
     </head>
     <body>
+        <!-- Template for a single countdown tower -->
         <template data-template="countdown-template">
             <div class="countdown-container" data-part="container">
                 <!-- Title -->
@@ -81,8 +82,13 @@
                     <div class="countdown-description">seconds</div>
                 </div>
 
+                <!-- Displays the target date; not always visible -->
                 <div class="countdown-targetdate" data-part="targetDate"></div>
 
+                <!--
+                    Container for the message displayed when you've reached
+                    the time specified in the countdown
+                -->
                 <div class="countdown-reached-container countdown-element-hide" data-part="targetReached">
                     <div class="countdown-reached-message">You've made it!<br><span class="countdown-reached-emoji">🎉</span></div>
                     <button tabindex="2" data-part="play">Play again</button>
@@ -90,6 +96,8 @@
                 </div>
             </div>
         </template>
+        
+        <!-- Template for a countdown when displayed in the manage countdown dialog -->
         <template data-template="countdown-list-template">
             <div class="managecountdown-countdown">
                 <div class="managecountdown-countdown-title" data-part="label"></div>
@@ -97,14 +105,19 @@
                 <button class="managecountdown-countdown-remove menu-button" data-part="remove">remove</button>
             </div>
         </template>
+
+        <!-- Main container to hold countdowns -->
         <div class="countdown-centering-container">
             <div class="countdown-wrapper" id="countdown-container">
             </div>
         </div>
+        <!-- Toolbar container -->
         <div class="toolbar-container" data-id="toolbar-container">
             <button class="material-symbols-outlined toolbar-button" data-part="add" title="Add &amp; Manage (a or m)">add</button>
             <button class="material-symbols-outlined toolbar-button" data-part="info" title="Help (h, /, or ?)">help</button>
         </div>
+
+        <!-- List of keyboard shortcuts popup dialog-->
         <dialog data-id="menu-container">
             <div data-part="contentContainer">
                 <div>
@@ -140,6 +153,7 @@
             </div>
         </dialog>
 
+        <!-- Dialog to manage countdowns when you've already got one -->
         <dialog data-id="manage-container">
             <div data-part="contentContainer" class="managecountdown-dialog">
                 <div>
@@ -170,6 +184,7 @@
             </div>
         </dialog>
 
+        <!-- Welcome experience you see on load when tehre are no countdowns -->
         <dialog data-id="welcome-container">
             <div data-part="contentContainer" class="managecountdown-dialog managecountdown-dialog-welcome">
                 <div>
