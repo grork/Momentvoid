@@ -14,7 +14,8 @@ struct SegmentView: View {
                 .kerning(digitKerning)
                 .lineLimit(1)
                 .padding([.bottom, .top], -20)
-                .contentTransition(.numericText())
+                .contentTransition(.numericText(countsDown: true))
+                .frame(minWidth: 125, alignment: .leading)
             
             Text(data.title)
                 .truncationMode(.tail)

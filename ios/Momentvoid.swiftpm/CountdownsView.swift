@@ -25,20 +25,19 @@ extension EnvironmentValues {
     }
 }
 
-
 struct CountdownsView: View {
     @State var maxContentHeight = 0.0
     @State var viewportHeight = 0.0
     @State var horizontalCenteringSpacerLength = 0.0
-    
     let countdowns: [Countdown]
+    
     var body: some View {
         // Make things scroll horizontally
         ScrollView(.horizontal) {
             HStack() {
                 // Spacer at the front so we can have a 'centered' like scrolling vibe. note the numbers here are just 'random'
                 Spacer(minLength: horizontalCenteringSpacerLength)
-                
+
                 // Actual Segments
                 ForEach(countdowns) { countdown in
                     CountdownView(countdown: countdown)
@@ -62,7 +61,7 @@ struct CountdownsView: View {
 
 struct CountdownsView_Previews: PreviewProvider {
     static var previews: some View {
-        let countdowns = Countdown.getSomeRandomCountdowns()
+        let (_,countdowns) = Countdown.getSomeRandomCountdowns()
         CountdownsView(countdowns: countdowns)
             .previewDisplayName("All Countdowns")
         

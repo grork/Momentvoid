@@ -1,26 +1,41 @@
 import SwiftUI
+struct CurrentTime: EnvironmentKey {
+    static let defaultValue: Date = Date.now
+}
+
+extension EnvironmentValues {
+    var currentTime: Date {
+        get { self[CurrentTime.self] }
+        set { self[CurrentTime.self] = newValue }
+    }
+}
 
 struct CountdownView: View {
     @Environment(\.topAlignmentSpacerLength) private var spacerLength
+    @Environment(\.currentTime) private var now
     let countdown: Countdown
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             Spacer(minLength: spacerLength)
+
             VStack(alignment: .leading, spacing: 0) {
                 Text(countdown.title)
                     .fontWeight(.thin)
                     .lineLimit(1)
                     .padding(.bottom, 8)
-                ForEach(countdown.segments) { segment in
+                
+                ForEach(Segment.getSegments(from: now, to: countdown.targetDate)) { segment in
                     SegmentView(data: segment)
                 }
-            }.overlay {
+            }
+            .overlay {
                 GeometryReader { proxy in
                     Color.clear.preference(key: AlignerKey.self, value: proxy.size.height)
                 }
             }
         }
+        .animation(.easeInOut, value: spacerLength)
         .scrollBounceBehavior(.basedOnSize)
     }
 }
@@ -48,11 +63,12 @@ struct CountdownView_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        let countdowns = Countdown.getSomeRandomCountdowns()
+        let (base, countdowns) = Countdown.getSomeRandomCountdowns()
         ForEach(countdowns) { countdown in
             SpacerWrapperHelper(countdown: countdown)
                 .padding([.leading, .trailing])
                 .border(.black)
+                .environment(\.currentTime, base)
                 .previewDisplayName(countdown.title)
         }
     }

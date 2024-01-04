@@ -10,6 +10,78 @@ struct Segment : Identifiable {
         self.value = value
         self.id = id
     }
+    
+    static func getSegments(from: Date, to: Date) -> [Segment] {
+        let components = Calendar.current.dateComponents([
+            .year,
+            .month,
+            .weekOfYear,
+            .day,
+            .hour,
+            .minute,
+            .second
+        ], from: from, to: to)
+        
+        var segments: [Segment] = [];
+        
+        if let years = components.year, years > 0 {
+            segments.append(Segment(
+                title: "years",
+                value: years,
+                id: "years"
+            ))
+        }
+        
+        if let months = components.month, months > 0 {
+            segments.append(Segment(
+                title: "months",
+                value: months,
+                id: "months"
+            ))
+        }
+        
+        if let weeks = components.weekOfYear, weeks > 0 {
+            segments.append(Segment(
+                title: "weeks",
+                value: weeks,
+                id: "weeks"
+            ))
+        }
+        
+        if let days = components.day, days > 0 {
+            segments.append(Segment(
+                title: "days",
+                value: days,
+                id: "days"
+            ))
+        }
+        
+        if let hours = components.hour, hours > 0 {
+            segments.append(Segment(
+                title: "hours",
+                value: hours,
+                id: "hours"
+            ))
+        }
+        
+        if let minutes = components.minute, minutes > 0 {
+            segments.append(Segment(
+                title: "minutes",
+                value: minutes,
+                id: "minutes"
+            ))
+        }
+        
+        if let seconds = components.second, seconds > -1 {
+            segments.append(Segment(
+                title: "seconds",
+                value: seconds,
+                id: "seconds"
+            ))
+        }
+        
+        return segments
+    }
 }
 
 @Observable
@@ -36,82 +108,8 @@ class Countdown: Identifiable {
         self.title = title
         self.id = title
     }
-    
-    var segments: [Segment] {
-        get {
-            let components = Calendar.current.dateComponents([
-                .year,
-                .month,
-                .weekOfYear,
-                .day,
-                .hour,
-                .minute,
-                .second
-            ], from: Date(), to: targetDate)
-            
-            var segments: [Segment] = [];
-            
-            if let years = components.year, years > 0 {
-                segments.append(Segment(
-                    title: "years",
-                    value: years,
-                    id: "years"
-                ))
-            }
-            
-            if let months = components.month, months > 0 {
-                segments.append(Segment(
-                    title: "months",
-                    value: months,
-                    id: "months"
-                ))
-            }
-            
-            if let weeks = components.weekOfYear, weeks > 0 {
-                segments.append(Segment(
-                    title: "weeks",
-                    value: weeks,
-                    id: "weeks"
-                ))
-            }
-            
-            if let days = components.day, days > 0 {
-                segments.append(Segment(
-                    title: "days",
-                    value: days,
-                    id: "days"
-                ))
-            }
-            
-            if let hours = components.hour, hours > 0 {
-                segments.append(Segment(
-                    title: "hours",
-                    value: hours,
-                    id: "hours"
-                ))
-            }
-            
-            if let minutes = components.minute, minutes > 0 {
-                segments.append(Segment(
-                    title: "minutes",
-                    value: minutes,
-                    id: "minutes"
-                ))
-            }
-            
-            if let seconds = components.second, seconds > 0 {
-                segments.append(Segment(
-                    title: "seconds",
-                    value: seconds,
-                    id: "seconds"
-                ))
-            }
-            
-            return segments
-        }
-    }
-    
-    static func getSomeRandomCountdowns() -> [Countdown] {
+
+    static func getSomeRandomCountdowns() -> (base: Date, countdowns: [Countdown]) {
         let calendar = Calendar.current
         let now = Date();
         let threeYears = calendar.date(byAdding: DateComponents(year: 3), to: now)!
@@ -126,7 +124,7 @@ class Countdown: Identifiable {
         formatter.dateTimeStyle = .named
         formatter.unitsStyle = .spellOut
         
-        return [
+        return (now.addingTimeInterval(1), [
             Countdown(target: halfAMinute, title: formatter.localizedString(for: halfAMinute, relativeTo: now)),
             Countdown(target: aFewMinutes, title: formatter.localizedString(for: aFewMinutes, relativeTo: now)),
             Countdown(target: aFewHours, title: formatter.localizedString(for: aFewHours, relativeTo: now)),
@@ -134,6 +132,6 @@ class Countdown: Identifiable {
             Countdown(target: twoWeeks, title: formatter.localizedString(for: twoWeeks, relativeTo: now)),
             Countdown(target: sixMonths, title: formatter.localizedString(for: sixMonths, relativeTo: now)),
             Countdown(target: threeYears, title: formatter.localizedString(for: threeYears, relativeTo: now))
-        ]
+        ])
     }
 }
