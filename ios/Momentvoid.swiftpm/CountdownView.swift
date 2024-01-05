@@ -13,6 +13,7 @@ extension EnvironmentValues {
 struct CountdownView: View {
     @Environment(\.topAlignmentSpacerLength) private var spacerLength
     @Environment(\.currentTime) private var now
+    @State private var activeLayoutAnimation: Animation? = nil
     let countdown: Countdown
     
     var body: some View {
@@ -35,8 +36,13 @@ struct CountdownView: View {
                 }
             }
         }
-        .animation(.easeInOut, value: spacerLength)
+        .animation(activeLayoutAnimation, value: spacerLength)
         .scrollBounceBehavior(.basedOnSize)
+        .onChange(of: now) {
+            if activeLayoutAnimation == nil {
+               activeLayoutAnimation = .easeInOut   
+            }
+        }
     }
 }
 
