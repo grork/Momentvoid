@@ -1,21 +1,31 @@
 import SwiftUI
 
 struct NoReason: View {
-    @State private var base = Date.now.addingTimeInterval(1)
-    @State private var countdowns = Countdown.getSomeRandomCountdowns()
+    @State private var base = Date.now
+    @State private var countdowns: [Countdown] = []
     
     var body: some View {
         VStack {
-            Button("Go forward") {
-                withAnimation {
-                    base += 59
+            HStack {
+                Button("Go forward") {
+                    withAnimation {
+                        base += 59
+                    }
+                }
+                Button("Reset") {
+                    withAnimation {
+                        base = Date.now
+                    }
                 }
             }
             
-            CountdownsView(countdowns: countdowns.countdowns)
+            
+            CountdownsView(countdowns: countdowns)
                 .environment(\.currentTime, base)
-        }
-        .ignoresSafeArea()
+        }.ignoresSafeArea()
+            .onAppear {
+                countdowns = Countdown.getSomeRandomCountdowns(relativeTo: base.addingTimeInterval(-1))
+            }
     }
 }
 

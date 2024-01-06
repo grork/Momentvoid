@@ -69,12 +69,13 @@ struct CountdownView_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        let (base, countdowns) = Countdown.getSomeRandomCountdowns()
+        let now = Date.now
+        let countdowns = Countdown.getSomeRandomCountdowns(relativeTo: now.addingTimeInterval(-1))
         ForEach(countdowns) { countdown in
             SpacerWrapperHelper(countdown: countdown)
                 .padding([.leading, .trailing])
                 .border(.black)
-                .environment(\.currentTime, base)
+                .environment(\.currentTime, now)
                 .previewDisplayName(countdown.title)
         }
     }

@@ -61,7 +61,7 @@ struct CountdownsView: View {
 
 struct CountdownsView_Previews: PreviewProvider {
     static var previews: some View {
-        let (_,countdowns) = Countdown.getSomeRandomCountdowns()
+        let countdowns = Countdown.getSomeRandomCountdowns()
         CountdownsView(countdowns: countdowns)
             .previewDisplayName("All Countdowns")
         

@@ -109,29 +109,28 @@ class Countdown: Identifiable {
         self.id = title
     }
 
-    static func getSomeRandomCountdowns() -> (base: Date, countdowns: [Countdown]) {
+    static func getSomeRandomCountdowns(relativeTo: Date = Date.now) -> [Countdown] {
         let calendar = Calendar.current
-        let now = Date();
-        let threeYears = calendar.date(byAdding: DateComponents(year: 3), to: now)!
-        let sixMonths = calendar.date(byAdding: DateComponents(month: 6), to: now)!
-        let twoWeeks = calendar.date(byAdding: DateComponents(day: 14), to: now)!
-        let aFewDays = calendar.date(byAdding: DateComponents(day: 3), to: now)!
-        let aFewHours = calendar.date(byAdding: DateComponents(hour: 4), to: now)!
-        let aFewMinutes = calendar.date(byAdding: DateComponents(minute: 15), to: now)!
-        let halfAMinute = calendar.date(byAdding: DateComponents(second: 30), to: now)!
+        let threeYears = calendar.date(byAdding: DateComponents(year: 3), to: relativeTo)!
+        let sixMonths = calendar.date(byAdding: DateComponents(month: 6), to: relativeTo)!
+        let twoWeeks = calendar.date(byAdding: DateComponents(day: 14), to: relativeTo)!
+        let aFewDays = calendar.date(byAdding: DateComponents(day: 3), to: relativeTo)!
+        let aFewHours = calendar.date(byAdding: DateComponents(hour: 4), to: relativeTo)!
+        let aFewMinutes = calendar.date(byAdding: DateComponents(minute: 15), to: relativeTo)!
+        let halfAMinute = calendar.date(byAdding: DateComponents(second: 30), to: relativeTo)!
         
         let formatter = RelativeDateTimeFormatter();
         formatter.dateTimeStyle = .named
         formatter.unitsStyle = .spellOut
         
-        return (now.addingTimeInterval(1), [
-            Countdown(target: halfAMinute, title: formatter.localizedString(for: halfAMinute, relativeTo: now)),
-            Countdown(target: aFewMinutes, title: formatter.localizedString(for: aFewMinutes, relativeTo: now)),
-            Countdown(target: aFewHours, title: formatter.localizedString(for: aFewHours, relativeTo: now)),
-            Countdown(target: aFewDays, title: formatter.localizedString(for: aFewDays, relativeTo: now)),
-            Countdown(target: twoWeeks, title: formatter.localizedString(for: twoWeeks, relativeTo: now)),
-            Countdown(target: sixMonths, title: formatter.localizedString(for: sixMonths, relativeTo: now)),
-            Countdown(target: threeYears, title: formatter.localizedString(for: threeYears, relativeTo: now))
-        ])
+        return [
+            Countdown(target: halfAMinute, title: formatter.localizedString(for: halfAMinute, relativeTo: relativeTo)),
+            Countdown(target: aFewMinutes, title: formatter.localizedString(for: aFewMinutes, relativeTo: relativeTo)),
+            Countdown(target: aFewHours, title: formatter.localizedString(for: aFewHours, relativeTo: relativeTo)),
+            Countdown(target: aFewDays, title: formatter.localizedString(for: aFewDays, relativeTo: relativeTo)),
+            Countdown(target: twoWeeks, title: formatter.localizedString(for: twoWeeks, relativeTo: relativeTo)),
+            Countdown(target: sixMonths, title: formatter.localizedString(for: sixMonths, relativeTo: relativeTo)),
+            Countdown(target: threeYears, title: formatter.localizedString(for: threeYears, relativeTo: relativeTo))
+        ]
     }
 }
