@@ -45,8 +45,9 @@ struct CountdownsView: View {
                 }
                 // Spacer at the end so we can scroll the last item into the center of the scrolling region. Numbers are just 'random'
                 Spacer(minLength: horizontalCenteringSpacerLength)
-            }
-        }.overlay {
+            }.transaction { t in t.animation = .default }
+        }
+        .overlay {
             GeometryReader { proxy in
                 Color.clear.onChange(of: proxy.size.height, initial: true) {
                     viewportHeight = proxy.size.height

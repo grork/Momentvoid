@@ -20,7 +20,7 @@ struct CountdownView: View {
         ScrollView(.vertical, showsIndicators: false) {
             Spacer(minLength: spacerLength)
 
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading) {
                 Text(countdown.title)
                     .fontWeight(.thin)
                     .lineLimit(1)
@@ -30,7 +30,8 @@ struct CountdownView: View {
                     SegmentView(data: segment)
                 }
             }
-            .overlay {
+            .frame(minWidth: 125, alignment: .leading)
+            .background {
                 GeometryReader { proxy in
                     Color.clear.preference(key: AlignerKey.self, value: proxy.size.height)
                 }
