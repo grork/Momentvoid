@@ -71,12 +71,13 @@ struct CountdownView_Previews: PreviewProvider {
     
     static var previews: some View {
         let now = Date.now
-        let countdowns = Countdown.getSomeRandomCountdowns(relativeTo: now.addingTimeInterval(-1))
+        let countdowns = Countdown.getSomeRandomCountdowns(relativeTo: now)
         ForEach(countdowns) { countdown in
             SpacerWrapperHelper(countdown: countdown)
                 .padding([.leading, .trailing])
                 .border(.black)
-                .environment(\.currentTime, now)
+                .environment(\.currentTime, now + 1)
+                .ignoresSafeArea()
                 .previewDisplayName(countdown.title)
         }
     }
