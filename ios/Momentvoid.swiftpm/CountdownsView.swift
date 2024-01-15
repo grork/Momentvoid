@@ -45,7 +45,10 @@ struct CountdownsView: View {
                 }
                 // Spacer at the end so we can scroll the last item into the center of the scrolling region. Numbers are just 'random'
                 Spacer(minLength: horizontalCenteringSpacerLength)
-            }.transaction { t in t.animation = .default }
+            }.transaction { t in
+                guard !t.disablesAnimations else { return }
+                t.animation = .default
+            }
         }
         .overlay {
             GeometryReader { proxy in
