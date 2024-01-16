@@ -42,6 +42,9 @@ struct CountdownsView: View {
                 ForEach(countdowns) { countdown in
                     CountdownView(countdown: countdown)
                         .environment(\.topAlignmentSpacerLength, deduceSpacerHeight(viewHeight: viewportHeight, contentHeight: maxContentHeight))
+                        .transition(
+                            .asymmetric(insertion: .move(edge: .top), removal: .move(edge: .bottom)).combined(with: .opacity)
+                        )
                 }
                 // Spacer at the end so we can scroll the last item into the center of the scrolling region. Numbers are just 'random'
                 Spacer(minLength: horizontalCenteringSpacerLength)
