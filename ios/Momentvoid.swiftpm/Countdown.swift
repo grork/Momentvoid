@@ -2,7 +2,7 @@ import Foundation
 
 struct Segment : Identifiable {
     let title: String
-    var value: Int = 0
+    let value: Int
     let id: String
     
     init(title: String, value: Int, id: String) {
