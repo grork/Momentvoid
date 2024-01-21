@@ -1,8 +1,8 @@
 import SwiftUI
 /**
- * A single segment for a unit of time. Displays things in visually
- * appealing form, and is aware of dynamic type to adjust the type
- * size
+ A single segment for a unit of time. Displays things in visually
+ appealing form, and is aware of dynamic type to adjust the type
+ size
  */
 struct SegmentView: View {
     /// The `Segment` data to be displayed
