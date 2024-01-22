@@ -87,6 +87,7 @@ struct Segment : Identifiable {
 @Observable
 class Countdown: Identifiable {
     public static var parser: ISO8601DateFormatter = {
+    private static var parser: ISO8601DateFormatter = {
         let instance = ISO8601DateFormatter()
         instance.formatOptions = .withInternetDateTime
         return instance
