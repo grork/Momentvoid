@@ -32,7 +32,7 @@ struct CountdownView: View {
             .frame(minWidth: 125, alignment: .leading)
             .background {
                 GeometryReader { proxy in
-                    Color.clear.preference(key: AlignerKey.self, value: proxy.size.height)
+                    Color.clear.preference(key: MaximumChildHeight.self, value: proxy.size.height)
                 }
             }
         }
@@ -49,7 +49,7 @@ struct CountdownView_Previews: PreviewProvider {
         
         var body: some View {
             CountdownView(countdown: countdown)
-                .environment(\.topAlignmentSpacerLength, deduceSpacerHeight(viewHeight: viewportHeight, contentHeight: maxHeight))
+                .environment(\.topAlignmentSpacerLength, deduceSpacerHeight(containerLength: viewportHeight, childLength: maxHeight))
                 .overlay {
                     GeometryReader { proxy in
                         Color.clear.onChange(of: proxy.size.height, initial: true) {
@@ -57,7 +57,7 @@ struct CountdownView_Previews: PreviewProvider {
                         }
                     }
                 }
-                .onPreferenceChange(AlignerKey.self) { value in
+                .onPreferenceChange(MaximumChildHeight.self) { value in
                     maxHeight = value
                 }
         }
