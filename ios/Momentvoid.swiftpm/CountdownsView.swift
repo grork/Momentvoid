@@ -7,7 +7,7 @@ import SwiftUI
 ///   - containerLength: Length of container within which we wish to center the child
 ///   - childLength: Length of the view we wish to be centered
 /// - Returns: The size required to center the child within the container
-func deduceSpacerHeight(containerLength: Double, childLength: Double) -> Double {
+fileprivate func deduceSpacerHeight(containerLength: Double, childLength: Double) -> Double {
     // Don't have a size, so we can't do math. If content is bigger than the view
     // we don't want a spacer.
     if ((containerLength <= 0.0 || childLength <= 0.0) || (childLength >= containerLength)) {

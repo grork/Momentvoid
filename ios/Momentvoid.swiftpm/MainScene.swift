@@ -56,7 +56,7 @@ struct MyApp: App {
                 }
                 
                 CountdownsView(countdowns: countdowns)
-                    .environment(\.currentTime, currentTime)
+                    .environment(\.referenceTime, currentTime)
             }.transaction { t in
                 t.disablesAnimations = (currentTime == startTime)
             }
