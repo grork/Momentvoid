@@ -60,7 +60,10 @@ export class ManageCountdowns {
             const title = countdown.title || "";
             parts.label.textContent = title;
             parts.targetDate.textContent = (title === countdown.toLocaleDateString() ? "" : countdown.toLocaleDateString());
-            parts.actionButton.addEventListener("click", () => this.countdownManager.removeCountdown(countdown));
+            parts.actionButton.addEventListener("click", (e: UIEvent) => {
+                e.stopPropagation();
+                this.countdownManager.removeCountdown(countdown);
+            });
             parts.container.addEventListener("click", () => this.countdownManager.removeCountdown(countdown));
         });
     }
@@ -87,7 +90,10 @@ export class ManageCountdowns {
             const title = suggestion.title || "";
             parts.label.textContent = title;
             parts.targetDate.textContent = suggestion.targetDate.toLocaleDateString();
-            parts.actionButton.addEventListener("click", () => this.countdownManager.addCountdown(suggestion.targetDate, suggestion.title));
+            parts.actionButton.addEventListener("click", (e: UIEvent) => {
+                e.stopPropagation();
+                this.countdownManager.addCountdown(suggestion.targetDate, suggestion.title);
+            });
             parts.container.addEventListener("click", () => this.countdownManager.addCountdown(suggestion.targetDate, suggestion.title))
 
             parts.actionButton.textContent = "add";
