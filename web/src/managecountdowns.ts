@@ -51,15 +51,17 @@ export class ManageCountdowns {
 
         currentCountdowns.forEach(countdown => {
             const parts: {
+                container: HTMLElement;
                 label: HTMLElement;
                 targetDate: HTMLElement;
-                remove: HTMLButtonElement;
+                actionButton: HTMLButtonElement;
             } = cloneIntoWithParts(template, this.parts.countdownList);
 
             const title = countdown.title || "";
             parts.label.textContent = title;
             parts.targetDate.textContent = (title === countdown.toLocaleDateString() ? "" : countdown.toLocaleDateString());
-            parts.remove.addEventListener("click", () => this.countdownManager.removeCountdown(countdown));
+            parts.actionButton.addEventListener("click", () => this.countdownManager.removeCountdown(countdown));
+            parts.container.addEventListener("click", () => this.countdownManager.removeCountdown(countdown));
         });
     }
 
@@ -76,20 +78,19 @@ export class ManageCountdowns {
 
         suggestions.forEach(suggestion => {
             const parts: {
+                container: HTMLElement;
                 label: HTMLElement;
                 targetDate: HTMLElement;
-                remove: HTMLButtonElement;
+                actionButton: HTMLButtonElement;
             } = cloneIntoWithParts(template, this.parts.suggestionsList);
 
             const title = suggestion.title || "";
             parts.label.textContent = title;
             parts.targetDate.textContent = suggestion.targetDate.toLocaleDateString();
-            parts.remove.addEventListener("click", () => {
-                this.countdownManager.addCountdown(suggestion.targetDate, suggestion.title);
-                this.close();
-            });
+            parts.actionButton.addEventListener("click", () => this.countdownManager.addCountdown(suggestion.targetDate, suggestion.title));
+            parts.container.addEventListener("click", () => this.countdownManager.addCountdown(suggestion.targetDate, suggestion.title))
 
-            parts.remove.textContent = "add";
+            parts.actionButton.textContent = "add";
         });
     }
 
