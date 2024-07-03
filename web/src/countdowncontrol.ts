@@ -17,6 +17,41 @@ export const enum Segments {
     SECONDS = "SECONDS"
 }
 
+// Converts a segment into a display string, aware of the 'plurlity' of the
+// the number. E.g., weeks is 'week' if there is _one_, and weeks if anything
+// else. Currently en-only aware 'cause where is no interntional support
+// elsewhere in this codebase
+export function segmentToDisplayWithPlurality(segment: Segments, value: number): string {
+    const plurality = (value != 1) ? "s" : "";
+    switch (segment) {
+        case Segments.YEARS:
+            return `year${plurality}`;
+
+        case Segments.MONTHS:
+            return `month${plurality}`;
+
+
+        case Segments.WEEKS:
+            return `week${plurality}`;
+
+
+        case Segments.DAYS:
+            return `day${plurality}`;
+
+
+        case Segments.HOURS:
+            return `hour${plurality}`;
+
+
+        case Segments.MINUTES:
+            return `minute${plurality}`;
+
+
+        case Segments.SECONDS:
+            return `second${plurality}`;
+    }
+}
+
 export const AllSegments = [
     Segments.YEARS,
     Segments.MONTHS,
@@ -133,7 +168,19 @@ export class CountdownControl {
 
         this.parts.seconds.textContent = <string><unknown>seconds;
 
-        this._currentMessage = generateMessage(weeks, days, hours, minutes, seconds, this.visibleSegments);
+        this._currentMessage = generateMessage({
+                [Segments.YEARS]: years,
+                [Segments.MONTHS]: months,
+                [Segments.WEEKS]: weeks,
+                [Segments.DAYS]: days,
+                [Segments.HOURS]: hours,
+                [Segments.MINUTES]: minutes,
+                [Segments.SECONDS]: seconds,
+            },
+            this.visibleSegments
+        );
+        
+        //this._currentMessage = generateMessage(weeks, days, hours, minutes, seconds, this.visibleSegments);
     }
 
     start(): void {

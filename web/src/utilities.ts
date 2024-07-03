@@ -1,4 +1,4 @@
-import { Segments } from "./countdowncontrol.js";
+import { Segments, segmentToDisplayWithPlurality } from "./countdowncontrol.js";
 
 export type NullableString = string | null;
 export type NakedFunction = () => void;
@@ -24,76 +24,27 @@ export function addCommaIfNeeded(source: string): string {
     return source + ", ";
 }
 
-export function generateMessage(weeks: number, days: number, hours: number, minutes: number, seconds: number, segments: Segments[]): string {
-    let message = "";
+// Given a map of segments to their value, converts them to a display string
+// based on the supplied visible segments. Note, the visibleSegments determines
+// the order of these values, not their absolute logical ordering.
+export function generateMessage(values: { [key in Segments]: number }, visibleSegments: Segments[]): string {
+    let result = "";
 
-    if (segments.includes(Segments.WEEKS)) {
-        if (weeks === 1) {
-            message = "1 week";
+    for (let segment of visibleSegments) {
+        const value = values[segment];
+
+        // Only include visible segments if there is a value in that segment
+        if (value < 1) {
+            continue;
         }
 
-        if (weeks > 1) {
-            message = `${weeks} weeks`;
-        }
+        // We need to add a comma after to ensure each unit is broken up
+        result = addCommaIfNeeded(result);
+        const unit = segmentToDisplayWithPlurality(segment, value);
+        result += `${value} ${unit}`;
     }
 
-    if (segments.includes(Segments.DAYS)) {
-        if (days > 0) {
-            message = addCommaIfNeeded(message);
-
-            if (days === 1) {
-                message += "1 day";
-            }
-
-            if (days > 1) {
-                message += `${days} days`;
-            }
-        }
-    }
-
-    if (segments.includes(Segments.HOURS)) {
-        if (hours > 0) {
-            message = addCommaIfNeeded(message);
-
-            if (hours === 1) {
-                message += "1 hour";
-            }
-
-            if (hours > 1) {
-                message += `${hours} hours`;
-            }
-        }
-    }
-
-    if (segments.includes(Segments.MINUTES)) {
-        if (minutes > 0) {
-            message = addCommaIfNeeded(message);
-
-            if (minutes === 1) {
-                message += "1 min";
-            }
-
-            if (minutes > 1) {
-                message += `${minutes} mins`;
-            }
-        }
-    }
-
-    if (segments.includes(Segments.SECONDS)) {
-        if (seconds > 0) {
-            message = addCommaIfNeeded(message);
-
-            if (seconds === 1) {
-                message += "1 sec"
-            }
-
-            if (seconds > 1) {
-                message += `${seconds} secs`;
-            }
-        }
-    }
-
-    return message;
+    return result;
 }
 
 export function removeFromArray<T>(source: T[], itemToRemove: T) {
