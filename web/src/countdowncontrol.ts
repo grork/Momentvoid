@@ -237,7 +237,12 @@ export class CountdownControl {
         const confetti = await this.getConfetti();
         let confettiParameters: IAddConfettiConfig = { confettiNumber: 60 };
 
-        const regexpEmojiPresentation = /\p{Emoji_Presentation}/gu;
+        // Match _emojis_. But of course emojies aren't that simple. This
+        // captures both new -- pretty colours! -- and old ones that actually
+        // have a colour variation. We will match the variation added by modern
+        // input stacks -- which is to say the mono-glyph + 'colour variation'
+        // selector. (See more: https://stackoverflow.com/questions/70401560/what-is-the-difference-between-emoji-presentation-and-extended-pictographic)
+        const regexpEmojiPresentation = /(\p{Emoji}\uFE0F|\p{Emoji_Presentation})/gu;
         let matchingEmoji = <string[]>this.countdown.title.match(regexpEmojiPresentation);
 
         // If there were no matching emojis, check for a custom set
