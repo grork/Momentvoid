@@ -129,3 +129,7 @@ export class EventManager<T> {
         this.handlers.clear();
     }
 }
+
+export function isSafariBrowser(): boolean {
+    return navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome");
+}
