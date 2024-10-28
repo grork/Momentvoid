@@ -146,6 +146,33 @@ let State: {
     ManageCountdowns: ManageCountdowns;
 };
 
+async function requestStoragePersistence(): Promise<void> {
+    if (navigator.storage && navigator.storage.persist) {
+        try {
+            const isPersisted = await navigator.storage.persist();
+            if (!isPersisted) {
+                displayWarningMessage("Warning: Your data may be lost if storage permission is not granted.");
+            }
+        } catch (error) {
+            displayWarningMessage("Warning: Your data may be lost if storage permission is not granted.");
+        }
+    }
+}
+
+function displayWarningMessage(message: string): void {
+    const warningBanner = document.createElement("div");
+    warningBanner.textContent = message;
+    warningBanner.style.position = "fixed";
+    warningBanner.style.bottom = "0";
+    warningBanner.style.left = "0";
+    warningBanner.style.width = "100%";
+    warningBanner.style.backgroundColor = "red";
+    warningBanner.style.color = "white";
+    warningBanner.style.textAlign = "center";
+    warningBanner.style.padding = "10px";
+    document.body.appendChild(warningBanner);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     /**
      * Gets a JSConfetti instance, initializing it if needed
@@ -311,6 +338,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (countdownManager.getCountdownsSnapshot().length === 0) {
         toggleEmptyState(true);
         welcomeCountdowns.show();
+    }
+
+    // Call requestStoragePersistence for Safari browsers
+    if (navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome")) {
+        requestStoragePersistence();
     }
 });
 
