@@ -9,6 +9,30 @@ import { ThemeManager } from "./thememanager.js";
 import { Toolbar } from "./toolbar.js";
 import { NullableString, removeFromArray } from "./utilities.js";
 
+async function postDataToService(data: any) {
+    const response = await fetch('/.netlify/functions/setCookie', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+async function getDataFromService() {
+    const response = await fetch('/.netlify/functions/setCookie', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    if (response.status === 200) {
+        return response.json();
+    }
+    return null;
+}
+
 function toggleEmptyState(isEmpty: boolean): void {
     document.body.classList.toggle("ui-empty-state", isEmpty);
 }
@@ -146,7 +170,7 @@ let State: {
     ManageCountdowns: ManageCountdowns;
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     /**
      * Gets a JSConfetti instance, initializing it if needed
      * @returns The instance of JSConfetti to use to play confetti
@@ -309,6 +333,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (countdownManager.getCountdownsSnapshot().length === 0) {
+        const serviceData = await getDataFromService();
+        if (serviceData) {
+            countdownManager.loadCountdownsFromService(serviceData);
+        }
         toggleEmptyState(true);
         welcomeCountdowns.show();
     }
