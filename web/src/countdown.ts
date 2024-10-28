@@ -180,6 +180,7 @@ export class CountdownManager {
 
     private handleCountdownChanged(countdown: Countdown): void {
         this.saveCountdownsToStorage();
+        this.postDataToService();
     }
 
     addCountdown(targetDate: Date, title: NullableString): Countdown {
@@ -189,6 +190,7 @@ export class CountdownManager {
         this.countdowns.push(countdown);
 
         this.saveCountdownsToStorage();
+        this.postDataToService();
 
         this.callChangeHandlers();
         return countdown;
@@ -203,6 +205,7 @@ export class CountdownManager {
         });
 
         this.saveCountdownsToStorage();
+        this.postDataToService();
 
         this.callChangeHandlers();
     }
@@ -268,5 +271,41 @@ export class CountdownManager {
     private callChangeHandlers() {
         const snapshot = this.getCountdownsSnapshot();
         this.eventSource.raise(snapshot);
+    }
+
+    private async postDataToService() {
+        const data = this.countdowns.map(countdown => ({
+            title: countdown.title,
+            targetDate: countdown.toISOString()
+        }));
+
+        await fetch('/.netlify/functions/setCookie', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
+
+    public async loadCountdownsFromService() {
+        const response = await fetch('/.netlify/functions/setCookie', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status === 200) {
+            const data = await response.json();
+            this.countdowns = data.map((item: IPersistedCountdown) => {
+                const time = new Date(item.targetDate);
+                const countdown = new Countdown(time, item.title);
+                countdown.registerChangeHandler(this.boundCountdownChangeHandler);
+                return countdown;
+            });
+
+            this.callChangeHandlers();
+        }
     }
 }
