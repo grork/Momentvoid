@@ -49,10 +49,18 @@ const THIS_MONTH = (new Date()).getMonth() + 1;
 const NEXT_YEAR = THIS_YEAR + 1;
 
 export function countdownSuggestions(): CandiDay[] {
+    const dates = [{
+        targetDate: new Date(`${NEXT_YEAR}-01-01T00:00:00`),
+        title: "🥳 New Year"
+    }, {
+        targetDate: new Date("2038-01-19T03:17:07"),
+        title: "🖥 2038 Problem"
+        }]; // Prefill with backstops to make sure theres always *some* dates
+    
     const now = new Date();
 
     // Get candidates in the remainder of this *calendar* year
-    const thisYear = Object.entries(candidates[THIS_YEAR]).reduce<CandiDay[]>((p, c) => {
+    Object.entries(candidates[THIS_YEAR] ?? []).reduce<CandiDay[]>((p, c) => {
         const [key, dates] = c;
         const month = parseInt(key);
 
@@ -65,19 +73,11 @@ export function countdownSuggestions(): CandiDay[] {
         p.push(...interestingDates);
 
         return p;
-    }, []);
-
-    const backstops = [{
-        targetDate: new Date(`${NEXT_YEAR}-01-01T00:00:00`),
-        title: "🥳 New Year"
-    }, {
-        targetDate: new Date("2038-01-19T03:17:07"),
-        title: "🖥 2038 Problem"
-        }];
+    }, dates);
     
     // Get any that are in the next *calendar* year, but are prior to the
     // current month.
-    const nextYear = Object.entries(candidates[NEXT_YEAR]).reduce<CandiDay[]>((p, c) => {
+    Object.entries(candidates[NEXT_YEAR] ?? []).reduce<CandiDay[]>((p, c) => {
         const [key, dates] = c;
         const month = parseInt(key);
 
@@ -90,8 +90,8 @@ export function countdownSuggestions(): CandiDay[] {
         p.push(...dates);
 
         return p;
-    }, backstops);
+    }, dates);
 
-    const dates = thisYear.concat(nextYear).sort((a, b) => a.targetDate.getTime() - b.targetDate.getTime());
+    dates.sort((a, b) => a.targetDate.getTime() - b.targetDate.getTime());
     return dates.slice(0, 4); // take up to the top 4
 }
