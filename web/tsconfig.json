@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     
-    "target": "ES2021",
+    "target": "ES2022",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022", "ES2022.Intl", "DOM", "DOM.Iterable"],
     
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
