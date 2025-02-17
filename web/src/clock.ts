@@ -69,13 +69,13 @@ export class Clock {
         return time;
     }
 
-    start(tickInterval?: number): void {
+    start(): void {
         this.stop();
 
         // Calculate the applied interval. This needs to account for the
         // acceleration factor to make the time not just step more, but *change*
         // more quickly.
-        let appliedTickInterval = this.tickInterval = tickInterval || this.tickInterval;
+        let appliedTickInterval = this.tickInterval;
         if (this.accelerationFactor) {
             // Cap the interval at 16ms, so we don't go faster than 60fps.
             appliedTickInterval = Math.max(appliedTickInterval / this.accelerationFactor, 16);
@@ -141,5 +141,12 @@ export class Clock {
         }
 
         this.start();
+    }
+
+    updateTickInterval(newInterval: number): void {
+        this.tickInterval = newInterval;
+        if (this.intervalToken > -1) {
+            this.start();
+        }
     }
 }

@@ -281,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "0": () => clock.resumeNormalSpeed(),
         "s": () => {
             const updatedInterval = cycleVisibleSegments(countdownControls, visibleSegments);
-            clock.start(updatedInterval);
+            clock.updateTickInterval(updatedInterval);
         },
         "c": () => countdownControls[0]?.playCelebrationAnimation(),
         "m": toggleManageCountdowns,
