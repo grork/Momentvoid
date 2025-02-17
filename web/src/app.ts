@@ -132,6 +132,20 @@ function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegm
 }
 
 /**
+ * Generates a set of test countdown times relative to the current time.
+ * @returns An array of test countdown times.
+ */
+function generateTestCountdownTimes(): [Date, NullableString][] {
+    const now = new Date();
+    return [
+        [new Date(now.getTime() + 24 * 60 * 60 * 1000), "24 hours"],
+        [new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), "7 days"],
+        [new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000), "30 days"],
+        [new Date(now.getTime() + 99 * 365 * 24 * 60 * 60 * 1000), "99 years"]
+    ];
+}
+
+/**
  * Holds general app state, available for all the functions within this file
  * access the appropriate state, and avoid them getting GCd.
  */
@@ -166,19 +180,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Process any URL parameters for adding countdowns to the list of tracked
     // countdowns, accounting for bad formats that people type in
-    let defaultTargetDates: [Date, NullableString][] = [];
+    let initialCountdowns: [Date, NullableString][] = [];
     const params = new URLSearchParams(window.location.search);
     let targetParam = params.get("target");
     if (targetParam) {
         const targetAsDate = new Date(targetParam);
-        if (defaultTargetDates.toString() !== "Invalid Date") {
-            defaultTargetDates = [[targetAsDate, null]];
+        if (initialCountdowns.toString() !== "Invalid Date") {
+            initialCountdowns = [[targetAsDate, null]];
         }
+    }
+
+    // Check for testtimes parameter and override countdowns if true
+    const inMemoryOnly = params.get("testtimes") === "true";
+    if (inMemoryOnly) {
+        initialCountdowns = generateTestCountdownTimes();
     }
 
     // Get the manager for our countdowns, passing in any ones obtained from
     // the URL so they can be merged
-    const countdownManager = new CountdownManager(defaultTargetDates);
+    const countdownManager = new CountdownManager(initialCountdowns, inMemoryOnly);
     const countdownContainer = document.getElementById("countdown-container")!;
 
     // Load the visible segments from storage, and apply them if available. We

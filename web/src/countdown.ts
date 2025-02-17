@@ -96,15 +96,17 @@ export class CountdownManager {
     private boundCountdownChangeHandler: CountdownChangedHandler = this.handleCountdownChanged.bind(this);
     private eventSource = new EventManager<Countdown[]>();
     private sort: SortMode = SortMode.NoSorting;
+    private inMemoryOnly: boolean;
 
-    constructor(defaultTargetDate: [Date, NullableString][]) {
+    constructor(initialCountdowns: [Date, NullableString][], inMemoryOnly: boolean = false) {
+        this.inMemoryOnly = inMemoryOnly;
         this.loadSortFromStorage();
         this.loadCountdownsFromStorage();
 
         // Append any additional default dates that have been supplied.
-        if (defaultTargetDate.length) {
+        if (initialCountdowns.length) {
             let added = false;
-            defaultTargetDate.forEach((date) => {
+            initialCountdowns.forEach((date) => {
                 const [targetDate, title] = date;
                 if (this.countdownExistsForTargetDate(targetDate)) {
                     return;
@@ -123,6 +125,10 @@ export class CountdownManager {
     }
 
     private saveCountdownsToStorage(): void {
+        if (this.inMemoryOnly) {
+            return;
+        }
+
         const targetTimes: IPersistedCountdown[] = [];
 
         this.countdowns.forEach((countdown) => {
@@ -148,6 +154,10 @@ export class CountdownManager {
     }
 
     private loadCountdownsFromStorage(): void {
+        if (this.inMemoryOnly) {
+            return;
+        }
+
         const storageValue = window.localStorage.getItem("countdowns");
         if (!storageValue) {
             return;
@@ -239,7 +249,6 @@ export class CountdownManager {
             case SortMode.FurthestFirst:
                 countdowns.sort(sortFurthestFirst);
                 break;
-
 
             case SortMode.NoSorting:
             default:
