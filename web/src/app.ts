@@ -138,8 +138,8 @@ function cycleVisibleSegments(countdownControls: CountdownControl[], visibleSegm
 function generateTestCountdownTimes(): [Date, NullableString][] {
     const now = new Date();
     return [
-        [new Date(now.getTime() + 24 * 60 * 60 * 1000), "24 hours"],
-        [new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), "7 days"],
+        [new Date(now.getTime() + 24 * 60 * 60 * 1000), "🐱🐈🐈‍⬛ 24 hours"],
+        [new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), " 👩🏾‍❤️‍👨🏼 7 days"],
         [new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000), "30 days"],
         [new Date(now.getTime() + 99 * 365 * 24 * 60 * 60 * 1000), "99 years"]
     ];

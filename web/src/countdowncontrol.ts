@@ -42,10 +42,8 @@ export function segmentToDisplayWithPlurality(segment: Segments, value: number):
         case Segments.HOURS:
             return `hour${plurality}`;
 
-
         case Segments.MINUTES:
             return `minute${plurality}`;
-
 
         case Segments.SECONDS:
             return `second${plurality}`;
@@ -236,14 +234,7 @@ export class CountdownControl {
     async playCelebrationAnimation(): Promise<void> {
         const confetti = await this.getConfetti();
         let confettiParameters: IAddConfettiConfig = { confettiNumber: 60 };
-
-        // Match _emojis_. But of course emojies aren't that simple. This
-        // captures both new -- pretty colours! -- and old ones that actually
-        // have a colour variation. We will match the variation added by modern
-        // input stacks -- which is to say the mono-glyph + 'colour variation'
-        // selector. (See more: https://stackoverflow.com/questions/70401560/what-is-the-difference-between-emoji-presentation-and-extended-pictographic)
-        const regexpEmojiPresentation = /(\p{Emoji}\uFE0F|\p{Emoji_Presentation})/gu;
-        let matchingEmoji = <string[]>this.countdown.title.match(regexpEmojiPresentation);
+        let matchingEmoji = this.extractEmojis(this.countdown.title);
 
         // If there were no matching emojis, check for a custom set
         if (!matchingEmoji?.length && this.customConfettiEmoji) {
@@ -264,5 +255,34 @@ export class CountdownControl {
         for (let i = 1; i <= 5; i++) {
             setTimeout(() => confetti.addConfetti(confettiParameters), 650 * i);
         }
+    }
+
+    // Extracts the valid emojies from a string. This means that for strings
+    // that contain both normal characters, _only emoji will be returned. If
+    // there are no emoji, then instead it'll return an empty array.
+    private extractEmojis(sourceString: string): string[] {
+        // Use the platform to separate the provided string in to grapheme
+        // clusters
+        const segmenter = new Intl.Segmenter(undefined /* runtime default locale*/, { granularity: "grapheme" });
+        const extractedClusters = segmenter.segment(sourceString);
+        const result = <string[]>[];
+
+        // Filter them to check if any match the complex & rich regex that helps
+        // check if there are any emoji (although, the regex cannot successfully
+        // extract them)
+        for (const cluster of extractedClusters) {
+            // Match _emojis_. But of course emojies aren't that simple. This
+            // captures both new -- pretty colours! -- and old ones that actually
+            // have a colour variation. We will match the variation added by modern
+            // input stacks -- which is to say the mono-glyph + 'colour variation'
+            // selector. (See more: https://stackoverflow.com/questions/70401560/what-is-the-difference-between-emoji-presentation-and-extended-pictographic)
+            // Note, that if you don't do this, the segmenter will have given
+            // you all the characters, not just emojis. Doh.
+            if (/\p{Extended_Pictographic}/u.test(cluster.segment)) {
+                result.push(cluster.segment);
+            }
+        }
+
+        return result;
     }
 }

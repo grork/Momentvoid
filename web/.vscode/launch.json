@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Launch Edge against Browser Sync",
             "cleanUp": "onlyTab",
-            "url": "http://localhost:3000",
+            "url": "http://localhost:3000/?testtimes=true",
             "preLaunchTask": "Serve Static",
         },
         {
