@@ -278,7 +278,7 @@ export class CountdownControl {
             // selector. (See more: https://stackoverflow.com/questions/70401560/what-is-the-difference-between-emoji-presentation-and-extended-pictographic)
             // Note, that if you don't do this, the segmenter will have given
             // you all the characters, not just emojis. Doh.
-            if (/\p{Extended_Pictographic}/u.test(cluster.segment)) {
+            if (/\p{Emoji_Presentation}/u.test(cluster.segment)) {
                 result.push(cluster.segment);
             }
         }
