@@ -14,6 +14,8 @@
     --shadow-colour: 0deg 0% 0%;
     --transition-duration: 0.3s;
     --transition-function: ease-in-out;
+    --title-margin-adjust: 8px;
+    --title-margin-adjust-negative: -8px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -125,6 +127,7 @@ a:visited {
 .countdown-wrapper > .countdown-container {
     position: relative;
     box-sizing: border-box;
+    min-width: 1.2ch;
 
     /* Place the font size here so that the min-width derived from the `ch` unit
        has something approximately right to work with */
@@ -133,7 +136,7 @@ a:visited {
 }
 
 /* Size each number+description to a fixed height to help with centering */
-.countdown-element-container:not(.countdown-title-container) {
+.countdown-element-container {
     box-sizing: border-box;
     cursor: default; /* Don't show an I-beam */
 }
@@ -183,18 +186,22 @@ a:visited {
     font-size: calc(var(--base-height) / 10); /* Make party zomg-huge */
 }
 
+.countdown-title-container-container {
+    height: calc(var(--base-height) / 25);
+}
+
 .countdown-title-container {
     overflow-x: auto; /* Scroll when contents are too big */
     overflow-y: hidden;
-    position: relative; /* Don't drive the width */
-    height: calc(var(--base-height) / 25); /* our child is absolute positioned,
-                                              so we'd have no height without this */
+    position: absolute; /* Don't drive the width */
+    height: calc((var(--base-height) / 25) + 12px); /* our child is absolute positioned,
+                                                       so we'd have no height without this */
     
     /* Move it around so the focus border (box shadow) doesn't touch the
        contained text exactly; e.g. breathing space */
-    padding-left: 8px;
-    margin-right: -8px;
-    transform: translateX(-8px);
+    padding-left: var(--title-margin-adjust);
+    margin-right: var(--title-margin-adjust-negative);
+    transform: translateX(var(--title-margin-adjust-negative));
 
     /* Make sure we've got a width at all times */
     width: 100%;
@@ -202,13 +209,25 @@ a:visited {
     border-radius: 4px;
 
     transition: box-shadow var(--transition-duration) var(--transition-function);
+
+    cursor: text;
 }
 
 /* Focus rect when focus is within the container */
-.countdown-title-container:focus-within,
-.countdown-title-container:hover {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--alt-text-colour);
+.countdown-title-container-container {
+    position: relative; /* Ensures `::after` positions correctly */
+  }
+.countdown-title-container-container:hover::after,
+.countdown-title-container-container:focus-within::after {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: var(--title-margin-adjust-negative);
+    right: var(--title-margin-adjust-negative);
+    bottom: -4px; /* bring bottom out to give it space to breath */
+    border: 1px solid var(--alt-text-colour);
+    border-radius: 4px;
+    pointer-events: none; /* Ensures it doesn’t interfere with interaction */
 }
 
 .countdown-title {
