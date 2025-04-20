@@ -112,7 +112,7 @@ a:visited {
 .countdown-wrapper {
     display: flex;
     flex-direction: row;
-    
+
     /* Center the content *horizontally*. Note that if you use "align-items:
        center" here then you'll have a hard time scrolling because in that case
        the items are *always* centered on their axis, not *relative* to the
@@ -124,7 +124,7 @@ a:visited {
 
 /* Manage the width of the whole column so that it isn't too small, but can also
    grow for e.g. 3-digit weeks */
-.countdown-wrapper > .countdown-container {
+.countdown-wrapper>.countdown-container {
     position: relative;
     box-sizing: border-box;
     min-width: calc(2.1ch + 5px);
@@ -135,14 +135,16 @@ a:visited {
     font-size: calc(var(--base-height) / 7);
 }
 
-.countdown-wrapper > .countdown-container:first-of-type {
-    margin-left: 8px; /* Make sure there is padding on the left side of the list primarily for mobile */
+.countdown-wrapper>.countdown-container:first-of-type {
+    margin-left: 8px;
+    /* Make sure there is padding on the left side of the list primarily for mobile */
 }
 
 /* Size each number+description to a fixed height to help with centering */
 .countdown-element-container {
     box-sizing: border-box;
-    cursor: default; /* Don't show an I-beam */
+    cursor: default;
+    /* Don't show an I-beam */
 }
 
 .countdown-number {
@@ -183,7 +185,8 @@ a:visited {
 }
 
 .countdown-reached-emoji {
-    font-size: calc(var(--base-height) / 10); /* Make party zomg-huge */
+    font-size: calc(var(--base-height) / 10);
+    /* Make party zomg-huge */
 }
 
 .countdown-title-container-container {
@@ -191,12 +194,15 @@ a:visited {
 }
 
 .countdown-title-container {
-    overflow-x: auto; /* Scroll when contents are too big */
+    overflow-x: auto;
+    /* Scroll when contents are too big */
     overflow-y: hidden;
-    position: absolute; /* Don't drive the width */
-    height: calc((var(--base-height) / 25) + 12px); /* our child is absolute positioned,
+    position: absolute;
+    /* Don't drive the width */
+    height: calc((var(--base-height) / 25) + 12px);
+    /* our child is absolute positioned,
                                                        so we'd have no height without this */
-    
+
     /* Move it around so the focus border (box shadow) doesn't touch the
        contained text exactly; e.g. breathing space */
     padding-left: var(--title-margin-adjust);
@@ -215,8 +221,10 @@ a:visited {
 
 /* Focus rect when focus is within the container */
 .countdown-title-container-container {
-    position: relative; /* Ensures `::after` positions correctly */
-  }
+    position: relative;
+    /* Ensures `::after` positions correctly */
+}
+
 .countdown-title-container-container:hover::after,
 .countdown-title-container-container:focus-within::after {
     content: "";
@@ -224,10 +232,12 @@ a:visited {
     top: -4px;
     left: var(--title-margin-adjust-negative);
     right: var(--title-margin-adjust-negative);
-    bottom: -4px; /* bring bottom out to give it space to breath */
+    bottom: -4px;
+    /* bring bottom out to give it space to breath */
     border: 1px solid var(--alt-text-colour);
     border-radius: 4px;
-    pointer-events: none; /* Ensures it doesn’t interfere with interaction */
+    pointer-events: none;
+    /* Ensures it doesn’t interfere with interaction */
 }
 
 .countdown-title {
@@ -295,7 +305,7 @@ dialog {
 }
 
 /* Menu itself, that hosts the content itself, and contains the background */
-dialog > :first-child {
+dialog> :first-child {
     position: relative;
     box-sizing: border-box;
     min-width: 280px;
@@ -306,10 +316,10 @@ dialog > :first-child {
 
     border: 1px solid var(--shortcut-background);
     box-shadow: 0px 1px 1.4px hsl(var(--shadow-colour) / 0.03),
-                0px 4.3px 6px -0.2px hsl(var(--shadow-colour) / 0.07),
-                0px 7.9px 11.1px -0.3px hsl(var(--shadow-colour) / 0.11),
-                0px 14.1px 19.8px -0.5px hsl(var(--shadow-colour) / 0.15),
-                0px 25px 35.1px -0.6px hsl(var(--shadow-colour) / 0.19);
+        0px 4.3px 6px -0.2px hsl(var(--shadow-colour) / 0.07),
+        0px 7.9px 11.1px -0.3px hsl(var(--shadow-colour) / 0.11),
+        0px 14.1px 19.8px -0.5px hsl(var(--shadow-colour) / 0.15),
+        0px 25px 35.1px -0.6px hsl(var(--shadow-colour) / 0.19);
     border-radius: 4px;
     background-color: var(--shortcut-background);
     backdrop-filter: blur(20px);
@@ -369,12 +379,12 @@ dialog > :first-child {
 
 /* Make sure the label elements – or anything else – are layed out as block, not
    inline */
-.menu-add-countdown-container > * {
+.menu-add-countdown-container>* {
     display: block;
     margin-bottom: 8px;
 }
 
-.menu-add-countdown-container label > input {
+.menu-add-countdown-container label>input {
     background-color: var(--date-add-text-background-colour);
     color: var(--text-colour);
 
@@ -410,20 +420,20 @@ dialog > :first-child {
 
     color: var(--text-colour);
     background-color: transparent;
-    
+
     border-width: 0px;
     border-radius: 4px;
     margin-right: -12px;
-    
+
     align-self: end;
     padding: 4px 12px;
 
     transition: background-color var(--transition-duration) var(--transition-function),
-                color var(--transition-duration) var(--transition-function);
+        color var(--transition-duration) var(--transition-function);
 }
 
 /* We don't want the 'add' button to be pulled rightwards, so clear it's margin */
-.menu-add-countdown-container > .menu-button {
+.menu-add-countdown-container>.menu-button {
     margin-right: unset;
 }
 
@@ -455,11 +465,11 @@ dialog > :first-child {
     height: auto;
 }
 
-.ui-empty-state .toolbar-container > .toolbar-button.material-symbols-outlined {
+.ui-empty-state .toolbar-container>.toolbar-button.material-symbols-outlined {
     font-size: calc(var(--base-height) / 7);
 }
 
-.toolbar-container > .toolbar-button {
+.toolbar-container>.toolbar-button {
     color: var(--toolbar-text-colour);
     padding: 12px;
 
@@ -471,21 +481,22 @@ dialog > :first-child {
     opacity: 0;
 
     transition: color var(--transition-duration) var(--transition-function), var(--transition-duration) var(--transition-function);
-    margin-left: -12px; /* pull the buttons closer together */
+    margin-left: -12px;
+    /* pull the buttons closer together */
 }
 
-.toolbar-container:hover > .toolbar-button,
-.ui-force-visible .toolbar-container > .toolbar-button,
-.ui-empty-state .toolbar-container > .toolbar-button {
+.toolbar-container:hover>.toolbar-button,
+.ui-force-visible .toolbar-container>.toolbar-button,
+.ui-empty-state .toolbar-container>.toolbar-button {
     opacity: 1;
 }
 
-.toolbar-container > .toolbar-button:hover,
-.toolbar-container > .toolbar-button:active {
+.toolbar-container>.toolbar-button:hover,
+.toolbar-container>.toolbar-button:active {
     color: var(--text-colour);
 }
 
-.toolbar-container > .toolbar-button:active {
+.toolbar-container>.toolbar-button:active {
     background-color: var(--alt-text-colour);
 }
 
@@ -514,8 +525,8 @@ dialog > :first-child {
     border-radius: 4px;
     padding: 12px;
     transition: background-color var(--transition-duration) var(--transition-function),
-                color var(--transition-duration) var(--transition-function);
-    
+        color var(--transition-duration) var(--transition-function);
+
     display: grid;
     grid-template-rows: auto auto 1fr;
     gap: 4px;
@@ -556,8 +567,7 @@ dialog > :first-child {
 
 @font-face {
     font-family: 'AT Name Sans Variable';
-    src: url("https://codevoid.net/fonts/ATNameSansVariable-Regular.woff2") format('woff2'),
-        url(ATNameSansVariable-Regular.woff2) format('woff2'); /* Fallback for local developmet */
+    src: url("https://www.codevoid.net/fonts/ATNameSansVariable-Regular.woff2") format('woff2');
     font-weight: 100 900;
     font-style: normal;
     font-display: block;
