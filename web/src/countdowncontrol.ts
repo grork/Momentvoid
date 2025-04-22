@@ -279,7 +279,7 @@ export class CountdownControl {
             // Note, that if you don't do this, the segmenter will have given
             // you all the characters, not just emojis. Doh.
             const segmentText = cluster.segment;
-            if (/\p{Emoji_Presentation}/u.test(segmentText) && !(segmentText >= '0' && segmentText <= '9')) {
+            if (/\p{Emoji}/u.test(segmentText) && !(segmentText >= '0' && segmentText <= '9')) {
                 result.push(segmentText);
             }
         }
